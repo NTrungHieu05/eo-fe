@@ -1,0 +1,33 @@
+:root {
+  --navBackground: #103557;
+  --menuBackground: #2e72b1;
+  --menuTextColor: #9bc9ff;
+  --menuHoverColor: #fff;
+  --footer1Bg: #e7ecf9;
+  --footer2Bg: #103557;
+  --footer1TextColor: #34447c;
+  --footer2TextColor: #d5def0;
+  --appBorder: 1px solid #2d5592;
+  --appBackground: inherit;
+  --appHoverBackground: #2d5592;
+  --appTextColor: #fff;
+  --appHoverColor: #fff;
+  --searchBackground: #2c6ca7;
+  --titleColor: #34447c;
+  --contentColor: #8293d0;
+  --iconWebFcColor: #6c81ff;
+  --iconAppFcColor: #435da1;
+  --textAppFcColor: #30372f;
+  --iconHoverAppFcColor: #828aff;
+  --descAppFcColor: #505050;
+  --descHoverAppFcColor: #a9b9f2;
+  --appFcBackground: #edf5ff;
+  --appHoverFcBackground: #435da2;
+  --btnTestBackground: #828aff;
+  --btnTestBackgroundLayer: #4162d8;
+  --btnDownloadAppBgr: #656ef1;
+  --btnDownloadAppTitleColor: #fff;
+  --downloadAppBg: #34447c;
+  --langBackground: #2c6ca7;
+  --borderLangBackground: #9bc9ff;
+}

@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "noImplicitAny": false,
+    "baseUrl": ".",
+    "paths": {
+      "@containers/*": ["containers/*"],
+      "@components/*": ["common/components/*"],
+      "@ui": ["common/ui"],
+      "@ui/*": ["common/ui/*"],
+      "@constants": ["common/constants"],
+      "@utils": ["common/utils"],
+      "@types": ["common/types"],
+      "@hooks": ["common/hooks"],
+      "@api": ["core/services"],
+      "@layout/*": ["core/layout/*"],
+      "@contexts/*": ["contexts/*"],
+      "@contexts": ["contexts"],
+      "@icons/*": ["public/static/images/icons/*"],
+      "@styles/*": ["styles/*"],
+      "@images/*": ["public/static/images/*"],
+      "@root/*": ["*"]
+    },
+    "incremental": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"]
+  },
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "next-env.d.ts", "**/types/index.d.ts"],
+  "exclude": ["node_modules"]
+}
