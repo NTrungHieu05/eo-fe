@@ -49,7 +49,7 @@ const Practice = () => {
     <ContentWrapper className="container">
       <div id="practice-list-view" className="practice-detail-view">
         <div className="practice-list-view-title">
-          Luyện nghe TOEIC {examData?.name} online miễn phí
+          Luyện TOEIC {examData?.name}
         </div>
         <div className="practice-list-view-main">
           <div className="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 css-1h77wgb">
@@ -88,7 +88,7 @@ const Practice = () => {
               <Col span={6}>
                 <div className="other-practices">
                   <div id="other-practices-list">
-                    <div className="title">Other Practices</div>
+                    <div className="title">Các phần khác</div>
                     <div className="list">
                       {topics.map((topic) =>
                         topic?.topics?.map((item) => (

@@ -10,7 +10,6 @@ import '@styles/global.css';
 import { BreakpointsContextProvider } from '@contexts/breakpointsContext';
 
 require('@styles/antd.less');
-require('@styles/antd.less');
 
 const MyApp = ({ Component, pageProps, user, router }) => {
   return (

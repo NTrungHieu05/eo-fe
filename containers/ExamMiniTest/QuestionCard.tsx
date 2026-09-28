@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactAudioPlayer from 'react-audio-player';
 import QuizPlayZone from './QuizPlayZone';
+import { resolveMediaUrl } from '@utils';
 
 export default function QuestionCard({ question, onUpdateQuestion, isStarting = false }) {
   const onChoice = (choice) => {
@@ -34,14 +35,14 @@ export default function QuestionCard({ question, onUpdateQuestion, isStarting = 
               <div className="question-group-question-box">
                 {question?.question?.sound && (
                   <div className="game-object-question-sound">
-                    <ReactAudioPlayer src={question?.question?.sound} autoPlay={false} controls />
+                    <ReactAudioPlayer src={resolveMediaUrl(question?.question?.sound)} autoPlay={false} controls />
                   </div>
                 )}
                 {question?.question?.image?.length > 0 && (
                   <div className="game-object-question-image">
                     <div className="game-image-widget-container" style={{ width: 300 }}>
                       <img
-                        src={question?.question?.image}
+                        src={resolveMediaUrl(question?.question?.image)}
                         alt={question?.question?.image}
                         style={{ width: '100%' }}
                       />
@@ -81,7 +82,7 @@ export default function QuestionCard({ question, onUpdateQuestion, isStarting = 
                     {question?.question?.sound && (
                       <div className="game-object-question-sound">
                         <ReactAudioPlayer
-                          src={question?.question?.sound}
+                          src={resolveMediaUrl(question?.question?.sound)}
                           autoPlay={false}
                           controls
                         />
@@ -91,7 +92,7 @@ export default function QuestionCard({ question, onUpdateQuestion, isStarting = 
                       <div className="game-object-question-image">
                         <div className="game-image-widget-container" style={{ width: 300 }}>
                           <img
-                            src={question?.question?.image}
+                            src={resolveMediaUrl(question?.question?.image)}
                             alt={question?.question?.image}
                             style={{ width: '100%' }}
                           />

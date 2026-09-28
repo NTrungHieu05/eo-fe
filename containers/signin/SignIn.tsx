@@ -51,16 +51,17 @@ const SignIn: React.FC = () => {
 
   const onLoginSuccess = (data) => {
     const cookies = new Cookies();
-    const user = data.englishUser;
-    const token = data.token;
-    if (token && typeof token === 'string') {
+    const user = data?.examUser || data?.englishUser;
+    const token = data?.access_token || data?.token;
+    const roles = user?.roles || [];
+    if (token && typeof token === 'string' && user) {
       cookies.set(Config.AUTH_TOKEN_KEY, token, {
         expires: moment().add(60, 'day').toDate(),
         path: '/',
       });
       reactLocalStorage.setObject(Config.USER_KEY, user);
       setUserInfos(user);
-      if (user.roles.includes(ROLE.ADMIN)) {
+      if (Array.isArray(roles) && roles.includes(ROLE.ADMIN)) {
         router.push(ROUTES.ADMIN_USER);
       } else {
         router.push(ROUTES.HOME);
@@ -80,7 +81,7 @@ const SignIn: React.FC = () => {
       <div className="login-content">
         <div className="form-login-wrap">
           <div className="header-login-wrap">
-            <div className="title-form">Login</div>
+            <div className="title-form">Đăng nhập</div>
           </div>
           <div className="form-login-content">
             <div className="form-login">
@@ -105,7 +106,7 @@ const SignIn: React.FC = () => {
                   className="mb-4"
                 >
                   <Input
-                    placeholder="Email Address"
+                    placeholder="Email"
                     prefix={<UserOutlined style={{ fontSize: '28px' }} />}
                   />
                 </Form.Item>
@@ -116,14 +117,14 @@ const SignIn: React.FC = () => {
                   className="mb-2"
                 >
                   <InputPassword
-                    placeholder="Password"
+                    placeholder="Mật khẩu"
                     prefix={<LockOutlined style={{ fontSize: '28px' }} />}
                   />
                 </Form.Item>
 
                 <div className="action-forgotpassword">
                   <div className="link-to-forgotpassword">
-                    <Link href={ROUTES.FORGOTPASSWORD}>Forgot password?</Link>
+                    <Link href={ROUTES.FORGOTPASSWORD}>Quên mật khẩu?</Link>
                   </div>
                 </div>
                 <div className="action-login">
@@ -133,7 +134,7 @@ const SignIn: React.FC = () => {
                     className="btn-signin"
                     loading={isLoading}
                   >
-                    Sign in
+                    Đăng nhập
                   </Button>
                 </div>
 
@@ -147,10 +148,10 @@ const SignIn: React.FC = () => {
                   Sign in with Google
                 </div> */}
                 <div className="auth-form-nav">
-                  Do you have any accounts?{' '}
+                  Chưa có tài khoản?{' '}
                   <span>
                     <Link href={ROUTES.SIGNUP}>
-                      <span className="link-to">Sign up</span>
+                      <span className="link-to">Đăng ký</span>
                     </Link>
                   </span>
                 </div>

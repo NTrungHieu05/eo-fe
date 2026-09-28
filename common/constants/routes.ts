@@ -4,6 +4,7 @@ export const ROUTES = {
   SIGNUP: '/signup',
   USER: '/user',
   FORGOTPASSWORD: '/forgot-password',
+  RESETPASSWORD: '/reset-password',
   WELCOME: '/welcome',
   MINI_TEST: '/test/practice',
   ADMIN_EXAM: '/admin/exam',
@@ -12,4 +13,10 @@ export const ROUTES = {
   ADMIN_USER: '/admin/user',
   ADMIN_CARD: '/admin/card',
 };
-export const PUBLIC_ROUTER = [ROUTES.WELCOME, ROUTES.SIGNIN, ROUTES.SIGNUP, ROUTES.FORGOTPASSWORD];
+export const PUBLIC_ROUTER = [
+  ROUTES.WELCOME,
+  ROUTES.SIGNIN,
+  ROUTES.SIGNUP,
+  ROUTES.FORGOTPASSWORD,
+  ROUTES.RESETPASSWORD,
+];

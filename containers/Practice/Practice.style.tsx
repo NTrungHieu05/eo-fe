@@ -1,29 +1,40 @@
 import { styled, theme } from '@styles/theme';
 
 export const ContentWrapper = styled.div`
-  background-color: rgb(246, 247, 251) !important;
+  background-color: transparent !important;
+  padding: 28px 0 48px;
   #other-practices-list {
     .title {
-      text-align: center;
-      font-weight: 700;
-      font-size: 20px;
+      text-align: left;
+      font-weight: 800;
+      font-size: 16px;
+      color: #12343d;
+      margin-bottom: 4px;
     }
     .list {
       margin-top: 12px;
       .list-item {
         background: #fff;
-        border-radius: 15px;
-        min-height: 55px;
+        border-radius: 14px;
+        min-height: 52px;
         display: flex;
         align-items: center;
         padding: 0 16px;
         margin-bottom: 10px;
+        border: 1px solid #e6eeee;
+        box-shadow: 0 6px 16px rgba(7, 47, 58, 0.04);
+        transition: transform 0.15s ease;
+        &:hover {
+          transform: translateX(4px);
+          border-color: #0e7c7b;
+        }
       }
       .list-item-name {
-        color: #535353;
+        color: #12343d;
+        font-weight: 600;
       }
       .list-item-icon {
-        color: #535353;
+        color: #0e7c7b;
         flex: 1;
         display: flex;
         justify-content: flex-end;
@@ -34,18 +45,18 @@ export const ContentWrapper = styled.div`
 
   .practice-detail-view {
     .practice-list-view-title {
-      text-align: center;
-      font-weight: 500;
-      font-size: 30px;
-      color: #1d1d1d;
-      padding: 30px 0;
+      text-align: left;
+      font-weight: 800;
+      font-size: 28px;
+      color: #12343d;
+      padding: 8px 0 24px;
     }
     .practice-list-view-main {
       .practice-name {
-        color: #333;
-        font-weight: 700;
-        font-size: 20px;
-        text-transform: uppercase;
+        color: #12343d;
+        font-weight: 800;
+        font-size: 18px;
+        text-transform: none;
       }
       .practice-list {
         margin-top: 12px;
@@ -89,13 +100,20 @@ export const ContentWrapper = styled.div`
         }
         .practice-list-box {
           background: #fff;
-          border-radius: 10px;
+          border-radius: 20px;
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 0 20px;
+          padding: 0 20px 8px;
           cursor: pointer;
           position: relative;
+          border: 1px solid #e6eeee;
+          box-shadow: var(--cardShadow);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 36px rgba(7, 47, 58, 0.12);
+          }
           .practice-pro {
             position: absolute;
             top: 0;
@@ -110,19 +128,19 @@ export const ContentWrapper = styled.div`
             border-radius: 0 15px 0 15px;
           }
           .practice-list-box-item--progress {
-            font-weight: 700;
+            font-weight: 800;
             font-size: 32px;
             line-height: 26px;
-            color: #91a3c8;
-            border-bottom: 1px dashed #c7cfe0;
-            padding: 20px 0 12px;
+            color: #0e7c7b;
+            border-bottom: 1px dashed #d7e4e4;
+            padding: 24px 0 12px;
             width: 100%;
             text-align: center;
             &.progress-none {
-              font-weight: 700;
+              font-weight: 800;
               font-size: 32px;
               line-height: 26px;
-              color: #c6ccd2;
+              color: #9ab3b3;
             }
           }
           .practice-list-box-item--participants {
@@ -139,13 +157,13 @@ export const ContentWrapper = styled.div`
           }
         }
         .practice-list-box-item--content {
-          font-weight: 500;
-          font-size: 20px;
-          line-height: 30px;
-          text-align: justify;
-          color: #333;
+          font-weight: 700;
+          font-size: 16px;
+          line-height: 24px;
+          text-align: center;
+          color: #12343d;
           margin-top: 12px;
-          margin-bottom: 8px;
+          margin-bottom: 16px;
         }
       }
       .practice-list-item {

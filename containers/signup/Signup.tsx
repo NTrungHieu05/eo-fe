@@ -70,7 +70,7 @@ const SignUp: React.FC = () => {
       <div className="register-content">
         <div className="form-register-wrap">
           <div className="header-login-wrap">
-            <div className="title-login">CREATE AN ACCOUNT</div>
+            <div className="title-login">Tạo tài khoản</div>
           </div>
           <div className="form-register-content">
             <div className="form-register">
@@ -101,7 +101,7 @@ const SignUp: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input placeholder="Enter your name" />
+                            <Input placeholder="Họ và tên" />
                           </Form.Item>
                         </Col>
 
@@ -119,7 +119,7 @@ const SignUp: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input placeholder="Email (Account)" />
+                            <Input placeholder="Email" />
                           </Form.Item>
                         </Col>
                         <Col span={24}>
@@ -136,7 +136,7 @@ const SignUp: React.FC = () => {
                               },
                             ]}
                           >
-                            <InputPassword key={'reg-password'} placeholder="Enter your password" />
+                            <InputPassword key={'reg-password'} placeholder="Mật khẩu" />
                           </Form.Item>
                         </Col>
                         <Col span={24}>
@@ -161,7 +161,7 @@ const SignUp: React.FC = () => {
                             <InputPassword
                               prefix
                               key={'reg-confirmPassword'}
-                              placeholder="Enter your confirm password"
+                              placeholder="Xác nhận mật khẩu"
                             />
                           </Form.Item>
                         </Col>
@@ -173,14 +173,14 @@ const SignUp: React.FC = () => {
                             values?.password?.length > 7 ? 'is-validated' : ''
                           }`}
                         >
-                          <IconChecked /> Minium 8 Characters
+                          <IconChecked /> Tối thiểu 8 ký tự
                         </div>
                         <div
                           className={`validate-character ${
                             isValidateCharacterPass ? 'is-validated' : ''
                           }`}
                         >
-                          <IconChecked /> Must contain 1 uppercase letter and 1 number
+                          <IconChecked /> Có ít nhất 1 chữ hoa và 1 số
                         </div>
                       </div>
                       <div className="action-wrap">
@@ -190,14 +190,14 @@ const SignUp: React.FC = () => {
                           className="btn-register"
                           loading={isLoading}
                         >
-                          REGISTER
+                          Đăng ký
                         </Button>
                       </div>
                       <div className="already-account">
-                        If you already have an account?{' '}
+                        Đã có tài khoản?{' '}
                         <span>
                           <Link href={ROUTES.SIGNIN}>
-                            <span className="link-to-login">Sign in</span>
+                            <span className="link-to-login">Đăng nhập</span>
                           </Link>
                         </span>
                       </div>

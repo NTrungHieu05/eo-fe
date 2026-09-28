@@ -28,7 +28,10 @@ const ForgotPassword: React.FC = () => {
         stop();
         Message.error(error?.message ?? 'Something error!');
       } else {
-        router.push(ROUTES.SIGNIN);
+        Message.success(
+          'A reset code was printed on the backend console. Enter it on the next screen.'
+        );
+        router.push(ROUTES.RESETPASSWORD);
       }
     } catch (err) {
       stop();
@@ -42,17 +45,16 @@ const ForgotPassword: React.FC = () => {
     <ForgotPasswordPageWrapper>
       <div className="forgot-password-content ">
         <div className="form-login-wrap">
-          <div className="title-form">Reset your password</div>
+          <div className="title-form">Quên mật khẩu</div>
           <div className="header-login-wrap">
             <Link href={ROUTES.SIGNIN}>
               <Button className="btn-back">
                 <ArrowLeftOutlined />
-                <span>Back</span>
+                <span>Quay lại</span>
               </Button>
             </Link>
             <div className="des-login">
-              Lost your password? Please enter your email address. You will receive a link to create
-              a new password via email.
+              Nhập email đã đăng ký. Mã đặt lại mật khẩu sẽ được in trên console backend.
             </div>
           </div>
           <div className="form-login-content">
@@ -76,12 +78,12 @@ const ForgotPassword: React.FC = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Email Address" />
+                  <Input placeholder="Email" />
                 </Form.Item>
 
                 <div className="action-wrap">
                   <Button htmlType="submit" className="btn-signin" loading={isLoading}>
-                    Reset password
+                    Gửi mã khôi phục
                   </Button>
                 </div>
               </Form>

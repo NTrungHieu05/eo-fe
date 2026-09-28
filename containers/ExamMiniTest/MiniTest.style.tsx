@@ -4,7 +4,7 @@ export const ExamMainWrap = styled.div`
   position: relative;
 `;
 export const ContentWrapper = styled.div`
-  background-color: #f2f3f7 !important;
+  background-color: #f3f6f6 !important;
   .custom-toeic-overview-panel .toeic-score-user-data {
     display: flex;
     border: 1px solid #e5e5e5;

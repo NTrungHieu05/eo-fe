@@ -1,11 +1,21 @@
 import { Progress } from 'antd';
 import ExamLayout from './ExamMiniTestLayout';
 import QuestionCard from './QuestionCard';
+import { getCardId } from '@utils';
 
 const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfos }) => {
-  const { total, newAnswerCount, correctAnswerCount, incorrectAnswerCount } = answerInfos;
+  const {
+    total,
+    newAnswerCount,
+    correctAnswerCount,
+    incorrectAnswerCount,
+    listeningScore = 5,
+    readingScore = 5,
+    toeicScore = 10,
+  } = answerInfos;
+  const firstId = getCardId(listQuestion?.[0]);
   const onClickReview = () => {
-    const question = document.getElementById(`review-${listQuestion?.[0]?._id}`);
+    const question = document.getElementById(`review-${firstId}`);
     if (!question) return;
     window.scrollTo({
       top: question.offsetTop,
@@ -17,7 +27,7 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
     onSetExamStatus('starting');
   };
 
-  const percent = (correctAnswerCount / total) * 100;
+  const percent = total ? (toeicScore / 990) * 100 : 0;
   return (
     <ExamLayout listQuestion={listQuestion} answerInfos={answerInfos}>
       <div id="game-view-container" className="game-view-container-main">
@@ -40,7 +50,7 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
                       type="circle"
                       percent={percent}
                       width={130}
-                      format={(percent) => <span>{percent.toFixed(0)}%</span>}
+                      format={() => <span>{toeicScore}</span>}
                     />
                   </div>
                 </div>
@@ -51,15 +61,35 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
                         className="questions-stat-item-value"
                         style={{ color: 'rgb(132, 155, 182)' }}
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width={12}
-                          height={13}
-                          viewBox="0 0 12 13"
-                          fill="none"
-                        >
-                          <circle cx="6.28342" cy="6.48361" r="5.68967" fill="#849BB6" />
-                        </svg>
+                        {toeicScore}/990
+                      </div>
+                      <div className="questions-stat-item-label">TOEIC</div>
+                    </div>
+                    <div className="main-stats-data-questions-stat-item item-correct">
+                      <div
+                        className="questions-stat-item-value"
+                        style={{ color: 'rgb(130, 188, 36)' }}
+                      >
+                        L {listeningScore}
+                      </div>
+                      <div className="questions-stat-item-label">Listening</div>
+                    </div>
+                    <div className="main-stats-data-questions-stat-item item-incorrect">
+                      <div
+                        className="questions-stat-item-value"
+                        style={{ color: 'rgb(101, 110, 241)' }}
+                      >
+                        R {readingScore}
+                      </div>
+                      <div className="questions-stat-item-label">Reading</div>
+                    </div>
+                  </div>
+                  <div className="main-statistics-questions-stat" style={{ marginTop: 12 }}>
+                    <div className="main-stats-data-questions-stat-item item-total">
+                      <div
+                        className="questions-stat-item-value"
+                        style={{ color: 'rgb(132, 155, 182)' }}
+                      >
                         {total}
                       </div>
                       <div className="questions-stat-item-label">Total</div>
@@ -69,15 +99,6 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
                         className="questions-stat-item-value"
                         style={{ color: 'rgb(130, 188, 36)' }}
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width={12}
-                          height={13}
-                          viewBox="0 0 12 13"
-                          fill="none"
-                        >
-                          <circle cx="6.28342" cy="6.48361" r="5.68967" fill="#82BC24" />
-                        </svg>
                         {correctAnswerCount}
                       </div>
                       <div className="questions-stat-item-label">Correct</div>
@@ -87,15 +108,6 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
                         className="questions-stat-item-value"
                         style={{ color: 'rgb(255, 84, 84)' }}
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width={12}
-                          height={13}
-                          viewBox="0 0 12 13"
-                          fill="none"
-                        >
-                          <circle cx="6.28342" cy="6.48361" r="5.68967" fill="#FF5454" />
-                        </svg>
                         {incorrectAnswerCount}
                       </div>
                       <div className="questions-stat-item-label">Incorrect</div>
@@ -234,11 +246,11 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
         </div>
         <div id="main-game-review-section" className="">
           {listQuestion.map((question, index) => (
-            <div id={`review-${question?._id}`} key={question?._id}>
+            <div id={`review-${getCardId(question)}`} key={getCardId(question)}>
               <QuestionCard
                 question={listQuestion[index]}
                 onUpdateQuestion={(newQuestion) => newQuestion}
-                key={`QuestionCard-${listQuestion[index]?._id}`}
+                key={`QuestionCard-${getCardId(listQuestion[index])}`}
               />
               <hr className="MuiDivider-root MuiDivider-fullWidth css-39bbo6" />
             </div>

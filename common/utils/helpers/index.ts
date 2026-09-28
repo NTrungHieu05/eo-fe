@@ -1,4 +1,5 @@
 import { forIn, isEmpty } from 'lodash';
+import Config from '@root/config';
 
 export const reactLocalStorage = {
   set: function (key: any, value: any) {
@@ -79,3 +80,24 @@ export const sortAnswer = (a, b) => {
     return 0;
   }
 };
+
+export const getCardId = (card) => card?.id || card?._id;
+
+export const resolveMediaUrl = (url?: string) => {
+  if (!url) return '';
+  if (/^https?:\/\//i.test(url)) return url;
+  const host = (Config.IMAGE_HOST || '').replace(/\/$/, '');
+  return `${host}${url.startsWith('/') ? url : `/${url}`}`;
+};
+
+/** Approximate ETS conversion: 0–100 correct → 5–495 (step 5). Not official. */
+export const toeicSectionScore = (correct: number) => {
+  const n = Math.max(0, Math.min(100, Math.round(Number(correct) || 0)));
+  if (n <= 0) return 5;
+  if (n >= 100) return 495;
+  const raw = 5 + 490 * Math.pow(n / 100, 0.92);
+  return Math.max(5, Math.min(495, Math.round(raw / 5) * 5));
+};
+
+export const toeicTotalScore = (listeningCorrect: number, readingCorrect: number) =>
+  toeicSectionScore(listeningCorrect) + toeicSectionScore(readingCorrect);

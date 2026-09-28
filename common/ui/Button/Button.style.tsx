@@ -9,8 +9,8 @@ export const StyledButton = styled((props) => <AntButton {...props} />)`
   &.ant-btn-default:hover,
   &.ant-btn-default:focus {
     color: #fff;
-    border-color: #2f9a4c;
-    background: #2f9a4c;
+    border-color: #0e7c7b;
+    background: #0e7c7b;
   }
   @media ${theme.device.maxMd} {
     font-size: 0.875rem;
@@ -28,8 +28,8 @@ export const StyledButton = styled((props) => <AntButton {...props} />)`
     &:hover,
     &:focus {
       color: #fff;
-      border-color: #2f9a4c;
-      background: #2f9a4c;
+      border-color: #0e7c7b;
+      background: #0e7c7b;
     }
   }
 

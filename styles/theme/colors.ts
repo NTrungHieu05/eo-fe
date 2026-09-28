@@ -76,7 +76,7 @@ const utility = {
 export const colors = {
   bodyBg: primary.lightGrey,
   bodyColor: utility.body,
-  primary: utility.red,
+  primary: '#0E7C7B',
   secondary: utility.green,
   danger: utility.red,
   error: utility.error,

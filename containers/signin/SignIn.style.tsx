@@ -1,36 +1,48 @@
-import { styled, theme } from '@styles/theme';
+import { styled } from '@styles/theme';
 
 export const SignInPageWrapper = styled.div`
-  // layout
+  min-height: 100vh;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  background:
+    radial-gradient(circle at top right, rgba(20, 163, 161, 0.16), transparent 36%),
+    var(--pageBg, #f3f6f6);
+
   .login-content {
-    flex: 0 0 100%;
-    padding: 15vh 8vw 8vh 10vw;
-    @media (max-width: 769px) {
-      padding-bottom: 75px;
-    }
+    flex: 0 0 auto;
+    width: 100%;
+    padding: 0;
   }
-  //end
+
   .title-form {
-    color: #29313a;
-    font-size: 30px;
-    font-weight: 700;
+    color: #12343d;
+    font-size: 28px;
+    font-weight: 800;
     text-align: center;
-    padding-bottom: 30px;
-    text-transform: uppercase;
+    padding-bottom: 8px;
+    text-transform: none;
   }
+
   .form-login-wrap {
-    max-width: 480px;
+    max-width: 440px;
     margin: 0 auto;
+    background: #fff;
+    border-radius: 24px;
+    padding: 36px 32px 28px;
+    box-shadow: var(--cardShadow);
+    border: 1px solid #e6eeee;
 
     .header-login-wrap {
+      text-align: center;
+      margin-bottom: 20px;
       .title-login {
-        font-weight: 700;
-        font-size: 36px;
-        line-height: 44px;
-        letter-spacing: 0.3px;
-        margin-bottom: 16px;
-        color: #272727;
+        font-weight: 800;
+        font-size: 28px;
+        line-height: 1.2;
+        margin-bottom: 8px;
+        color: #12343d;
       }
     }
     .form-login-content {
@@ -47,37 +59,36 @@ export const SignInPageWrapper = styled.div`
     .ant-input-affix-wrapper-status-error:not(.ant-input-affix-wrapper-disabled):not(
         .ant-input-affix-wrapper-borderless
       ).ant-input-affix-wrapper:hover {
-      background: #f5f6f8;
+      background: #f5f8f8;
     }
     .ant-input {
-      background: #f5f6f8;
+      background: #f5f8f8;
       font-weight: 500;
       font-size: 16px;
       line-height: 20px;
-      letter-spacing: 0.4375px;
-      color: #272727;
+      color: #12343d;
     }
     .ant-form-item-label > label {
-      font-size: 18px;
-      line-height: 23px;
-      letter-spacing: 0.2625px;
-      color: rgba(39, 39, 39, 0.85);
+      font-size: 15px;
+      color: #3d5a5a;
     }
     .ant-form-item-explain-error {
       font-weight: 500;
       font-size: 13px;
-      line-height: 20px;
-      letter-spacing: 0.4375px;
       color: #cd0000;
       margin-top: 5px;
     }
   }
   .link-to-forgotpassword {
-    color: #5d87f1;
-    font-size: 18px;
+    color: #0e7c7b;
+    font-size: 14px;
     font-weight: 600;
-    padding-bottom: 24px;
+    padding-bottom: 20px;
+    text-align: right;
     cursor: pointer;
+    a {
+      color: inherit;
+    }
     &:hover {
       text-decoration: underline;
     }
@@ -87,58 +98,40 @@ export const SignInPageWrapper = styled.div`
   }
   .btn-signin {
     display: inline-flex;
-    -webkit-box-align: center;
     align-items: center;
-    -webkit-box-pack: center;
     justify-content: center;
-    position: relative;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-    outline: 0px;
-    margin: 0px;
-    cursor: pointer;
-    user-select: none;
-    vertical-align: middle;
-    appearance: none;
-    text-decoration: none;
-    font-family: inherit;
-    text-transform: unset;
-    line-height: 1.75;
-    min-width: 64px;
-    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
-      box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
-      border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
-      color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-    border: 1px solid rgba(25, 118, 210, 0.5);
-
-    background: #656ef1;
+    width: 100%;
+    height: 48px;
+    border: none;
+    background: #0e7c7b;
     color: #fff;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 700;
-    border-radius: 20px;
-    padding: 7px 40px;
+    border-radius: 999px;
+    padding: 0 40px;
+    &:hover,
+    &:focus {
+      background: #0b5f5e;
+      color: #fff;
+      border: none;
+      opacity: 1;
+    }
   }
   .divider {
     padding: 20px 50px;
-
     .ant-divider-inner-text {
-      display: inline-block;
-      padding-left: calc(9.6px);
-      padding-right: calc(9.6px);
       color: #898989;
-      font-size: 18px;
-      font-weight: 400;
+      font-size: 16px;
     }
   }
   .auth-form-nav {
     text-align: center;
-    margin-top: 40px;
+    margin-top: 24px;
+    color: #5b7178;
     .link-to {
-      font-weight: 500;
-      font-size: 18px;
-      line-height: 22px;
-      letter-spacing: 0.2625px;
-      color: #6220d4;
+      font-weight: 700;
+      font-size: 15px;
+      color: #0e7c7b;
       cursor: pointer;
     }
   }

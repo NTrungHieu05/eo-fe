@@ -11,11 +11,11 @@ export const globalStyles = (
       body {
         margin: 0;
         color: rgba(0, 0, 0, 0.87);
-        font-family: SVN-Poppins, sans-serif;
+        font-family: Inter, SVN-Poppins, sans-serif;
         font-weight: 400;
         font-size: 1rem;
         line-height: 1.5;
-        background-color: #fff;
+        background-color: #f3f6f6;
         overflow-x: hidden;
       }
       #main-app {
@@ -206,13 +206,13 @@ export const globalStyles = (
         font-size: 14px;
       }
       .user-page {
-        background-color: #f2f6fc !important;
+        background-color: #f3f6f6 !important;
       }
       .bg-gray {
-        background-color: #f6f7fb !important;
+        background-color: #f3f6f6 !important;
       }
       .exam-page {
-        background-color: #f2f3f7 !important;
+        background-color: #f3f6f6 !important;
       }
       .form-datepicker {
         width: 100%;

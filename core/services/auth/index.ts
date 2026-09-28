@@ -55,7 +55,11 @@ export const postUnblockUser = async (data) => {
 };
 
 export const putResetPassword = async (data) => {
-  return put(`${ENDPOINTS.RESETPASS}`, data);
+  return post(`${ENDPOINTS.RESETPASS}`, data);
+};
+
+export const postResetPassword = async (data) => {
+  return post(`${ENDPOINTS.RESETPASS}`, data);
 };
 
 export const putChangePassword = async (data) => {

@@ -1,131 +1,93 @@
-import { styled, theme } from '@styles/theme';
+import { styled } from '@styles/theme';
 
 export const SignUpPageWrapper = styled.div`
-  // layout
+  min-height: 100vh;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  background:
+    radial-gradient(circle at top right, rgba(20, 163, 161, 0.16), transparent 36%),
+    var(--pageBg, #f3f6f6);
+
   .register-content {
-    flex: 0 0 100%;
-    padding: 10vh 7.3vw 10vh 9.3vw;
-    @media (max-width: 769px) {
-      padding-bottom: 75px;
-    }
+    flex: 0 0 auto;
+    width: 100%;
+    padding: 0;
   }
-  //end
+
   .ant-form-item {
     margin-bottom: 0;
   }
   .form-register-wrap {
-    max-width: 660px;
+    max-width: 480px;
     margin: 0 auto;
-    .login-logo {
-      margin-bottom: 64px;
-      @media (max-width: 769px) {
-        margin-bottom: 30px;
-        text-align: center;
-        img {
-          width: 160px;
-        }
-      }
-    }
+    background: #fff;
+    border-radius: 24px;
+    padding: 36px 32px 28px;
+    box-shadow: var(--cardShadow);
+    border: 1px solid #e6eeee;
+
     .header-login-wrap {
-      margin-bottom: 64px;
+      margin-bottom: 24px;
+      text-align: center;
       .title-login {
-        font-weight: 700;
-        font-size: 36px;
-        line-height: 44px;
-        letter-spacing: 0.3px;
-        margin-bottom: 16px;
-        color: #272727;
+        font-weight: 800;
+        font-size: 28px;
+        line-height: 1.2;
+        margin-bottom: 8px;
+        color: #12343d;
       }
       .des-login {
-        font-weight: 400;
-        font-size: 20px;
-        line-height: 23px;
-        letter-spacing: 0.2625px;
-        color: rgba(39, 39, 39, 0.85);
-      }
-
-      @media (max-width: 769px) {
-        margin-bottom: unset;
-        position: absolute;
-        top: 175px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 400px;
-        max-width: 92vw;
-        .title-login {
-          font-size: 30px;
-          line-height: 44px;
-          color: #ffffff;
-          margin-bottom: unset;
-        }
-        .des-login {
-          font-size: 16px;
-          color: #ffffff;
-        }
+        font-size: 15px;
+        color: #5b7178;
       }
     }
     .form-register-content {
       .form-header {
-        border-bottom: 2px solid #dedede;
+        border-bottom: 2px solid #e6eeee;
         padding-bottom: 6px;
-        margin-bottom: 37px;
+        margin-bottom: 24px;
         width: max-content;
       }
       .active-form-signin {
-        color: #6220d4;
-        font-weight: 500;
-        font-size: 18px;
-        line-height: 20px;
-        letter-spacing: 0.4375px;
+        color: #0e7c7b;
+        font-weight: 600;
+        font-size: 16px;
         margin-right: 25px;
-        border-bottom: 3px solid #6220d4;
+        border-bottom: 3px solid #0e7c7b;
         padding-bottom: 7px;
       }
       .link-to-signup-title {
-        color: rgba(102, 90, 225, 0.64);
+        color: rgba(14, 124, 123, 0.64);
         font-weight: 500;
-        font-size: 18px;
-        line-height: 20px;
-        letter-spacing: 0.4375px;
+        font-size: 16px;
       }
       .action-wrap {
         display: flex;
         justify-content: center;
-        margin-top: 24px;
+        margin-top: 8px;
         align-items: center;
         .btn-register {
           display: inline-flex;
-          -webkit-box-align: center;
           align-items: center;
-          -webkit-box-pack: center;
           justify-content: center;
-          position: relative;
-          box-sizing: border-box;
-          -webkit-tap-highlight-color: transparent;
-          outline: 0px;
-          margin: 0px;
-          cursor: pointer;
-          user-select: none;
-          vertical-align: middle;
-          appearance: none;
-          text-decoration: none;
-          font-family: inherit;
-          text-transform: unset;
-          line-height: 1.75;
-          min-width: 64px;
-          transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
-            box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
-            border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
-            color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-          border: 1px solid rgba(25, 118, 210, 0.5);
-
-          background: #656ef1;
+          width: 100%;
+          height: 48px;
+          border: none;
+          background: #0e7c7b;
           color: #fff;
-          font-size: 20px;
+          font-size: 16px;
           font-weight: 700;
-          border-radius: 20px;
-          padding: 7px 40px;
+          border-radius: 999px;
+          padding: 0 40px;
+          &:hover,
+          &:focus {
+            background: #0b5f5e;
+            color: #fff;
+            border: none;
+            opacity: 1;
+          }
         }
       }
       .action-hidden-pass,
@@ -136,60 +98,44 @@ export const SignUpPageWrapper = styled.div`
       }
     }
     .ant-form-item-label > label {
-      font-size: 18px;
-      line-height: 23px;
-      letter-spacing: 0.2625px;
-      color: rgba(39, 39, 39, 0.85);
+      font-size: 15px;
+      color: #3d5a5a;
     }
     .ant-form-item-explain-error {
       font-weight: 500;
       font-size: 13px;
-      line-height: 20px;
-      letter-spacing: 0.4375px;
       color: #cd0000;
       margin-top: 5px;
     }
 
     .check-validate-pass-box {
-      font-weight: 400;
-      font-size: 18px;
-      line-height: 30px;
-      letter-spacing: 0.2625px;
-      color: rgba(39, 39, 39, 0.85);
-      margin-bottom: 36px;
-      margin-top: 12px;
+      font-size: 14px;
+      line-height: 24px;
+      color: #5b7178;
+      margin: 12px 0 20px;
       .validate-length,
       .validate-character {
         > svg {
           display: none;
-          margin-right: 8p;
+          margin-right: 8px;
         }
         &.is-validated {
-          color: rgba(12, 176, 58, 0.85);
+          color: #0e7c7b;
           > svg {
             display: inline-block;
           }
         }
       }
-      @media (max-width: 769px) {
-        margin-bottom: 18px;
-      }
     }
 
     .already-account {
-      font-weight: 400;
-      font-size: 18px;
-      line-height: 22px;
-      letter-spacing: 0.2625px;
-      color: rgba(39, 39, 39, 0.85);
-      margin-top: 56px;
+      font-size: 15px;
+      color: #5b7178;
+      margin-top: 24px;
       text-align: center;
       .link-to-login {
-        font-weight: 500;
-        font-size: 18px;
-        line-height: 22px;
-        letter-spacing: 0.2625px;
-        color: #6220d4;
+        font-weight: 700;
+        color: #0e7c7b;
         cursor: pointer;
       }
     }
@@ -197,14 +143,9 @@ export const SignUpPageWrapper = styled.div`
 
   .divider {
     padding: 20px 50px;
-
     .ant-divider-inner-text {
-      display: inline-block;
-      padding-left: calc(9.6px);
-      padding-right: calc(9.6px);
       color: #898989;
-      font-size: 18px;
-      font-weight: 400;
+      font-size: 16px;
     }
   }
 `;

@@ -11,8 +11,23 @@ const withTM = require('next-transpile-modules')(['@babel/preset-react']); // or
 const nextConfig = {
   modern: true,
   experimental: { esmExternals: false },
+  async rewrites() {
+    const api = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/').replace(/\/$/, '');
+    return [
+      {
+        source: '/data/:path*',
+        destination: `${api}/data/:path*`,
+      },
+    ];
+  },
   webpack5: true,
   webpack: (config, { isServer, webpack }) => {
+    config.resolveLoader = config.resolveLoader || {};
+    config.resolveLoader.alias = {
+      ...(config.resolveLoader.alias || {}),
+      'less-loader': require.resolve('less-loader'),
+      less: require.resolve('less'),
+    };
     const fileLoaderRule = config.module.rules.find((rule) => rule.test && rule.test.test('.svg'));
     fileLoaderRule.exclude = /\.svg$/;
     config.module.rules.push({

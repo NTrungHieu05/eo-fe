@@ -4,7 +4,13 @@ import Config from '@root/config';
 import { ENDPOINTS, ROUTES } from '@constants';
 import { Message, reactLocalStorage } from '@utils';
 
-const PUBLIC_URLS = [ENDPOINTS.LOGIN];
+const PUBLIC_URLS = [
+  ENDPOINTS.LOGIN,
+  ENDPOINTS.FORGOTPASS,
+  ENDPOINTS.RESETPASS,
+  ENDPOINTS.REGISTER,
+  ENDPOINTS.VERIFY_OTP,
+];
 
 const axios = Axios.create({
   baseURL: Config.API_URL,
@@ -14,9 +20,10 @@ const axios = Axios.create({
 axios.interceptors.request.use(
   function (config: any) {
     //don't add auth header if url match ignore list
+    const requestUrl = config?.url || '';
     if (
-      PUBLIC_URLS.indexOf(config?.url) >= 0 ||
-      (config?.url && config?.url.indexOf('public') >= 0)
+      PUBLIC_URLS.some((url) => requestUrl === url || requestUrl.startsWith(url)) ||
+      requestUrl.indexOf('public') >= 0
     ) {
       return config;
     }

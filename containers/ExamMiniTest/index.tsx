@@ -1,17 +1,18 @@
-import { getListCardMiniTest } from '@api';
+import { getListCardMiniTest, postCollectExam } from '@api';
 import { useLoading } from '@hooks';
 import Config from '@root/config';
-import { Message, reactLocalStorage, sortAnswer } from '@utils';
+import { Message, reactLocalStorage, sortAnswer, toeicSectionScore, toeicTotalScore } from '@utils';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
 import ExamResult from './ExamMiniTestResult';
 import ExamStart from './ExamMiniTestStart';
 import ExamView from './ExamMiniTestView';
-import Countdown from 'antd/lib/statistic/Countdown';
-import { ClockCircleOutlined } from '@ant-design/icons';
 import { ExamMainWrap } from './MiniTest.style';
 
 type ExamStatusType = 'initial' | 'starting' | 'reviewing';
+
+const isCorrectAnswer = (question) =>
+  question?.userAnswer?.[0] && question?.userAnswer?.[0] === question?.answer?.texts?.[0];
 
 const ExamMiniTest = () => {
   const router = useRouter();
@@ -19,6 +20,7 @@ const ExamMiniTest = () => {
 
   const [examStatus, setExamStatus] = useState<ExamStatusType>('initial');
   const [listQuestion, setListQuestion] = useState([]);
+  const [examId, setExamId] = useState('');
 
   const answerInfos = useMemo(() => {
     const flatListQuestion = listQuestion.reduce((acc, question) => {
@@ -39,16 +41,27 @@ const ExamMiniTest = () => {
     }, []);
 
     const newAnswerCount = flatListQuestion.filter((question) => !question?.userAnswer?.[0]).length;
-    const correctAnswerCount = flatListQuestion.filter(
-      (question) =>
-        question?.userAnswer?.[0] && question?.userAnswer?.[0] === question?.answer?.texts?.[0]
-    )?.length;
+    const correctAnswerCount = flatListQuestion.filter(isCorrectAnswer)?.length;
     const incorrectAnswerCount = flatListQuestion?.length - newAnswerCount - correctAnswerCount;
+    const listeningCorrect = flatListQuestion.filter(
+      (question) => (question.questionNo || 0) <= 100 && isCorrectAnswer(question)
+    ).length;
+    const readingCorrect = flatListQuestion.filter(
+      (question) => (question.questionNo || 0) > 100 && isCorrectAnswer(question)
+    ).length;
+    const listeningScore = toeicSectionScore(listeningCorrect);
+    const readingScore = toeicSectionScore(readingCorrect);
+    const toeicScore = toeicTotalScore(listeningCorrect, readingCorrect);
     return {
       total: newAnswerCount + correctAnswerCount + incorrectAnswerCount,
       newAnswerCount,
       correctAnswerCount,
       incorrectAnswerCount,
+      listeningCorrect,
+      readingCorrect,
+      listeningScore,
+      readingScore,
+      toeicScore,
     };
   }, [listQuestion]);
 
@@ -63,6 +76,7 @@ const ExamMiniTest = () => {
         stop();
         Message.error(error?.message ?? 'Something error!');
       } else {
+        setExamId(respData?.id || '');
         let questionNo = 0;
         const _listData = respData?.cards?.map((card) => {
           const isQuestionGroup = card?.answer?.choices?.join('')?.length === 0;
@@ -114,7 +128,29 @@ const ExamMiniTest = () => {
     fetchListCard();
   }, [router]);
 
-  const onSetExamStatus = (status: ExamStatusType) => {
+  const onCollectionExam = async () => {
+    if (!examId) {
+      return;
+    }
+    try {
+      const resp: any = await postCollectExam({
+        progress: answerInfos.toeicScore,
+        status: 1,
+        examId,
+      });
+      const error = resp.data.error;
+      if (error) {
+        Message.error(error?.message ?? 'Something error!');
+      }
+    } catch (err) {
+      console.log('onSubmit-error :>> ', err.toString());
+    }
+  };
+
+  const onSetExamStatus = async (status: ExamStatusType) => {
+    if (status === 'reviewing') {
+      await onCollectionExam();
+    }
     setExamStatus(status);
   };
 

@@ -2,19 +2,19 @@ import { styled, theme } from '@styles/theme';
 import { Input } from 'antd';
 
 export const StyledInput = styled(Input)`
-  background: #f5f6f8;
-  border: 1px solid #dedede !important;
-  border-radius: 4px;
-  height: 56px;
+  background: #f5f8f8;
+  border: 1px solid #d7e4e4 !important;
+  border-radius: 14px;
+  height: 52px;
   font-weight: 500;
   font-size: 16px;
   line-height: 20px;
-  letter-spacing: 0.4375px;
-  color: #272727;
+  color: #12343d;
   &:focus,
   &.ant-input-focused,
   &:hover {
-    box-shadow: 0 0 3px 1px #dedede;
+    border-color: #0e7c7b !important;
+    box-shadow: 0 0 0 3px rgba(14, 124, 123, 0.12);
   }
 
   &:-webkit-autofill,
@@ -43,27 +43,26 @@ export const StyledInput = styled(Input)`
 `;
 
 export const StyledInputPassword = styled(Input.Password)`
-  background: #f5f6f8;
-  border: 1px solid #dedede;
-  border-radius: 4px;
-  height: 56px;
+  background: #f5f8f8;
+  border: 1px solid #d7e4e4;
+  border-radius: 14px;
+  height: 52px;
   &.ant-input-affix-wrapper-status-error:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper,
   &.ant-input-affix-wrapper-status-error:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper:hover {
-    background: #f5f6f8;
+    background: #f5f8f8;
   }
   .ant-input {
-    background: #f5f6f8;
+    background: #f5f8f8;
     font-weight: 500;
     font-size: 16px;
     line-height: 20px;
-    letter-spacing: 0.4375px;
-    color: #272727;
+    color: #12343d;
   }
 
   &:focus,
   &.ant-input-focused {
     border-color: ${theme.colors.primary};
-    box-shadow: none;
+    box-shadow: 0 0 0 3px rgba(14, 124, 123, 0.12);
   }
   &:hover {
     border-color: ${theme.colors.primary};

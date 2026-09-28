@@ -1,5 +1,6 @@
-const API_URL = 'http://localhost:8080/';
-const IMAGE_HOST = 'http://localhost:8080';
+const rawApi = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/';
+const API_URL = rawApi.endsWith('/') ? rawApi : `${rawApi}/`;
+const IMAGE_HOST = API_URL.replace(/\/$/, '');
 
 const Config = {
   API_URL,
