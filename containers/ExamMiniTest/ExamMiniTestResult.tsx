@@ -12,6 +12,8 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
     listeningScore = 5,
     readingScore = 5,
     toeicScore = 10,
+    listeningCorrect = 0,
+    readingCorrect = 0,
   } = answerInfos;
   const firstId = getCardId(listQuestion?.[0]);
   const onClickReview = () => {
@@ -72,7 +74,7 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
                       >
                         L {listeningScore}
                       </div>
-                      <div className="questions-stat-item-label">Listening</div>
+                      <div className="questions-stat-item-label">Listening {listeningCorrect}/100</div>
                     </div>
                     <div className="main-stats-data-questions-stat-item item-incorrect">
                       <div
@@ -81,7 +83,7 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
                       >
                         R {readingScore}
                       </div>
-                      <div className="questions-stat-item-label">Reading</div>
+                      <div className="questions-stat-item-label">Reading {readingCorrect}/100</div>
                     </div>
                   </div>
                   <div className="main-statistics-questions-stat" style={{ marginTop: 12 }}>

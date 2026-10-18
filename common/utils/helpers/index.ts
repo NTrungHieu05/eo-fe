@@ -90,14 +90,60 @@ export const resolveMediaUrl = (url?: string) => {
   return `${host}${url.startsWith('/') ? url : `/${url}`}`;
 };
 
-/** Approximate ETS conversion: 0–100 correct → 5–495 (step 5). Not official. */
-export const toeicSectionScore = (correct: number) => {
-  const n = Math.max(0, Math.min(100, Math.round(Number(correct) || 0)));
-  if (n <= 0) return 5;
-  if (n >= 100) return 495;
-  const raw = 5 + 490 * Math.pow(n / 100, 0.92);
-  return Math.max(5, Math.min(495, Math.round(raw / 5) * 5));
+/**
+ * Same anchors as exam.service.exam.ToeicScore on the backend.
+ * 0 correct = 5, 100 correct = 495, step 5. Listening and Reading differ.
+ */
+const LISTENING_ANCHORS: Array<[number, number]> = [
+  [0, 5],
+  [10, 45],
+  [20, 90],
+  [30, 140],
+  [40, 190],
+  [50, 245],
+  [60, 300],
+  [70, 355],
+  [80, 410],
+  [90, 460],
+  [95, 485],
+  [100, 495],
+];
+
+const READING_ANCHORS: Array<[number, number]> = [
+  [0, 5],
+  [10, 35],
+  [20, 75],
+  [30, 120],
+  [40, 170],
+  [50, 220],
+  [60, 275],
+  [70, 330],
+  [80, 390],
+  [90, 445],
+  [96, 480],
+  [100, 495],
+];
+
+const scaleSection = (correct: number, anchors: Array<[number, number]>) => {
+  const raw = Math.max(0, Math.min(100, Math.round(Number(correct) || 0)));
+  if (raw <= anchors[0][0]) return anchors[0][1];
+  for (let i = 1; i < anchors.length; i += 1) {
+    const [highRaw, highScore] = anchors[i];
+    const [lowRaw, lowScore] = anchors[i - 1];
+    if (raw <= highRaw) {
+      const ratio = (raw - lowRaw) / (highRaw - lowRaw);
+      const rounded = Math.round((lowScore + ratio * (highScore - lowScore)) / 5) * 5;
+      return Math.max(5, Math.min(495, rounded));
+    }
+  }
+  return 495;
 };
 
+export const toeicListeningScore = (correct: number) => scaleSection(correct, LISTENING_ANCHORS);
+
+export const toeicReadingScore = (correct: number) => scaleSection(correct, READING_ANCHORS);
+
+export const toeicSectionScore = toeicListeningScore;
+
 export const toeicTotalScore = (listeningCorrect: number, readingCorrect: number) =>
-  toeicSectionScore(listeningCorrect) + toeicSectionScore(readingCorrect);
+  toeicListeningScore(listeningCorrect) + toeicReadingScore(readingCorrect);

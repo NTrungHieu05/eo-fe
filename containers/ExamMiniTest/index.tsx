@@ -1,7 +1,7 @@
-import { getListCardMiniTest, postCollectExam } from '@api';
+import { getListCardMiniTest, postCollectExam, postToeicScore } from '@api';
 import { useLoading } from '@hooks';
 import Config from '@root/config';
-import { Message, reactLocalStorage, sortAnswer, toeicSectionScore, toeicTotalScore } from '@utils';
+import { Message, reactLocalStorage, sortAnswer, toeicListeningScore, toeicReadingScore, toeicTotalScore } from '@utils';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
 import ExamResult from './ExamMiniTestResult';
@@ -49,8 +49,8 @@ const ExamMiniTest = () => {
     const readingCorrect = flatListQuestion.filter(
       (question) => (question.questionNo || 0) > 100 && isCorrectAnswer(question)
     ).length;
-    const listeningScore = toeicSectionScore(listeningCorrect);
-    const readingScore = toeicSectionScore(readingCorrect);
+    const listeningScore = toeicListeningScore(listeningCorrect);
+    const readingScore = toeicReadingScore(readingCorrect);
     const toeicScore = toeicTotalScore(listeningCorrect, readingCorrect);
     return {
       total: newAnswerCount + correctAnswerCount + incorrectAnswerCount,
@@ -133,8 +133,21 @@ const ExamMiniTest = () => {
       return;
     }
     try {
+      let progress = answerInfos.toeicScore;
+      try {
+        const scoreResp: any = await postToeicScore({
+          listeningCorrect: answerInfos.listeningCorrect,
+          readingCorrect: answerInfos.readingCorrect,
+        });
+        const scaled = scoreResp.data?.responseData;
+        if (scaled && typeof scaled.totalScore === 'number') {
+          progress = scaled.totalScore;
+        }
+      } catch (scoreError) {
+        console.log('score-error :>> ', scoreError?.toString?.() || scoreError);
+      }
       const resp: any = await postCollectExam({
-        progress: answerInfos.toeicScore,
+        progress,
         status: 1,
         examId,
       });

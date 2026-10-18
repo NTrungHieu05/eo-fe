@@ -30,5 +30,6 @@ export const ENDPOINTS = {
   ADMIN_CARD_IMPORT: `card/import`,
   ADMIN_UPLOAD: `upload?type=0`,
   EXAM_COLLECT: `exam/collect`,
+  EXAM_SCORE: `exam/score`,
   VERIFY_OTP: `notification/verify-otp`,
 };
