@@ -1,4 +1,5 @@
 import { forIn, isEmpty } from 'lodash';
+import moment from 'moment';
 import Config from '@root/config';
 
 export const reactLocalStorage = {
@@ -14,8 +15,13 @@ export const reactLocalStorage = {
     return window.localStorage[key];
   },
   getObject: function (key: any) {
-    if (typeof window !== 'undefined') {
-      return JSON.parse(window?.localStorage[key] || '{}');
+    if (typeof window === 'undefined') {
+      return {};
+    }
+    try {
+      return JSON.parse(window.localStorage[key] || '{}');
+    } catch (err) {
+      return {};
     }
   },
   getArray: function (key: any) {
@@ -147,3 +153,24 @@ export const toeicSectionScore = toeicListeningScore;
 
 export const toeicTotalScore = (listeningCorrect: number, readingCorrect: number) =>
   toeicListeningScore(listeningCorrect) + toeicReadingScore(readingCorrect);
+
+export const splitFullName = (fullName = '') => {
+  const displayName = String(fullName || '').trim();
+  const parts = displayName.split(/\s+/).filter(Boolean);
+  if (parts.length <= 1) {
+    return { firstName: displayName, lastName: '', displayName };
+  }
+  return {
+    lastName: parts[0],
+    firstName: parts.slice(1).join(' '),
+    displayName,
+  };
+};
+
+export const parseDob = (dob) => {
+  if (!dob) {
+    return null;
+  }
+  const parsed = moment(dob, ['DD/MM/YYYY', 'DD-MM-YYYY', 'YYYY-MM-DD'], true);
+  return parsed.isValid() ? parsed : null;
+};

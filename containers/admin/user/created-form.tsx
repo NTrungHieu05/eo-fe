@@ -3,7 +3,7 @@ import { PATTERN_VALIDATE } from '@constants';
 import { useLoading } from '@hooks';
 import { Button } from '@ui';
 import { InputPassword } from '@ui/Input/Input';
-import { Message } from '@utils';
+import { Message, parseDob } from '@utils';
 import { Col, DatePicker, Form, Input, Modal, Row, Select } from 'antd';
 import { Option } from 'antd/lib/mentions';
 import React, { useEffect, useState } from 'react';
@@ -24,11 +24,11 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
       const params = {
         email: data.email,
         firstName: data.username,
+        displayName: data.username,
         phone: data.phone,
-        role: 'User',
-        dob: moment(data?.dob).format('DD/MM/YYYY'),
+        dob: data.dob ? moment(data.dob).format('DD/MM/YYYY') : undefined,
         gender: data.gender,
-        ...(formData ? { userId: formData.userId } : { password: 'abcd1234@' }),
+        ...(formData ? { userId: formData.userId } : { password: 'Abcd1234' }),
       };
 
       const resp: any = formData ? await putEditUser(params) : await postRegister(params);
@@ -54,7 +54,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
         password: '',
         username: formData.displayName,
         phone: formData.phone,
-        dob: moment(formData?.dob ?? '10/12/2000'),
+        dob: parseDob(formData?.dob),
         gender: formData.gender,
       });
     } else {
@@ -140,7 +140,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                         },
                       ]}
                     >
-                      <DatePicker className="form-datepicker" format={'DD-MM-YYYY'} />
+                      <DatePicker className="form-datepicker" format="DD/MM/YYYY" />
                     </Form.Item>
                   </Col>
                   <Col span={12}>

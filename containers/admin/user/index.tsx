@@ -20,7 +20,7 @@ const CMSUser: React.FC = () => {
     try {
       const resp: any = await getListUser();
       const error = resp.data.error;
-      const respData = resp.data?.users;
+      const respData = resp.data?.responseData?.data || [];
       if (error) {
         stop();
         Message.error(error?.message ?? 'Something error!');

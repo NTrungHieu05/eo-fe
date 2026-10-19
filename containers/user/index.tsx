@@ -1,8 +1,8 @@
-import { putUpdateUser } from '@api';
+import { getUserDetail, putUpdateUser } from '@api';
 import { PATTERN_VALIDATE } from '@constants';
 import { useLoading } from '@hooks';
 import Config from '@root/config';
-import { Message, reactLocalStorage } from '@utils';
+import { Message, parseDob, reactLocalStorage, splitFullName } from '@utils';
 import { Button, Col, DatePicker, Form, Input, Modal, Row } from 'antd';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
@@ -22,53 +22,72 @@ const UserPage = () => {
   const onCloseChangePassword = () => {
     setShowChangePassword(false);
   };
+  const fillForm = (user) => {
+    if (!user?.email && !user?.userId) {
+      return;
+    }
+    form.setFieldsValue({
+      email: user?.email,
+      username: user?.displayName || [user?.firstName, user?.lastName].filter(Boolean).join(' '),
+      dob: parseDob(user?.dob),
+      phone: user?.phone,
+    });
+  };
+
   const onSubmit = async (data) => {
     start();
     try {
+      const name = splitFullName(data.username);
       const params = {
-        email: data.email,
-        password: data.password,
-        firstName: data.username,
-        lastName: '',
-        diplayName: data.username,
-        // address: 'Da Ton, Gia Lam, Ha Noi',
+        userId: userInfos?.userId,
+        displayName: name.displayName,
+        firstName: name.firstName,
+        lastName: name.lastName,
         phone: data.phone,
-        role: 'User',
-        dob: moment(data?.dob).format('DD/MM/YYYY'),
-        gender: data.gender,
-        userId: userInfos.userId,
+        dob: data.dob ? moment(data.dob).format('DD/MM/YYYY') : undefined,
       };
 
       const resp: any = await putUpdateUser(params);
       const error = resp.data.error;
       const respData = resp.data?.responseData;
       if (error) {
-        stop();
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Không cập nhật được hồ sơ');
       } else {
-        Message.success('Successfully!');
-        reactLocalStorage.setObject(Config.USER_KEY, respData);
-        setUserInfos(respData);
+        Message.success('Cập nhật hồ sơ thành công');
+        const nextUser = { ...userInfos, ...respData };
+        reactLocalStorage.setObject(Config.USER_KEY, nextUser);
+        setUserInfos(nextUser);
+        fillForm(nextUser);
       }
     } catch (err) {
       console.log('onSubmit-error :>> ', err.toString());
+      Message.error('Không kết nối được máy chủ');
     } finally {
       stop();
     }
   };
-  useEffect(() => {
-    const formData = {
-      email: userInfos?.email,
-      username: userInfos?.displayName,
-      dob: userInfos?.dob ? moment(userInfos?.dob, 'DD/MM/YYYY') : null,
-      phone: userInfos?.phone,
-    };
-    form.setFieldsValue(formData);
 
-    return () => {
-      form.setFieldsValue({});
-    };
-  }, []);
+  useEffect(() => {
+    fillForm(userInfos);
+  }, [userInfos]);
+
+  useEffect(() => {
+    const userId = userInfos?.userId;
+    if (!userId) {
+      return;
+    }
+    getUserDetail(userId)
+      .then((resp: any) => {
+        const data = resp.data?.responseData;
+        if (resp.data?.error || !data) {
+          return;
+        }
+        const nextUser = { ...userInfos, ...data };
+        reactLocalStorage.setObject(Config.USER_KEY, nextUser);
+        setUserInfos(nextUser);
+      })
+      .catch(() => undefined);
+  }, [userInfos?.userId]);
 
   return (
     <UserPageWrapper className="container">
@@ -125,7 +144,7 @@ const UserPage = () => {
                     <Form.Item
                       name="username"
                       rules={[
-                        { required: true, message: 'Please input your name!' },
+                        { required: true, message: 'Vui lòng nhập họ và tên!' },
                         {
                           pattern: PATTERN_VALIDATE.isBlank.value,
                           message: PATTERN_VALIDATE.isBlank.message,
@@ -150,7 +169,7 @@ const UserPage = () => {
                             ></path>
                           </svg>
                         }
-                        placeholder="Enter your name"
+                        placeholder="Họ và tên"
                       />
                     </Form.Item>
                   </Col>
@@ -196,11 +215,15 @@ const UserPage = () => {
                       rules={[
                         {
                           required: true,
-                          message: 'Please input your date of birth!',
+                          message: 'Vui lòng chọn ngày sinh!',
                         },
                       ]}
                     >
-                      <DatePicker className="form-datepicker" format={'DD-MM-YYYY'} />
+                      <DatePicker
+                        className="form-datepicker"
+                        format="DD/MM/YYYY"
+                        placeholder="Ngày sinh"
+                      />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
@@ -209,7 +232,7 @@ const UserPage = () => {
                       rules={[
                         {
                           required: true,
-                          message: 'Please input your phone number!',
+                          message: 'Vui lòng nhập số điện thoại!',
                         },
                         {
                           pattern: PATTERN_VALIDATE.phone.value,
@@ -233,7 +256,7 @@ const UserPage = () => {
                             ></path>
                           </svg>
                         }
-                        placeholder="Phone"
+                        placeholder="Số điện thoại"
                       />
                     </Form.Item>
                   </Col>

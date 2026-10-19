@@ -10,8 +10,8 @@ export const PATTERN_VALIDATE = {
     message: 'Invalid Facebook URL format',
   },
   phone: {
-    value: /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/,
-    message: 'Invalid phone number format',
+    value: /^(0|\+84)[0-9]{9}$/,
+    message: 'Số điện thoại gồm 10 số, bắt đầu bằng 0',
   },
   instagram: {
     value: /(?:(?:http|https):\/\/)?(?:www.)?(?:instagram.com|instagr.am)\/([A-Za-z0-9-_]+)/im,

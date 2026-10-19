@@ -16,8 +16,16 @@ export const SignUpPageWrapper = styled.div`
     padding: 0;
   }
 
-  .ant-form-item {
+    .ant-form-item {
     margin-bottom: 0;
+  }
+  .ant-picker {
+    width: 100%;
+    height: 48px;
+    border-radius: 12px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
   }
   .form-register-wrap {
     max-width: 480px;

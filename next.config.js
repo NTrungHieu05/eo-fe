@@ -12,11 +12,16 @@ const nextConfig = {
   modern: true,
   experimental: { esmExternals: false },
   async rewrites() {
-    const api = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/').replace(/\/$/, '');
+    const publicApi = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/').replace(/\/$/, '');
+    const backend = (process.env.BACKEND_URL || (publicApi.startsWith('http') ? publicApi : 'http://localhost:8080')).replace(/\/$/, '');
     return [
       {
+        source: '/api/:path*',
+        destination: `${backend}/:path*`,
+      },
+      {
         source: '/data/:path*',
-        destination: `${api}/data/:path*`,
+        destination: `${backend}/data/:path*`,
       },
     ];
   },

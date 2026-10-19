@@ -44,6 +44,7 @@ const SignIn: React.FC = () => {
     } catch (err) {
       stop();
       console.log('onSubmit-error :>> ', err.toString());
+      Message.error('Không kết nối được máy chủ. Kiểm tra backend http://localhost:8080 đang chạy.');
     } finally {
       stop();
     }
@@ -165,6 +166,7 @@ const SignIn: React.FC = () => {
         onClose={onCloseModalVerify}
         onOk={onOkModalVerify}
         email={email}
+        hintOtp=""
       />
     </SignInPageWrapper>
   );

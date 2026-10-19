@@ -30,15 +30,18 @@ const ExamLayout: React.FC<ExamLayoutProps> = (props: ExamLayoutProps) => {
     if (!topicId) {
       return;
     }
-    const resp: any = await getListExam(topicId);
-    const error = resp.data.error;
-    const respData = resp.data?.responseData;
-    if (error) {
-      stop();
-      Message.error(error?.message ?? 'Something error!');
-    } else {
-      setListTest(respData.exams);
-      setTopicData(respData);
+    try {
+      const resp: any = await getListExam(topicId);
+      const error = resp.data.error;
+      const respData = resp.data?.responseData;
+      if (error) {
+        Message.error(error?.message ?? 'Something error!');
+      } else {
+        setListTest(respData?.exams || []);
+        setTopicData(respData);
+      }
+    } catch (err) {
+      Message.error('Không tải được danh sách đề thi');
     }
   };
 

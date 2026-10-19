@@ -6,7 +6,7 @@ import { Button, Form, Input, Modal } from 'antd';
 import { useRouter } from 'next/router';
 import { ModalVerifyWrap } from './index.style';
 
-const ModalVerifyOTP = ({ show, onClose, onOk, email }) => {
+const ModalVerifyOTP = ({ show, onClose, onOk, email, hintOtp }) => {
   const [form] = Form.useForm();
   const router = useRouter();
   const [{ isLoading }, { start, stop }] = useLoading();
@@ -50,7 +50,11 @@ const ModalVerifyOTP = ({ show, onClose, onOk, email }) => {
       className="edit-profile-modal"
     >
       <ModalVerifyWrap>
-        <div className="verify-label mb-3">Please verify your account: </div>
+        <div className="verify-label mb-3">
+          {hintOtp
+            ? `Nếu chưa nhận Gmail, dùng mã OTP: ${hintOtp}`
+            : 'Kiểm tra Gmail (cả Spam). Nếu chưa cấu hình mail, lấy OTP trong console backend.'}
+        </div>
         <div>
           <Form
             form={form}

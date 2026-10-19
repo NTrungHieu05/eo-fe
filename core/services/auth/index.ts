@@ -109,3 +109,7 @@ export const putEditUser = async (putData: any) => {
 export const putUpdateUser = async (putData: any) => {
   return put(ENDPOINTS.USER_INFO, putData);
 };
+
+export const getUserDetail = async (id: string) => {
+  return get(`user/${id}`);
+};

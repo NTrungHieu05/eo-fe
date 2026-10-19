@@ -24,10 +24,11 @@ const CMSCard: React.FC = () => {
     showUploadList: false,
     onChange(info) {
       if (info.file.status === 'done') {
+        const filePath = info.file.response?.filePath;
         message.success(
           `${info.file.name} file uploaded successfully, Please wait for a moment to import data!`
         );
-        fetchImportCard(info.file.name);
+        fetchImportCard(filePath);
       } else if (info.file.status === 'error') {
         message.error(`${info.file.name} file upload failed.`);
       }
@@ -46,7 +47,7 @@ const CMSCard: React.FC = () => {
         stop();
         Message.error(error?.message ?? 'Something error!');
       } else {
-        onSuccess();
+        onSuccess(resp.data?.responseData);
       }
     } catch (err) {
       stop();
@@ -54,11 +55,11 @@ const CMSCard: React.FC = () => {
     }
   };
 
-  const fetchImportCard = async (fileName) => {
+  const fetchImportCard = async (filePath) => {
     start();
     try {
       const params = {
-        filePath: `/root/home/Exam_Online/data/${fileName}`,
+        filePath,
       };
       const resp: any = await postCardImport(params);
       const error = resp.data.error;
@@ -66,7 +67,7 @@ const CMSCard: React.FC = () => {
         stop();
         Message.error(error?.message ?? 'Something error!');
       } else {
-        message.success(`${fileName} file imported successfully`);
+        message.success(`File imported successfully`);
         fetchListCard();
       }
     } catch (err) {

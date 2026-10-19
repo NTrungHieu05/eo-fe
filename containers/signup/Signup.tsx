@@ -2,15 +2,12 @@ import { postRegister } from '@api';
 import { PATTERN_VALIDATE, ROUTES } from '@constants';
 import { useLoading } from '@hooks';
 import IconChecked from '@icons/IChecked.svg';
-import Config from '@root/config';
 import { Button } from '@ui/Button';
 import Input, { InputPassword } from '@ui/Input/Input';
-import { Message, reactLocalStorage } from '@utils';
-import { Col, Form, Row } from 'antd';
-import moment from 'moment';
+import { Message, splitFullName } from '@utils';
+import { Col, DatePicker, Form, Row } from 'antd';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { Cookies } from 'react-cookie';
 import { SignUpPageWrapper } from './Signup.style';
 import { useRouter } from 'next/router';
 import ModalVerifyOTP from '@containers/modal-verify-otp';
@@ -22,20 +19,20 @@ const SignUp: React.FC = () => {
 
   const [showFormVerify, setShowFormVerify] = useState(false);
   const [email, setEmail] = useState('');
+  const [devOtp, setDevOtp] = useState('');
 
   const onSubmit = async (data) => {
     start();
     try {
+      const name = splitFullName(data.fullName);
       const params = {
         email: data.email,
         password: data.password,
-        firstName: data.username,
-        lastName: data.username,
-        // address: 'Da Ton, Gia Lam, Ha Noi',
-        // phone: '+84900000008',
-        role: 'User',
-        // dob: '10/12/2000',
-        // gender: 'Male',
+        firstName: name.firstName,
+        lastName: name.lastName,
+        displayName: name.displayName,
+        phone: data.phone,
+        dob: data.dob ? data.dob.format('DD/MM/YYYY') : undefined,
       };
 
       const resp: any = await postRegister(params);
@@ -46,9 +43,11 @@ const SignUp: React.FC = () => {
       } else {
         setShowFormVerify(true);
         setEmail(data.email);
+        setDevOtp(resp.data?.responseData?.otp || '');
       }
     } catch (err) {
       console.log('onSubmit-error :>> ', err.toString());
+      Message.error('Không kết nối được máy chủ. Kiểm tra backend đang chạy.');
     } finally {
       stop();
     }
@@ -57,12 +56,13 @@ const SignUp: React.FC = () => {
   const onCloseModalVerify = () => {
     setShowFormVerify(false);
     form.resetFields();
-    router.push(ROUTES.HOME);
+    router.push(ROUTES.SIGNIN);
   };
   const onOkModalVerify = () => {
     setShowFormVerify(false);
     form.resetFields();
-    router.push(ROUTES.HOME);
+    Message.success('Xác minh thành công. Hãy đăng nhập.');
+    router.push(ROUTES.SIGNIN);
   };
 
   return (
@@ -89,12 +89,12 @@ const SignUp: React.FC = () => {
                     values?.password?.length > 0;
                   return (
                     <>
-                      <Row gutter={[16, 24]}>
+                      <Row gutter={[16, 16]}>
                         <Col span={24}>
                           <Form.Item
-                            name="username"
+                            name="fullName"
                             rules={[
-                              { required: true, message: 'Please input your name!' },
+                              { required: true, message: 'Vui lòng nhập họ và tên!' },
                               {
                                 pattern: PATTERN_VALIDATE.isBlank.value,
                                 message: PATTERN_VALIDATE.isBlank.message,
@@ -111,7 +111,7 @@ const SignUp: React.FC = () => {
                             rules={[
                               {
                                 required: true,
-                                message: 'Please input your email address!',
+                                message: 'Vui lòng nhập email!',
                               },
                               {
                                 pattern: PATTERN_VALIDATE.email.value,
@@ -120,6 +120,32 @@ const SignUp: React.FC = () => {
                             ]}
                           >
                             <Input placeholder="Email" />
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          <Form.Item
+                            name="phone"
+                            rules={[
+                              { required: true, message: 'Vui lòng nhập số điện thoại!' },
+                              {
+                                pattern: PATTERN_VALIDATE.phone.value,
+                                message: PATTERN_VALIDATE.phone.message,
+                              },
+                            ]}
+                          >
+                            <Input placeholder="Số điện thoại" />
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          <Form.Item
+                            name="dob"
+                            rules={[{ required: true, message: 'Vui lòng chọn ngày sinh!' }]}
+                          >
+                            <DatePicker
+                              placeholder="Ngày sinh"
+                              format="DD/MM/YYYY"
+                              style={{ width: '100%' }}
+                            />
                           </Form.Item>
                         </Col>
                         <Col span={24}>
@@ -159,7 +185,6 @@ const SignUp: React.FC = () => {
                             ]}
                           >
                             <InputPassword
-                              prefix
                               key={'reg-confirmPassword'}
                               placeholder="Xác nhận mật khẩu"
                             />
@@ -214,6 +239,7 @@ const SignUp: React.FC = () => {
         onClose={onCloseModalVerify}
         onOk={onOkModalVerify}
         email={email}
+        hintOtp={devOtp}
       />
     </SignUpPageWrapper>
   );

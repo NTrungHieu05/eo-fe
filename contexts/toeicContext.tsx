@@ -31,17 +31,14 @@ export const ToeicContext = React.createContext<ToeicContextProps>({
 export const ToeicContextProvider = (props) => {
   const router = useRouter();
   const [topics, setTopics] = useState([]);
-  const [userInfos, setUserInfos] = useState([]);
+  const [userInfos, setUserInfos] = useState({});
 
   const fetchHeaderInfo = async () => {
     try {
       const resp = await getheaderInfo();
       const error = resp.data?.error;
       const respData = resp.data?.responseData;
-      if (error) {
-        stop();
-        // Message.error(error?.message ?? 'Something error! Try again later');
-      } else {
+      if (!error && respData) {
         setTopics(respData);
       }
     } catch (error) {}
@@ -52,17 +49,16 @@ export const ToeicContextProvider = (props) => {
   useEffect(() => {
     const cookies = new Cookies();
     const accessToken = cookies.get(Config.AUTH_TOKEN_KEY);
-    const UserData = reactLocalStorage.getObject(Config.USER_KEY);
+    const UserData = reactLocalStorage.getObject(Config.USER_KEY) || {};
     if (!isEqual(UserData, userInfos)) {
       setUserInfos(UserData);
     }
     if (!PUBLIC_ROUTER.includes(router.pathname) && (!accessToken || isEmpty(UserData))) {
       reactLocalStorage.clear();
-      cookies.remove(Config.AUTH_TOKEN_KEY);
+      cookies.remove(Config.AUTH_TOKEN_KEY, { path: '/' });
       router.push(ROUTES.WELCOME);
-      return;
     }
-  });
+  }, [router.pathname]);
   return (
     <ToeicContext.Provider
       value={{
