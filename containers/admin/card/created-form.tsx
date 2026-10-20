@@ -1,13 +1,13 @@
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { getAdminListCard, postCreatedCard, postCreatedExam, putEditCard, putEditExam } from '@api';
-import { PATTERN_VALIDATE } from '@constants';
+import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { postCreatedCard, postUploadFile, putEditCard } from '@api';
 import { useLoading } from '@hooks';
 import { styled } from '@styles/theme';
 import { Button } from '@ui';
-import { Message, sortAnswer } from '@utils';
-import { Checkbox, Col, Form, Input, Row, Select, Space } from 'antd';
+import { Message, resolveMediaUrl, sortAnswer } from '@utils';
+import { Button as AntdButton, Checkbox, Col, Form, Input, Row, Space, Upload } from 'antd';
 import { FormListFieldData, FormListOperation } from 'antd/lib/form/FormList';
 import { useEffect, useState } from 'react';
+import ReactAudioPlayer from 'react-audio-player';
 type CreatedFormProps = {
   onClose: () => void;
   formData?: any;
@@ -20,6 +20,41 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
   const [isInit, setIsInit] = useState<boolean>(true);
 
   const isQuestionGroupField = Form.useWatch('isQuestionGroup', form);
+  const soundValue = Form.useWatch(['question', 'sound'], form);
+  const imageValue = Form.useWatch(['question', 'image'], form);
+
+  const uploadMedia = (kind: 'sound' | 'image') => async (options) => {
+    const { file, onSuccess, onError } = options;
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const resp: any = await postUploadFile(formData, kind === 'image' ? 1 : 2);
+      const error = resp.data.error;
+      if (error) {
+        Message.error(error?.message ?? 'Tải file thất bại');
+        onError?.(new Error(error?.message));
+        return;
+      }
+      const url = resp.data?.responseData?.mediaUrl;
+      if (!url) {
+        Message.error('Tải xong nhưng server không trả đường dẫn file');
+        onError?.(new Error('missing mediaUrl'));
+        return;
+      }
+      const question = form.getFieldValue('question') || {};
+      form.setFieldsValue({
+        question: {
+          ...question,
+          [kind]: url,
+        },
+      });
+      Message.success('Đã tải file. Đường dẫn đã được điền vào ô bên dưới.');
+      onSuccess?.(resp.data?.responseData);
+    } catch (err) {
+      Message.error('Không tải được file. Kiểm tra backend đang chạy.');
+      onError?.(err);
+    }
+  };
 
   const onClickIsQuestionGroup = () => {
     if (isQuestionGroupField) {
@@ -182,13 +217,45 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                     <div className="list-title">Question</div>
                   </Col>
                   <Col span={24}>
+                    <div className="media-label">File nghe (Part 1–4)</div>
+                    <Space wrap className="media-actions">
+                      <Upload
+                        accept="audio/*,.mp3,.wav,.m4a,.ogg"
+                        showUploadList={false}
+                        customRequest={uploadMedia('sound')}
+                        maxCount={1}
+                      >
+                        <AntdButton icon={<UploadOutlined />}>Chọn file nghe</AntdButton>
+                      </Upload>
+                    </Space>
+                    {soundValue ? (
+                      <div className="media-preview">
+                        <ReactAudioPlayer src={resolveMediaUrl(soundValue)} controls />
+                      </div>
+                    ) : null}
                     <Form.Item name={['question', 'sound']}>
-                      <Input placeholder="Enter question sound" />
+                      <Input placeholder="Hoặc dán link: /data/sounds/ten-file.mp3" />
                     </Form.Item>
                   </Col>
                   <Col span={24}>
+                    <div className="media-label">Ảnh (Part 1)</div>
+                    <Space wrap className="media-actions">
+                      <Upload
+                        accept="image/*,.png,.jpg,.jpeg,.gif,.webp"
+                        showUploadList={false}
+                        customRequest={uploadMedia('image')}
+                        maxCount={1}
+                      >
+                        <AntdButton icon={<UploadOutlined />}>Chọn ảnh</AntdButton>
+                      </Upload>
+                    </Space>
+                    {imageValue ? (
+                      <div className="media-preview">
+                        <img src={resolveMediaUrl(imageValue)} alt="preview" />
+                      </div>
+                    ) : null}
                     <Form.Item name={['question', 'image']}>
-                      <Input placeholder="Enter question image" />
+                      <Input placeholder="Hoặc dán link: /data/images/ten-file.jpg" />
                     </Form.Item>
                   </Col>
                   <Col span={24}>
@@ -420,6 +487,23 @@ export const CreatedFromWrap = styled.div`
   .child-card-title {
     font-size: 18px;
     font-weight: 600;
+  }
+  .media-label {
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .media-actions {
+    margin-bottom: 8px;
+  }
+  .media-preview {
+    margin: 8px 0 12px;
+    img {
+      max-width: 280px;
+      max-height: 180px;
+      object-fit: contain;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+    }
   }
 `;
 

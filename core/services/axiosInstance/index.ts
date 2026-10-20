@@ -21,13 +21,21 @@ axios.interceptors.request.use(
   function (config: any) {
     //don't add auth header if url match ignore list
     const requestUrl = config?.url || '';
+    const isFormData =
+      typeof FormData !== 'undefined' && config.data instanceof FormData;
     if (
       PUBLIC_URLS.some((url) => requestUrl === url || requestUrl.startsWith(url)) ||
       requestUrl.indexOf('public') >= 0
     ) {
       return config;
     }
-    config.headers['Content-Type'] = 'application/json';
+    if (isFormData) {
+      if (config.headers) {
+        delete config.headers['Content-Type'];
+      }
+    } else {
+      config.headers['Content-Type'] = 'application/json';
+    }
     // config.headers['Access-Control-Allow-Origin'] = '*';
     // config.headers['Access-Control-Allow-Credentials'] = 'true';
     // config.headers['Access-Control-Allow-Methods'] = 'POST, PUT, PATCH, GET, DELETE, OPTIONS';

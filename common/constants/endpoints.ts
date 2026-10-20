@@ -31,7 +31,7 @@ export const ENDPOINTS = {
   ADMIN_USERS: `admin/users`,
   ADMIN_EDIT_USERS: `user/info`,
   ADMIN_CARD_IMPORT: `card/import`,
-  ADMIN_UPLOAD: `upload?type=0`,
+  ADMIN_UPLOAD: `upload`,
   EXAM_COLLECT: `exam/collect`,
   EXAM_SCORE: `exam/score`,
   VERIFY_OTP: `notification/verify-otp`,

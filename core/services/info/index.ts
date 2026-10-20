@@ -43,6 +43,6 @@ export const postCardImport = async (postData: any) => {
   return post(ENDPOINTS.ADMIN_CARD_IMPORT, postData);
 };
 
-export const postUploadFile = async (postData: any) => {
-  return post(ENDPOINTS.ADMIN_UPLOAD, postData);
+export const postUploadFile = async (postData: any, type = 0) => {
+  return post(`${ENDPOINTS.ADMIN_UPLOAD}?type=${type}`, postData);
 };
