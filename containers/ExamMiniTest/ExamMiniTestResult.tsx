@@ -3,7 +3,7 @@ import ExamLayout from './ExamMiniTestLayout';
 import QuestionCard from './QuestionCard';
 import { getCardId } from '@utils';
 
-const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfos }) => {
+const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfos, examName }) => {
   const {
     total,
     newAnswerCount,
@@ -14,6 +14,9 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
     toeicScore = 10,
     listeningCorrect = 0,
     readingCorrect = 0,
+    listeningTotal = 100,
+    readingTotal = 100,
+    officialScale = false,
   } = answerInfos;
   const firstId = getCardId(listQuestion?.[0]);
   const onClickReview = () => {
@@ -29,9 +32,18 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
     onSetExamStatus('starting');
   };
 
-  const percent = total ? (toeicScore / 990) * 100 : 0;
+  const percent = officialScale
+    ? (toeicScore / 990) * 100
+    : total
+    ? (correctAnswerCount / total) * 100
+    : 0;
   return (
-    <ExamLayout listQuestion={listQuestion} answerInfos={answerInfos}>
+    <ExamLayout
+      listQuestion={listQuestion}
+      answerInfos={answerInfos}
+      examName={examName}
+      examStatus="reviewing"
+    >
       <div id="game-view-container" className="game-view-container-main">
         <div id="main-game-view" className="">
           <div id="main-game-scroll-panel" className="main-game-object">
@@ -52,7 +64,9 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
                       type="circle"
                       percent={percent}
                       width={130}
-                      format={() => <span>{toeicScore}</span>}
+                      format={() => (
+                        <span>{officialScale ? toeicScore : `${correctAnswerCount}/${total}`}</span>
+                      )}
                     />
                   </div>
                 </div>
@@ -63,27 +77,27 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
                         className="questions-stat-item-value"
                         style={{ color: 'rgb(132, 155, 182)' }}
                       >
-                        {toeicScore}/990
+                        {officialScale ? `${toeicScore}/990` : `${correctAnswerCount}/${total}`}
                       </div>
-                      <div className="questions-stat-item-label">TOEIC</div>
+                      <div className="questions-stat-item-label">{officialScale ? 'TOEIC' : 'Đúng'}</div>
                     </div>
                     <div className="main-stats-data-questions-stat-item item-correct">
                       <div
                         className="questions-stat-item-value"
                         style={{ color: 'rgb(130, 188, 36)' }}
                       >
-                        L {listeningScore}
+                        {officialScale ? `L ${listeningScore}` : listeningCorrect}
                       </div>
-                      <div className="questions-stat-item-label">Listening {listeningCorrect}/100</div>
+                      <div className="questions-stat-item-label">Listening {listeningCorrect}/{listeningTotal}</div>
                     </div>
                     <div className="main-stats-data-questions-stat-item item-incorrect">
                       <div
                         className="questions-stat-item-value"
                         style={{ color: 'rgb(101, 110, 241)' }}
                       >
-                        R {readingScore}
+                        {officialScale ? `R ${readingScore}` : readingCorrect}
                       </div>
-                      <div className="questions-stat-item-label">Reading {readingCorrect}/100</div>
+                      <div className="questions-stat-item-label">Reading {readingCorrect}/{readingTotal}</div>
                     </div>
                   </div>
                   <div className="main-statistics-questions-stat" style={{ marginTop: 12 }}>
@@ -252,6 +266,8 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
               <QuestionCard
                 question={listQuestion[index]}
                 onUpdateQuestion={(newQuestion) => newQuestion}
+                readOnly
+                reveal
                 key={`QuestionCard-${getCardId(listQuestion[index])}`}
               />
               <hr className="MuiDivider-root MuiDivider-fullWidth css-39bbo6" />

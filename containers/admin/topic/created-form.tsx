@@ -1,52 +1,26 @@
-import { getListExamAdmin, postCreatedTopic, putEditTopic } from '@api';
+import { postCreatedTopic, putEditTopic } from '@api';
 import { PATTERN_VALIDATE } from '@constants';
 import { useLoading } from '@hooks';
 import { styled } from '@styles/theme';
 import { Button } from '@ui';
 import { Message } from '@utils';
-import { Col, Form, Input, Row, Select } from 'antd';
-import { useEffect, useState } from 'react';
+import { Col, Form, Input, Row } from 'antd';
+import { useEffect } from 'react';
+
 type CreatedFormProps = {
   onClose: () => void;
   formData?: any;
 };
+
 const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
   const [form] = Form.useForm();
-
   const [{ isLoading }, { start, stop }] = useLoading();
 
-  const [dataList, setDataList] = useState<any[]>([]);
-
-  const fetchDataList = async () => {
-    start();
-    try {
-      const resp: any = await getListExamAdmin();
-      const error = resp.data.error;
-      const respData = resp.data?.responseData;
-      if (error) {
-        stop();
-        Message.error(error?.message ?? 'Something error!');
-      } else {
-        const listData = respData.exams.map((item) => {
-          return {
-            label: item.name,
-            value: item.id,
-          };
-        });
-        setDataList(listData);
-      }
-    } catch (err) {
-      console.log('onSubmit-error :>> ', err.toString());
-    } finally {
-      stop();
-    }
-  };
   const onSubmit = async (data) => {
     start();
     try {
       const params = {
         name: data.name,
-        examIds: data.examIds,
         ...(formData ? { id: formData.id } : {}),
       };
 
@@ -68,15 +42,11 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
 
   useEffect(() => {
     if (formData) {
-      form.setFieldsValue(formData);
+      form.setFieldsValue({ name: formData.name });
     } else {
       form.resetFields();
     }
   }, [formData]);
-
-  useEffect(() => {
-    fetchDataList();
-  }, []);
 
   return (
     <CreatedFromWrap>
@@ -90,34 +60,27 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
           requiredMark={false}
           validateTrigger="onBlur"
         >
-          {(values, formInstance) => {
+          {() => {
             return (
               <>
+                <p className="topic-form-hint">
+                  Topic là Part TOEIC (Part 1–7). Câu hỏi thuộc Part. Đề luyện chọn một Part rồi lấy
+                  câu của Part đó; đề thi thử ghép câu từ nhiều Part.
+                </p>
                 <Row gutter={[8, 8]}>
                   <Col span={24}>
                     <Form.Item
                       name="name"
-                      label="Topic Name"
+                      label="Tên Part (topic)"
                       rules={[
-                        { required: true, message: 'Please input topic name!' },
+                        { required: true, message: 'Nhập tên Part!' },
                         {
                           pattern: PATTERN_VALIDATE.isBlank.value,
                           message: PATTERN_VALIDATE.isBlank.message,
                         },
                       ]}
                     >
-                      <Input placeholder="Enter topic name" />
-                    </Form.Item>
-                  </Col>
-                  <Col span={24}>
-                    <Form.Item name="examIds" label="List exam">
-                      <Select
-                        mode="multiple"
-                        allowClear
-                        style={{ width: '100%' }}
-                        placeholder="Please select exam"
-                        options={dataList}
-                      />
+                      <Input placeholder="Ví dụ: Phần 5:Hoàn Thành Câu" />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -153,6 +116,10 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
 export const CreatedFromWrap = styled.div`
   .ant-form-item {
     margin-bottom: 0;
+  }
+  .topic-form-hint {
+    color: #5b6b7c;
+    margin-bottom: 12px;
   }
 `;
 

@@ -9,11 +9,10 @@ import { Divider, Form } from 'antd';
 import moment from 'moment';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React from 'react';
 import { Cookies } from 'react-cookie';
 import { SignInPageWrapper } from './SignIn.style';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import ModalVerifyOTP from '@containers/modal-verify-otp';
 import { useToeicContext } from '@contexts/toeicContext';
 
 const SignIn: React.FC = () => {
@@ -21,9 +20,6 @@ const SignIn: React.FC = () => {
   const router = useRouter();
   const { setUserInfos } = useToeicContext();
   const [{ isLoading }, { start, stop }] = useLoading();
-
-  const [showFormVerify, setShowFormVerify] = useState(false);
-  const [email, setEmail] = useState('');
 
   const onSubmit = async (data) => {
     start();
@@ -34,10 +30,6 @@ const SignIn: React.FC = () => {
       if (error) {
         stop();
         Message.error(error?.message ?? 'Something error! Try again later');
-        if (error.code === 1017) {
-          setEmail(data.email);
-          setShowFormVerify(true);
-        }
       } else {
         onLoginSuccess(respData);
       }
@@ -57,7 +49,7 @@ const SignIn: React.FC = () => {
     const roles = user?.roles || [];
     if (token && typeof token === 'string' && user) {
       cookies.set(Config.AUTH_TOKEN_KEY, token, {
-        expires: moment().add(60, 'day').toDate(),
+        expires: moment().add(7, 'day').toDate(),
         path: '/',
       });
       reactLocalStorage.setObject(Config.USER_KEY, user);
@@ -68,13 +60,6 @@ const SignIn: React.FC = () => {
         router.push(ROUTES.HOME);
       }
     }
-  };
-
-  const onCloseModalVerify = () => {
-    setShowFormVerify(false);
-  };
-  const onOkModalVerify = () => {
-    setShowFormVerify(false);
   };
 
   return (
@@ -161,13 +146,6 @@ const SignIn: React.FC = () => {
           </div>
         </div>
       </div>
-      <ModalVerifyOTP
-        show={showFormVerify}
-        onClose={onCloseModalVerify}
-        onOk={onOkModalVerify}
-        email={email}
-        hintOtp=""
-      />
     </SignInPageWrapper>
   );
 };

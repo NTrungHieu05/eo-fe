@@ -132,11 +132,11 @@ const CMSTopic: React.FC = () => {
           render={(record) => <div>{record?.name}</div>}
         />
         <Column
-          title="Exam count"
+          title="Số đề luyện"
           key="exam-count"
           dataIndex=""
           className="column-name"
-          render={(record) => <div>{record?.examIds?.length}</div>}
+          render={(record) => <div>{record?.examIds?.length || 0}</div>}
         />
       </Table>
       <Modal

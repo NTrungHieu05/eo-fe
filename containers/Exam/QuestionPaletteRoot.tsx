@@ -1,8 +1,11 @@
+import { answersMatch, getCardId } from '@utils';
 import { useEffect, useState } from 'react';
+import React from 'react';
 
 type QuestionPaletteRootProps = {
   listQuestion?: any[];
   children?: React.ReactNode;
+  onSelectCard?: (cardIndex: number) => void;
   answerInfos: {
     total: number;
     newAnswerCount: number;
@@ -13,16 +16,26 @@ type QuestionPaletteRootProps = {
 const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
   listQuestion,
   answerInfos,
+  onSelectCard,
 }: QuestionPaletteRootProps) => {
   const { total, newAnswerCount, correctAnswerCount, incorrectAnswerCount } = answerInfos;
 
   const goToQuestion = (id) => {
+    if (!id) return;
     const question = document.getElementById(`review-${id}`);
     if (!question) return;
     window.scrollTo({
       top: question.offsetTop,
       behavior: 'smooth',
     });
+  };
+
+  const openQuestion = (cardIndex, reviewId) => {
+    if (onSelectCard) {
+      onSelectCard(cardIndex);
+      return;
+    }
+    goToQuestion(reviewId);
   };
 
   return (
@@ -35,22 +48,23 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
         <div className="question-palette-body">
           <div className="questions-list questions-list-custom" id="question-list-scroll">
             <div className="question-list-row" style={{ gridTemplateColumns: 'repeat(8, 1fr)' }}>
-              {listQuestion?.map((question) => (
-                <>
+              {listQuestion?.map((question, cardIndex) => (
+                <React.Fragment key={question?._id || question?.id || cardIndex}>
                   {question?.isQuestionGroup ? (
-                    question.childCards.map((childCard) => (
+                    question.childCards?.map((childCard) => (
                       <button
                         className={`question-item question-palette-item-custom ${
                           childCard?.userAnswer?.length > 0
-                            ? childCard?.userAnswer?.[0] === childCard?.answer?.texts?.[0]
+                            ? answersMatch(childCard?.userAnswer, childCard?.answer?.texts)
                               ? 'p-item-correct'
                               : 'p-item-incorrect'
                             : ''
                         }`}
                         tabIndex={0}
                         type="button"
-                        id={`pallete-item-${childCard?._id}`}
-                        onClick={() => goToQuestion(childCard?._id)}
+                        key={childCard?._id || childCard?.id || childCard?.questionNo}
+                        id={`pallete-item-${childCard?._id || childCard?.questionNo}`}
+                        onClick={() => openQuestion(cardIndex, getCardId(question))}
                       >
                         {childCard?.questionNo}
                       </button>
@@ -60,21 +74,22 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
                       <button
                         className={`question-item question-palette-item-custom ${
                           question?.userAnswer?.length > 0
-                            ? question?.userAnswer?.[0] === question?.answer?.texts?.[0]
+                            ? answersMatch(question?.userAnswer, question?.answer?.texts)
                               ? 'p-item-correct'
                               : 'p-item-incorrect'
                             : ''
                         }`}
                         tabIndex={0}
                         type="button"
-                        id={`pallete-item-${question?._id}`}
-                        onClick={() => goToQuestion(question?._id)}
+                        key={question?._id || question?.id}
+                        id={`pallete-item-${question?._id || question?.id}`}
+                        onClick={() => openQuestion(cardIndex, getCardId(question))}
                       >
                         {question?.questionNo}
                       </button>
                     </>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </div>
           </div>

@@ -34,5 +34,4 @@ export const ENDPOINTS = {
   ADMIN_UPLOAD: `upload`,
   EXAM_COLLECT: `exam/collect`,
   EXAM_SCORE: `exam/score`,
-  VERIFY_OTP: `notification/verify-otp`,
 };

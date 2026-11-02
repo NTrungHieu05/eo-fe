@@ -9,7 +9,6 @@ const PUBLIC_URLS = [
   ENDPOINTS.FORGOTPASS,
   ENDPOINTS.RESETPASS,
   ENDPOINTS.REGISTER,
-  ENDPOINTS.VERIFY_OTP,
 ];
 
 const axios = Axios.create({
@@ -77,12 +76,12 @@ axios.interceptors.response.use(
       reactLocalStorage.clear();
       cookies.remove(Config.AUTH_TOKEN_KEY, { path: '/' });
       cookies.remove(Config.USER_KEY, { path: '/' });
-      // Message.error(error.response.data.error);
-      Message.error('Authorization failed');
-      // setTimeout(() => {
-      //   const from = window.location.href;
-      //   window.location.href = `${ROUTES.SIGNIN}?r=${encodeURIComponent(from)}`;
-      // }, 500);
+      Message.error('Phiên đăng nhập đã hết hạn. Hãy đăng nhập lại.');
+      const path = typeof window === 'undefined' ? '' : window.location.pathname;
+      const onAuthPage = path.startsWith(ROUTES.WELCOME) || path.startsWith(ROUTES.SIGNIN);
+      if (!onAuthPage && typeof window !== 'undefined') {
+        window.location.href = ROUTES.WELCOME;
+      }
     }
     return Promise.reject(error);
   }

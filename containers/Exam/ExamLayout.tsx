@@ -3,7 +3,7 @@ import { ContentWrapper } from './Exam.style';
 import QuestionPaletteRoot from './QuestionPaletteRoot';
 import { getListExam } from '@api';
 import { Message } from '@utils';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 
 type ExamLayoutProps = {
@@ -15,6 +15,7 @@ type ExamLayoutProps = {
     correctAnswerCount: number;
     incorrectAnswerCount: number;
   };
+  onSelectCard?: (cardIndex: number) => void;
 };
 type TopicType = {
   id: string;
@@ -24,30 +25,44 @@ const ExamLayout: React.FC<ExamLayoutProps> = (props: ExamLayoutProps) => {
   const router = useRouter();
   const [topicData, setTopicData] = useState<TopicType | undefined>(undefined);
   const [listTest, setListTest] = useState([]);
+  const listRequest = useRef(0);
 
-  const fetchListExam = async () => {
-    const topicId = router.query.topicCode;
+  const fetchListExam = async (topicId) => {
     if (!topicId) {
       return;
     }
+    const requestId = ++listRequest.current;
     try {
       const resp: any = await getListExam(topicId);
+      if (requestId !== listRequest.current) {
+        return;
+      }
       const error = resp.data.error;
       const respData = resp.data?.responseData;
       if (error) {
+        setTopicData(undefined);
+        setListTest([]);
         Message.error(error?.message ?? 'Something error!');
       } else {
         setListTest(respData?.exams || []);
         setTopicData(respData);
       }
     } catch (err) {
-      Message.error('Không tải được danh sách đề thi');
+      if (requestId === listRequest.current) {
+        setTopicData(undefined);
+        setListTest([]);
+        Message.error('Không tải được danh sách đề thi');
+      }
     }
   };
 
   useEffect(() => {
-    fetchListExam();
-  }, [router]);
+    const topicCode = router.query.topicCode;
+    const topicId = Array.isArray(topicCode) ? topicCode[0] : topicCode;
+    setTopicData(undefined);
+    setListTest([]);
+    fetchListExam(topicId);
+  }, [router.query.topicCode]);
 
   return (
     <ContentWrapper>
@@ -62,6 +77,7 @@ const ExamLayout: React.FC<ExamLayoutProps> = (props: ExamLayoutProps) => {
                 <QuestionPaletteRoot
                   listQuestion={props.listQuestion}
                   answerInfos={props.answerInfos}
+                  onSelectCard={props.onSelectCard}
                 />
                 {/* <div className="current-level-list-label">Practices</div> */}
                 {/* <div id="current-topic-list" className="current-topic-list" style={{ height: 130 }}>

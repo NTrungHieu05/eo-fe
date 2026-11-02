@@ -11,37 +11,57 @@ const ExamStart = ({
   onSetExamStatus,
   answerInfos,
   examStatus,
+  examName,
+  readOnly = false,
 }) => {
+  const questions = listQuestion || [];
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-  const onUpdateQuestion = (newQuestion, index) => {
-    const newListQuestion = [...listQuestion];
-    newListQuestion[index] = newQuestion;
-    onUpdateListQuestion?.(newListQuestion);
+
+  const onUpdateQuestion = (updater, index) => {
+    onUpdateListQuestion?.((current) => {
+      const next = [...(current || [])];
+      const card = next[index];
+      next[index] = typeof updater === 'function' ? updater(card) : updater;
+      return next;
+    });
   };
 
   const onNextQuestion = () => {
-    if (currentQuestionIndex !== listQuestion.length - 1) {
-      setCurrentQuestionIndex((prev) => (prev === listQuestion.length - 1 ? prev : prev + 1));
+    if (!questions.length) {
       return;
     }
-
-    onSetExamStatus('reviewing');
+    if (currentQuestionIndex >= questions.length - 1) {
+      onSetExamStatus('reviewing');
+      return;
+    }
+    setCurrentQuestionIndex((prev) => Math.min(prev + 1, questions.length - 1));
   };
   const onPreviousQuestion = () => {
-    setCurrentQuestionIndex((prev) => (prev === 0 ? prev : prev - 1));
+    setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0));
   };
 
   const examCountDown = useMemo(() => Date.now() + 1000 * 60 * 120, [examStatus]);
 
   const onFinishCountdown = async () => {
+    if (!questions.length) {
+      return;
+    }
     onSetExamStatus('reviewing');
   };
 
   return (
-    <ExamLayout listQuestion={listQuestion} answerInfos={answerInfos} examStatus={examStatus}>
+    <ExamLayout
+      listQuestion={questions}
+      answerInfos={answerInfos}
+      examName={examName}
+      examStatus={examStatus}
+      onSelectCard={(index) =>
+        setCurrentQuestionIndex(Math.min(Math.max(index, 0), Math.max(questions.length - 1, 0)))
+      }
+    >
       <div className="mini-test-start-heading-box">
-        <Button shape="round" onClick={onFinishCountdown} className="btn-submit-exam">
-          {'Submit Now'}
+        <Button shape="round" onClick={onFinishCountdown} className="btn-submit-exam" disabled={!questions.length || readOnly}>
+          {'Nộp bài'}
         </Button>
         <Countdown
           className="mini-test-count-down"
@@ -53,17 +73,20 @@ const ExamStart = ({
       <div id="game-view-container" className="game-view-container-main">
         <div id="main-game-view" className="">
           <div id="main-game-scroll-panel" className="main-game-object">
+            {!questions.length ? (
+              <p>Đề này chưa có câu hỏi.</p>
+            ) : (
+              <>
             <QuestionCard
-              question={listQuestion[currentQuestionIndex]}
-              onUpdateQuestion={(newQuestion) =>
-                onUpdateQuestion(newQuestion, currentQuestionIndex)
+              question={questions[Math.min(currentQuestionIndex, questions.length - 1)]}
+              onUpdateQuestion={(updater) =>
+                onUpdateQuestion(updater, Math.min(currentQuestionIndex, questions.length - 1))
               }
-              key={`QuestionCard-${listQuestion[currentQuestionIndex]?._id}`}
+              readOnly={readOnly}
+              key={`QuestionCard-${questions[currentQuestionIndex]?._id || questions[currentQuestionIndex]?.id}-${currentQuestionIndex}`}
               isStarting={true}
             />
-            <div
-              className={`slide-button-box ${currentQuestionIndex === 0 ? 'first-question' : ''} `}
-            >
+            <div className={`slide-button-box ${currentQuestionIndex === 0 ? 'first-question' : ''} `}>
               {currentQuestionIndex !== 0 && (
                 <Button shape="round" onClick={onPreviousQuestion} className="btn-previous">
                   <LeftOutlined />
@@ -71,11 +94,13 @@ const ExamStart = ({
                 </Button>
               )}
 
-              <Button shape="round" onClick={onNextQuestion} className="btn-next">
-                {currentQuestionIndex !== listQuestion.length - 1 ? 'Next ' : 'Submit '}
+              <Button shape="round" onClick={onNextQuestion} className="btn-next" disabled={readOnly}>
+                {currentQuestionIndex >= questions.length - 1 ? 'Nộp bài ' : 'Next '}
                 <RightOutlined />
               </Button>
             </div>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { CloseCircleOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons';
-import { getListExamAdmin, putDeleteExam } from '@api';
+import { getListExamAdmin, getListTopicAdmin, putDeleteExam } from '@api';
 import { useLoading } from '@hooks';
 import { Message } from '@utils';
 import { Button, Modal, Spin, Table } from 'antd';
@@ -11,6 +11,7 @@ import { PageWrapper } from './index.style';
 const CMSExam: React.FC = () => {
   const [{ isLoading }, { start, stop }] = useLoading();
   const [dataList, setDataList] = useState<any[]>([]);
+  const [topics, setTopics] = useState<any[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showModalConfirm, setShowModalConfirm] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] = useState<any>(undefined);
@@ -36,6 +37,17 @@ const CMSExam: React.FC = () => {
 
   useEffect(() => {
     fetchDataList();
+    const loadTopics = async () => {
+      try {
+        const resp: any = await getListTopicAdmin();
+        if (!resp.data.error) {
+          setTopics(resp.data?.responseData?.topics || []);
+        }
+      } catch (err) {
+        console.log('loadTopics-error :>> ', err.toString());
+      }
+    };
+    loadTopics();
   }, []);
 
   const onDeleteRecord = async (record) => {
@@ -132,7 +144,25 @@ const CMSExam: React.FC = () => {
           render={(record) => <div>{record?.name}</div>}
         />
         <Column
-          title="Card count"
+          title="Loại"
+          key="kind"
+          render={(record) => (
+            <div>{record?.practiceTest ? 'Thi thử' : 'Luyện Part'}</div>
+          )}
+        />
+        <Column
+          title="Part"
+          key="topic"
+          render={(record) => (
+            <div>
+              {record?.practiceTest
+                ? 'Nhiều Part'
+                : topics.find((topic) => topic.id === record?.topicId)?.name || record?.topicId || '—'}
+            </div>
+          )}
+        />
+        <Column
+          title="Số câu"
           key="card-count"
           dataIndex=""
           className="column-name"

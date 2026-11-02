@@ -27,7 +27,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
         stop();
         Message.error(error?.message ?? 'Something error!');
       } else {
-        const listData = respData.topics.map((item) => {
+        const listData = (respData?.topics || []).map((item) => {
           return {
             label: item.name,
             value: item.id,

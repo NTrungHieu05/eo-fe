@@ -1,12 +1,13 @@
-import ExamMiniTest from '@containers/ExamMiniTest';
-import MainLayout from '@ui/MainLayout';
+import { ROUTES } from '@constants';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 const MiniTestPage = () => {
-  return (
-    <MainLayout className={'exam-page'}>
-      <ExamMiniTest />
-    </MainLayout>
-  );
+  const router = useRouter();
+  useEffect(() => {
+    router.replace(ROUTES.MINI_TEST);
+  }, [router]);
+  return null;
 };
 
 export default MiniTestPage;

@@ -5426,4 +5426,52 @@ export const ContentWrapper = styled.div`
       }
     }
   }
+
+  .practice-exam-picker {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 32px 24px;
+    box-shadow: 0 8px 24px rgba(15, 40, 70, 0.06);
+    margin-bottom: 20px;
+    h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    p {
+      color: #5b6b7c;
+      margin-bottom: 16px;
+    }
+  }
+  .practice-exam-empty {
+    color: #94a3b8;
+  }
+  .practice-exam-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .practice-exam-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 16px 18px;
+    border: 1px solid #e8eef2;
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+    text-align: left;
+    strong {
+      font-size: 16px;
+      color: #0f172a;
+    }
+    span {
+      color: #64748b;
+      font-size: 13px;
+    }
+    &.selected {
+      border-color: #0e7c7b;
+      box-shadow: 0 0 0 2px rgba(14, 124, 123, 0.15);
+    }
+  }
 `;

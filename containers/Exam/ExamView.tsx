@@ -1,7 +1,14 @@
 import { Progress } from 'antd';
 import ExamLayout from './ExamLayout';
 
-const ExamView = ({ listQuestion, onSetExamStatus, answerInfos, isMiniTest = false }) => {
+const ExamView = ({
+  listQuestion,
+  onSetExamStatus,
+  answerInfos,
+  isLoading = false,
+  loadFailed = false,
+  isMiniTest = false,
+}) => {
   const { total, newAnswerCount, correctAnswerCount, incorrectAnswerCount } = answerInfos;
 
   return (
@@ -83,14 +90,26 @@ const ExamView = ({ listQuestion, onSetExamStatus, answerInfos, isMiniTest = fal
                     </div>
                   </div>
                   <div className="main-statistics-questions-button">
-                    <button
-                      className="MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButtonBase-root  css-bktioj"
-                      tabIndex={0}
-                      type="button"
-                      onClick={() => onSetExamStatus('starting')}
-                    >
-                      START
-                    </button>
+                    {!isLoading && loadFailed ? (
+                      <p>Không tải được đề.</p>
+                    ) : !isLoading && !listQuestion?.length ? (
+                      <p>Đề này chưa có câu hỏi.</p>
+                    ) : (
+                      <button
+                        className="MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButtonBase-root  css-bktioj"
+                        tabIndex={0}
+                        type="button"
+                        disabled={isLoading || !listQuestion?.length}
+                        onClick={() => {
+                          if (!listQuestion?.length) {
+                            return;
+                          }
+                          onSetExamStatus('starting');
+                        }}
+                      >
+                        START
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -4,6 +4,7 @@ import ExamLayout from './ExamLayout';
 import QuizPlayZone from './QuizPlayZone';
 import { Progress } from 'antd';
 import QuestionCard from './QuestionCard';
+import { getCardId } from '@utils';
 
 const ExamResult = ({
   listQuestion,
@@ -15,7 +16,7 @@ const ExamResult = ({
 }) => {
   const { total, newAnswerCount, correctAnswerCount, incorrectAnswerCount } = answerInfos;
   const onClickReview = () => {
-    const question = document.getElementById(`review-${listQuestion?.[0]?._id}`);
+    const question = document.getElementById(`review-${getCardId(listQuestion?.[0])}`);
     if (!question) return;
     window.scrollTo({
       top: question.offsetTop,
@@ -27,7 +28,7 @@ const ExamResult = ({
     onSetExamStatus('starting');
   };
 
-  const percent = (correctAnswerCount / total) * 100;
+  const percent = total ? (correctAnswerCount / total) * 100 : 0;
   return (
     <ExamLayout listQuestion={listQuestion} answerInfos={answerInfos}>
       <div id="game-view-container" className="game-view-container-main">
@@ -50,7 +51,9 @@ const ExamResult = ({
                       type="circle"
                       percent={percent}
                       width={130}
-                      format={(percent) => <span>{percent.toFixed(0)}%</span>}
+                      format={(value) => (
+                        <span>{Number.isFinite(value) ? Math.round(value) : 0}%</span>
+                      )}
                     />
                   </div>
                 </div>
@@ -254,12 +257,13 @@ const ExamResult = ({
           </div>
         </div>
         <div id="main-game-review-section" className="">
-          {listQuestion.map((question, index) => (
-            <div id={`review-${question?._id}`} key={question?._id}>
+          {(listQuestion || []).map((question, index) => (
+            <div id={`review-${getCardId(question)}`} key={getCardId(question) || index}>
               <QuestionCard
                 question={listQuestion[index]}
                 onUpdateQuestion={(newQuestion) => newQuestion}
-                key={`QuestionCard-${listQuestion[index]?._id}`}
+                readOnly
+                key={`QuestionCard-${getCardId(listQuestion[index]) || index}`}
               />
               <hr className="MuiDivider-root MuiDivider-fullWidth css-39bbo6" />
             </div>

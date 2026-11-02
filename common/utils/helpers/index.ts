@@ -72,10 +72,13 @@ export function buildUrlWithParams(url, params, removeEncode?: boolean) {
   return url + ret;
 }
 
+export const isQuestionGroupCard = (card) =>
+  Boolean(card?.isQuestionGroup) ||
+  (Array.isArray(card?.childCards) && card.childCards.length > 0);
+
 export const sortAnswer = (a, b) => {
-  // Remove the double quotes and parentheses from the values for comparison
-  const aValue = a.replace(/["()]/g, '');
-  const bValue = b.replace(/["()]/g, '');
+  const aValue = String(a ?? '').replace(/["()]/g, '');
+  const bValue = String(b ?? '').replace(/["()]/g, '');
 
   // Compare the values
   if (aValue < bValue) {
@@ -88,6 +91,17 @@ export const sortAnswer = (a, b) => {
 };
 
 export const getCardId = (card) => card?.id || card?._id;
+
+export const sameAnswerText = (left?: string, right?: string) => {
+  const a = String(left ?? '').trim();
+  const b = String(right ?? '').trim();
+  return a.length > 0 && a === b;
+};
+
+export const answersMatch = (userAnswer?: string[], texts?: string[]) =>
+  (texts || []).some((text) => sameAnswerText(userAnswer?.[0], text));
+
+export const isLetterHint = (hint?: string) => /^[A-D]$/i.test(String(hint ?? '').trim());
 
 export const resolveMediaUrl = (url?: string) => {
   if (!url) return '';

@@ -4,7 +4,7 @@ import { useLoading } from '@hooks';
 import { Message } from '@utils';
 import { Col, Row } from 'antd';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ContentWrapper, IntroWrap, TestWrap } from './Practice.style';
 import { useToeicContext } from '@contexts/toeicContext';
 import Link from 'next/link';
@@ -17,25 +17,36 @@ const Practice = () => {
   const [{ isLoading }, { start, stop }] = useLoading();
 
   const [examData, setExamData] = useState(undefined);
-  const fetchListExam = async () => {
-    if (!topicId) {
+  const listRequest = useRef(0);
+  const fetchListExam = async (id) => {
+    if (!id) {
       return;
     }
+    const requestId = ++listRequest.current;
     start();
     try {
-      const resp: any = await getListExam(topicId);
+      const resp: any = await getListExam(id);
+      if (requestId !== listRequest.current) {
+        return;
+      }
       const error = resp.data.error;
       const respData = resp.data?.responseData;
       if (error) {
-        stop();
+        setExamData(undefined);
         Message.error(error?.message ?? 'Something error!');
       } else {
         setExamData(respData);
       }
     } catch (err) {
       console.log('onSubmit-error :>> ', err.toString());
+      if (requestId === listRequest.current) {
+        setExamData(undefined);
+        Message.error('Không tải được danh sách đề');
+      }
     } finally {
-      stop();
+      if (requestId === listRequest.current) {
+        stop();
+      }
     }
   };
   const onClickRouterPush = (exam) => {
@@ -43,8 +54,9 @@ const Practice = () => {
   };
 
   useEffect(() => {
-    fetchListExam();
-  }, [router]);
+    setExamData(undefined);
+    fetchListExam(topicId);
+  }, [topicId]);
   return (
     <ContentWrapper className="container">
       <div id="practice-list-view" className="practice-detail-view">
@@ -68,8 +80,12 @@ const Practice = () => {
                             onClick={() => onClickRouterPush(item)}
                           >
                             <div className="practice-list-box">
-                              <div className="practice-list-box-item--progress progress-none">
-                                {item.progress ?? 0}%
+                              <div
+                                className={`practice-list-box-item--progress${
+                                  item.progress == null ? ' progress-none' : ''
+                                }`}
+                              >
+                                {item.progress == null ? 'Chưa làm' : `${item.progress}%`}
                               </div>
                               <div className="practice-list-box-item--content">{item.name}</div>
                               {/* <div className="practice-list-box-item--participants">
@@ -90,7 +106,7 @@ const Practice = () => {
                   <div id="other-practices-list">
                     <div className="title">Các phần khác</div>
                     <div className="list">
-                      {topics.map((topic) =>
+                      {(topics || []).map((topic) =>
                         topic?.topics?.map((item) => (
                           <Link href={`/practice/${item?.topicId}`}>
                             <div className="list-item cursor-pointer">

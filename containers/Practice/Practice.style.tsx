@@ -137,8 +137,8 @@ export const ContentWrapper = styled.div`
             width: 100%;
             text-align: center;
             &.progress-none {
-              font-weight: 800;
-              font-size: 32px;
+              font-weight: 700;
+              font-size: 18px;
               line-height: 26px;
               color: #9ab3b3;
             }

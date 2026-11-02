@@ -1,10 +1,10 @@
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import { postCreatedCard, postUploadFile, putEditCard } from '@api';
+import { getListTopicAdmin, postCreatedCard, postUploadFile, putEditCard } from '@api';
 import { useLoading } from '@hooks';
 import { styled } from '@styles/theme';
 import { Button } from '@ui';
 import { Message, resolveMediaUrl, sortAnswer } from '@utils';
-import { Button as AntdButton, Checkbox, Col, Form, Input, Row, Space, Upload } from 'antd';
+import { Button as AntdButton, Checkbox, Col, Form, Input, Row, Select, Space, Upload } from 'antd';
 import { FormListFieldData, FormListOperation } from 'antd/lib/form/FormList';
 import { useEffect, useState } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
@@ -18,6 +18,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
   const [{ isLoading }, { start, stop }] = useLoading();
 
   const [isInit, setIsInit] = useState<boolean>(true);
+  const [topics, setTopics] = useState<any[]>([]);
 
   const isQuestionGroupField = Form.useWatch('isQuestionGroup', form);
   const soundValue = Form.useWatch(['question', 'sound'], form);
@@ -56,72 +57,87 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
     }
   };
 
-  const onClickIsQuestionGroup = () => {
-    if (isQuestionGroupField) {
+  const onToggleQuestionGroup = (checked: boolean) => {
+    if (checked) {
       form.setFieldsValue({
         childCards: [
           {
-            answer: ['', '', '', ''],
+            answer: [
+              { choice: '', isCorrectAnswer: false },
+              { choice: '', isCorrectAnswer: false },
+              { choice: '', isCorrectAnswer: false },
+              { choice: '', isCorrectAnswer: false },
+            ],
             question: { text: '' },
             hint: '',
           },
         ],
       });
-    } else {
-      form.setFieldsValue({
-        answer: [
-          {
-            choice: '',
-          },
-          {
-            choice: '',
-          },
-          {
-            choice: '',
-          },
-          {
-            choice: '',
-          },
-        ],
-        hint: '',
-      });
+      return;
     }
+    form.setFieldsValue({
+      answer: [
+        { choice: '', isCorrectAnswer: false },
+        { choice: '', isCorrectAnswer: false },
+        { choice: '', isCorrectAnswer: false },
+        { choice: '', isCorrectAnswer: false },
+      ],
+      hint: '',
+    });
+  };
+
+  const correctChoice = (answers) => {
+    const marked = (answers || []).filter(
+      (item) => item?.isCorrectAnswer && (item?.choice || '').trim()
+    );
+    return marked.length === 1 ? marked[0].choice.trim() : '';
   };
 
   const onSubmit = async (data) => {
+    const groupMissingAnswer =
+      data?.isQuestionGroup &&
+      (data?.childCards || []).some((child) => !correctChoice(child?.answer));
+    if (groupMissingAnswer || (!data?.isQuestionGroup && !correctChoice(data?.answer))) {
+      Message.error('Mỗi câu cần đúng một đáp án được đánh dấu đúng.');
+      return;
+    }
     start();
     try {
       const params = {
         ...(formData ? { id: formData?.id } : {}),
+        topicId: data?.topicId,
         question: data?.question,
         isQuestionGroup: data?.isQuestionGroup ?? false,
         ...(data?.isQuestionGroup
           ? {
-              childCards: data?.childCards.map((child) => {
+              childCards: (data?.childCards || []).map((child) => {
                 return {
                   question: child?.question,
                   answer: {
-                    choices: child?.answer?.reduce((acc, cur) => {
-                      if (!cur.isCorrectAnswer) {
-                        acc?.push?.(cur?.choice);
+                    choices: (child?.answer || []).reduce((acc, cur) => {
+                      const choice = (cur?.choice || '').trim();
+                      if (!cur.isCorrectAnswer && choice) {
+                        acc.push(choice);
                       }
                       return acc;
                     }, []),
-                    texts: [child?.answer?.filter((item) => item?.isCorrectAnswer)?.[0]?.choice],
+                    texts: [correctChoice(child?.answer)],
+                    hint: child?.hint ?? '',
                   },
-                  hint: child?.hint ?? '',
                 };
               }),
             }
           : {
+              childCards: [],
               answer: {
-                choices: data?.answer?.reduce((acc, cur) => {
-                  if (!cur?.isCorrectAnswer) {
-                    acc?.push?.(cur?.choice);
+                choices: (data?.answer || []).reduce((acc, cur) => {
+                  const choice = (cur?.choice || '').trim();
+                  if (!cur?.isCorrectAnswer && choice) {
+                    acc.push(choice);
                   }
                   return acc;
                 }, []),
-                texts: [data?.answer?.filter((item) => item.isCorrectAnswer)?.[0].choice],
+                texts: [correctChoice(data?.answer)],
                 hint: data?.hint ?? '',
               },
             }),
@@ -152,24 +168,26 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
           : formData?.answer?.choices?.join('')?.length === 0;
       form.setFieldsValue({
         name: formData?.name,
-        cardIds: formData?.cardIds,
+        topicId: formData?.topicId,
         question: formData?.question,
         isQuestionGroup: isQuestionGroup,
       });
       if (isQuestionGroup) {
         form.setFieldsValue({
-          childCards: formData?.childCards.map((item) => {
+          childCards: (formData?.childCards || []).map((child) => {
             const allAnswer = [
-              ...(item?.answer?.choices ?? []),
-              ...(item?.answer?.texts ?? []),
+              ...(child?.answer?.choices ?? []),
+              ...(child?.answer?.texts ?? []),
             ].sort(sortAnswer);
             return {
-              question: item?.question,
-              hint: item?.answer?.hint,
-              answer: allAnswer?.map((item) => {
+              question: child?.question,
+              hint: child?.answer?.hint,
+              answer: allAnswer?.map((choice) => {
                 return {
-                  isCorrectAnswer: item?.answer?.texts?.includes?.(item),
-                  choice: item,
+                  isCorrectAnswer: (child?.answer?.texts || []).some(
+                    (text) => String(text ?? '').trim() === String(choice ?? '').trim() && String(choice ?? '').trim()
+                  ),
+                  choice,
                 };
               }),
             };
@@ -183,7 +201,9 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
         form.setFieldsValue({
           answer: allAnswer?.map((item) => {
             return {
-              isCorrectAnswer: formData?.answer?.texts?.includes?.(item),
+              isCorrectAnswer: (formData?.answer?.texts || []).some(
+                (text) => String(text ?? '').trim() === String(item ?? '').trim() && String(item ?? '').trim()
+              ),
               choice: item,
             };
           }),
@@ -196,6 +216,20 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
     }
     setIsInit(false);
   }, [formData]);
+
+  useEffect(() => {
+    const loadTopics = async () => {
+      try {
+        const resp: any = await getListTopicAdmin();
+        if (!resp.data.error) {
+          setTopics(resp.data?.responseData?.topics || []);
+        }
+      } catch (err) {
+        console.log('loadTopics-error :>> ', err.toString());
+      }
+    };
+    loadTopics();
+  }, []);
 
   return (
     <CreatedFromWrap>
@@ -213,6 +247,20 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
             return (
               <>
                 <Row gutter={[8, 8]}>
+                  <Col span={24}>
+                    <Form.Item
+                      name="topicId"
+                      label="Part (topic)"
+                      rules={[{ required: true, message: 'Câu hỏi phải thuộc một Part' }]}
+                    >
+                      <Select
+                        showSearch
+                        optionFilterProp="label"
+                        placeholder="Chọn Part chứa câu hỏi này"
+                        options={topics.map((topic) => ({ label: topic.name, value: topic.id }))}
+                      />
+                    </Form.Item>
+                  </Col>
                   <Col span={24}>
                     <div className="list-title">Question</div>
                   </Col>
@@ -265,7 +313,11 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                   </Col>
                   <Col span={24}>
                     <Form.Item name="isQuestionGroup" valuePropName="checked">
-                      <Checkbox onClick={onClickIsQuestionGroup}>Is question group?</Checkbox>
+                      <Checkbox
+                        onChange={(event) => onToggleQuestionGroup(event.target.checked)}
+                      >
+                        Is question group?
+                      </Checkbox>
                     </Form.Item>
                   </Col>
                 </Row>

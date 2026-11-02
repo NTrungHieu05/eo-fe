@@ -19,7 +19,7 @@ export default function QuizPlayStartingItem({
   return (
     <div
       className={`quiz-choice-item show-result ${choice.isChecked ? 'picking' : ''}`}
-      onClick={() => !isSelected && onChoice(choice)}
+      onClick={() => onChoice(choice)}
       key={choice.text}
     >
       <div className="quiz-choice-item-icon show-result">

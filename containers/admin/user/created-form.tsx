@@ -1,9 +1,9 @@
-import { postRegister, putEditUser } from '@api';
+import { postCreateAdminUser, putEditUser } from '@api';
 import { PATTERN_VALIDATE } from '@constants';
 import { useLoading } from '@hooks';
 import { Button } from '@ui';
 import { InputPassword } from '@ui/Input/Input';
-import { Message, parseDob } from '@utils';
+import { Message, parseDob, splitFullName } from '@utils';
 import { Col, DatePicker, Form, Input, Modal, Row, Select } from 'antd';
 import { Option } from 'antd/lib/mentions';
 import React, { useEffect, useState } from 'react';
@@ -21,17 +21,19 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
   const onSubmit = async (data) => {
     start();
     try {
+      const name = splitFullName(data.username);
       const params = {
         email: data.email,
-        firstName: data.username,
-        displayName: data.username,
+        firstName: name.firstName,
+        lastName: name.lastName,
+        displayName: name.displayName,
         phone: data.phone,
         dob: data.dob ? moment(data.dob).format('DD/MM/YYYY') : undefined,
         gender: data.gender,
-        ...(formData ? { userId: formData.userId } : { password: 'Abcd1234' }),
+        ...(formData ? { userId: formData.userId } : { password: data.password }),
       };
 
-      const resp: any = formData ? await putEditUser(params) : await postRegister(params);
+      const resp: any = formData ? await putEditUser(params) : await postCreateAdminUser(params);
       const error = resp.data.error;
       if (error) {
         stop();
@@ -111,6 +113,23 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       <Input placeholder="Email (Account)" readOnly={!!formData} />
                     </Form.Item>
                   </Col>
+                  {!formData && (
+                    <Col span={12}>
+                      <Form.Item
+                        name="password"
+                        label="Password"
+                        rules={[
+                          { required: true, message: 'Please input a password!' },
+                          {
+                            pattern: PATTERN_VALIDATE.password.value,
+                            message: PATTERN_VALIDATE.password.message,
+                          },
+                        ]}
+                      >
+                        <InputPassword placeholder="Mật khẩu đăng nhập" />
+                      </Form.Item>
+                    </Col>
+                  )}
                   <Col span={12}>
                     <Form.Item
                       name="phone"

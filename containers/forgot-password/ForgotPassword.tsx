@@ -36,6 +36,7 @@ const ForgotPassword: React.FC = () => {
     } catch (err) {
       stop();
       console.log('onSubmit-error :>> ', err.toString());
+      Message.error('Không kết nối được máy chủ');
     } finally {
       stop();
     }

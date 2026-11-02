@@ -110,9 +110,15 @@ const CMSUser: React.FC = () => {
     <PageWrapper>
       <div className="cms-page-title">Manager User</div>
       <div className="btn-action-box">
-        {/* <Button onClick={() => setShowModal(true)} className="btn-add">
+        <Button
+          onClick={() => {
+            setSelectedRow(undefined);
+            setShowModal(true);
+          }}
+          className="btn-add"
+        >
           <PlusOutlined /> Add User
-        </Button> */}
+        </Button>
       </div>
       <Table
         dataSource={dataList}
@@ -178,7 +184,7 @@ const CMSUser: React.FC = () => {
       <Modal
         width={755}
         bodyStyle={{ height: 'max-content' }}
-        title={'Add User'}
+        title={selectedRow ? 'Edit User' : 'Add User'}
         maskClosable={false}
         visible={showModal}
         onCancel={onCloseCreatedForm}

@@ -1,6 +1,7 @@
 import Icon from '@ant-design/icons/lib/components/Icon';
 import { IconCheckCircle, IconChoiceCircle, IconCloseCircle } from '@ui/Svgs';
 import React, { useEffect, useState } from 'react';
+import { isLetterHint, sameAnswerText } from '@utils';
 import Hint from './Hint';
 import QuizPlayItem from './QuizPlayItem';
 
@@ -18,15 +19,14 @@ type QuizPlayZoneProps = {
   };
   onChoice?: (choice) => void;
   index: number;
+  readOnly?: boolean;
+  reveal?: boolean;
 };
 export default function QuizPlayZone(props: QuizPlayZoneProps) {
   const [choices, setChoices] = useState([]);
 
   useEffect(() => {
-    const listAnswer =
-      props?.answer?.allAnswer?.length > 0
-        ? props?.answer?.allAnswer
-        : ['(A)', '(B)', '(C)', '(D)'];
+    const listAnswer = props?.answer?.allAnswer?.length > 0 ? props.answer.allAnswer : [];
     let data = listAnswer.map((answer) => {
       return {
         text: answer,
@@ -36,13 +36,13 @@ export default function QuizPlayZone(props: QuizPlayZoneProps) {
     });
     data = data.map((choice) => {
       let _choice = choice;
-      if (props?.answer?.texts?.includes(choice.text)) {
+      if (props?.answer?.texts?.some((text) => sameAnswerText(text, choice.text))) {
         _choice = {
           ..._choice,
           isAnswer: true,
         };
       }
-      if (props?.userAnswer?.includes(choice.text)) {
+      if (props?.userAnswer?.some((text) => sameAnswerText(text, choice.text))) {
         _choice = {
           ..._choice,
           isChecked: true,
@@ -54,8 +54,11 @@ export default function QuizPlayZone(props: QuizPlayZoneProps) {
     setChoices(data);
   }, [props.userAnswer, props.answer]);
 
+  const answered = props?.userAnswer?.length > 0;
+  const revealed = Boolean(props.reveal) || answered;
+
   const onChoice = (choice) => {
-    if (props?.userAnswer?.length > 0) {
+    if (props.readOnly || answered) {
       return;
     }
     props.onChoice(choice.text);
@@ -66,25 +69,25 @@ export default function QuizPlayZone(props: QuizPlayZoneProps) {
       <div className="question-index-wrap">
         <div className="game-object-view-question-group-index">
           <span>{props.index}.</span>
-          {props.parentQuestion?.isQuestionGroup && (
+          {props.parentQuestion?.isQuestionGroup && props.childCard?.question?.text && (
             <span dangerouslySetInnerHTML={{ __html: props.childCard.question.text }}></span>
           )}
         </div>
       </div>
       <div className="game-object-quiz-choices">
         {choices.length > 0 &&
-          choices.map((choice) => (
-            <>
+          choices.map((choice, index) => (
+            <div key={`${choice.text}-${index}`}>
               <QuizPlayItem
                 choice={choice}
                 onChoice={onChoice}
-                key={choice.text}
-                isSelected={props?.userAnswer?.length > 0}
+                isSelected={revealed}
               />
-              {props?.userAnswer?.length > 0 && choice?.isAnswer && props?.answer?.hint && (
-                <Hint hint={props?.answer?.hint} />
-              )}
-            </>
+              {revealed &&
+                choice?.isAnswer &&
+                props?.answer?.hint &&
+                !isLetterHint(props.answer.hint) && <Hint hint={props.answer.hint} />}
+            </div>
           ))}
       </div>
     </div>

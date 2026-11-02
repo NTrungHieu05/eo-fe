@@ -36,6 +36,7 @@ const ChangePasswordForm = ({ onClose }: ChangePasswordFormProps) => {
       }
     } catch (err) {
       console.log('onSubmit-error :>> ', err.toString());
+      Message.error('Không đổi được mật khẩu');
     } finally {
       stop();
     }
@@ -64,10 +65,6 @@ const ChangePasswordForm = ({ onClose }: ChangePasswordFormProps) => {
                         {
                           required: true,
                           message: 'Please input your password!',
-                        },
-                        {
-                          pattern: PATTERN_VALIDATE.password.value,
-                          message: PATTERN_VALIDATE.password.message,
                         },
                       ]}
                     >

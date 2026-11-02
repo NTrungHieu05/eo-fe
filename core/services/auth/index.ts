@@ -46,8 +46,8 @@ export const postToeicScore = async (postData: any) => {
 export const postForgotPassword = async (data) => {
   return post(ENDPOINTS.FORGOTPASS, data);
 };
-export const postVerifyOTP = async (data) => {
-  return post(`${ENDPOINTS.VERIFY_OTP}?email=${data.email}&otp=${data.code}`, {});
+export const postCreateAdminUser = async (postData: any) => {
+  return post(ENDPOINTS.ADMIN_USERS, postData);
 };
 
 export const postBlockUser = async (data) => {

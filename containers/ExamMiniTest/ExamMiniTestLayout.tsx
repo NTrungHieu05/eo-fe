@@ -1,16 +1,13 @@
-import { Col, Progress, Row } from 'antd';
 import { ContentWrapper } from './MiniTest.style';
 import QuestionPaletteRoot from './QuestionPaletteRoot';
-import { getListExam } from '@api';
-import { Message } from '@utils';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 import QuestionPaletteRootResult from './QuestionPaletteRootResult';
 
 type ExamLayoutProps = {
   children: React.ReactNode;
   listQuestion?: any[];
   examStatus?: string;
+  examName?: string;
+  onSelectCard?: (cardIndex: number) => void;
   answerInfos: {
     total: number;
     newAnswerCount: number;
@@ -18,39 +15,8 @@ type ExamLayoutProps = {
     incorrectAnswerCount: number;
   };
 };
-type TopicType = {
-  id: string;
-  name: string;
-};
+
 const ExamLayout: React.FC<ExamLayoutProps> = (props: ExamLayoutProps) => {
-  const router = useRouter();
-  const [topicData, setTopicData] = useState<TopicType | undefined>(undefined);
-  const [listTest, setListTest] = useState([]);
-
-  const fetchListExam = async () => {
-    const topicId = router.query.topicCode;
-    if (!topicId) {
-      return;
-    }
-    try {
-      const resp: any = await getListExam(topicId);
-      const error = resp.data.error;
-      const respData = resp.data?.responseData;
-      if (error) {
-        Message.error(error?.message ?? 'Something error!');
-      } else {
-        setListTest(respData?.exams || []);
-        setTopicData(respData);
-      }
-    } catch (err) {
-      Message.error('Không tải được danh sách đề thi');
-    }
-  };
-
-  useEffect(() => {
-    fetchListExam();
-  }, [router]);
-
   return (
     <ContentWrapper>
       <div id="main-study-view" className="main-study-view">
@@ -59,7 +25,7 @@ const ExamLayout: React.FC<ExamLayoutProps> = (props: ExamLayoutProps) => {
             <div className="study-layout-item study-layout-left">
               <div className="study-layout-left-wrap expand">
                 <h2 className="MuiTypography-root MuiTypography-body1 root-topic-name css-100vuwi">
-                  {topicData?.name}
+                  {props.examName || 'Thi thử'}
                 </h2>
                 {props.examStatus === 'reviewing' ? (
                   <QuestionPaletteRootResult
@@ -70,6 +36,7 @@ const ExamLayout: React.FC<ExamLayoutProps> = (props: ExamLayoutProps) => {
                   <QuestionPaletteRoot
                     listQuestion={props.listQuestion}
                     answerInfos={props.answerInfos}
+                    onSelectCard={props.onSelectCard}
                   />
                 )}
               </div>

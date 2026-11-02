@@ -19,6 +19,10 @@ export const getListCardMiniTest = async () => {
   return get(ENDPOINTS.MINI_TEST_CARD);
 };
 
+export const getPracticeTestById = async (id: string) => {
+  return get(`${ENDPOINTS.MINI_TEST_CARD}/${id}`);
+};
+
 export const getListExamAdmin = async () => {
   return get(`${ENDPOINTS.ADMIN_EXAM}`);
 };

@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
-
 type QuestionPaletteRootProps = {
   listQuestion?: any[];
   children?: React.ReactNode;
+  onSelectCard?: (cardIndex: number) => void;
   answerInfos: {
     total: number;
     newAnswerCount: number;
@@ -10,15 +9,22 @@ type QuestionPaletteRootProps = {
     incorrectAnswerCount: number;
   };
 };
+
+const isAnswered = (question) =>
+  question?.isQuestionGroup
+    ? question.childCards?.some((child) => child?.userAnswer?.length > 0)
+    : question?.userAnswer?.length > 0;
+
 const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
   listQuestion,
   answerInfos,
+  onSelectCard,
 }: QuestionPaletteRootProps) => {
   const { total, newAnswerCount, correctAnswerCount, incorrectAnswerCount } = answerInfos;
 
   return (
     <div className="jss27 question-palette-root">
-      <div className="current-topic-label question-palette-game-title">Test 1</div>
+      <div className="current-topic-label question-palette-game-title">Thi thử</div>
       <div className="question-palette-main">
         <div className="question-palette-header">
           <div className="question-palette-title">Question Palette</div>
@@ -26,65 +32,45 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
         <div className="question-palette-body">
           <div className="questions-list questions-list-custom" id="question-list-scroll">
             <div className="question-list-row" style={{ gridTemplateColumns: 'repeat(8, 1fr)' }}>
-              {listQuestion?.map((question) => (
-                <>
-                  {question?.isQuestionGroup ? (
-                    question.childCards.map((childCard) => (
+              {listQuestion?.map((question, cardIndex) =>
+                question?.isQuestionGroup
+                  ? question.childCards?.map((childCard) => (
                       <button
+                        key={childCard?._id || childCard?.id || childCard?.questionNo}
                         className={`question-item question-palette-item-custom ${
                           childCard?.userAnswer?.length > 0 ? 'p-item-selected' : ''
                         }`}
                         tabIndex={0}
                         type="button"
-                        id={`pallete-item-${childCard?._id}`}
+                        onClick={() => onSelectCard?.(cardIndex)}
                       >
                         {childCard?.questionNo}
                       </button>
                     ))
-                  ) : (
-                    <>
+                  : (
                       <button
+                        key={question?._id || question?.id}
                         className={`question-item question-palette-item-custom ${
-                          question?.userAnswer?.length > 0 ? 'p-item-selected' : ''
+                          isAnswered(question) ? 'p-item-selected' : ''
                         }`}
                         tabIndex={0}
                         type="button"
-                        id={`pallete-item-${question?._id}`}
+                        onClick={() => onSelectCard?.(cardIndex)}
                       >
                         {question?.questionNo}
                       </button>
-                    </>
-                  )}
-                </>
-              ))}
+                    )
+              )}
             </div>
           </div>
           <div className="question-stat-progress">
             <div className="jss28">
               <div className="questions-stat-item">
-                <svg
-                  width={10}
-                  height={11}
-                  viewBox="0 0 10 11"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <rect y="0.5" width={10} height={10} rx={3} fill="#007aff" />
-                </svg>
                 <span className="questions-stat-item-text">
                   {correctAnswerCount + incorrectAnswerCount}/{total} Selected
                 </span>
               </div>
               <div className="questions-stat-item">
-                <svg
-                  width={10}
-                  height={11}
-                  viewBox="0 0 10 11"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <rect y="0.5" width={10} height={10} rx={3} fill="#a3a3a3" />
-                </svg>
                 <span className="questions-stat-item-text">
                   {newAnswerCount}/{total} New
                 </span>

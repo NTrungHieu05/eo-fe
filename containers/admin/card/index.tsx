@@ -1,80 +1,36 @@
-import { CloseCircleOutlined, FormOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import { getAdminListCard, postCardImport, postUploadFile, putDeleteCard } from '@api';
+import { CloseCircleOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons';
+import { getAdminListCard, getListTopicAdmin, putDeleteCard } from '@api';
 import { useLoading } from '@hooks';
 import { Message } from '@utils';
-import { Button, Modal, Spin, Table, Upload, UploadProps, message } from 'antd';
+import { Button, Modal, Spin, Table } from 'antd';
 import Column from 'antd/lib/table/Column';
 import React, { useEffect, useState } from 'react';
 import CreatedForm from './created-form';
 import { PageWrapper } from './index.style';
 
+const questionName = (card) => {
+  const own = (card?.question?.text || '').trim();
+  if (own) {
+    return own;
+  }
+  const children = (card?.childCards || [])
+    .map((child) => (child?.question?.text || '').trim())
+    .filter(Boolean);
+  if (children.length) {
+    return children.join(' · ');
+  }
+  return 'Câu chưa có nội dung';
+};
+
 const CMSCard: React.FC = () => {
   const [{ isLoading }, { start, stop }] = useLoading();
 
   const [dataList, setDataList] = useState<any[]>([]);
+  const [topics, setTopics] = useState<any[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showModalConfirm, setShowModalConfirm] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] = useState<any>(undefined);
 
-  const props: UploadProps = {
-    name: 'file',
-    type: 'select',
-    accept:
-      '.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel',
-    showUploadList: false,
-    onChange(info) {
-      if (info.file.status === 'done') {
-        const filePath = info.file.response?.filePath;
-        message.success(
-          `${info.file.name} file uploaded successfully, Please wait for a moment to import data!`
-        );
-        fetchImportCard(filePath);
-      } else if (info.file.status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-  };
-
-  const fetchUploadCards = async (options) => {
-    start();
-    try {
-      const { file, onSuccess } = options;
-      const formData = new FormData();
-      formData.append('file', file);
-      const resp: any = await postUploadFile(formData);
-      const error = resp.data.error;
-      if (error) {
-        stop();
-        Message.error(error?.message ?? 'Something error!');
-      } else {
-        onSuccess(resp.data?.responseData);
-      }
-    } catch (err) {
-      stop();
-      console.log('onSubmit-error :>> ', err.toString());
-    }
-  };
-
-  const fetchImportCard = async (filePath) => {
-    start();
-    try {
-      const params = {
-        filePath,
-      };
-      const resp: any = await postCardImport(params);
-      const error = resp.data.error;
-      if (error) {
-        stop();
-        Message.error(error?.message ?? 'Something error!');
-      } else {
-        message.success(`File imported successfully`);
-        fetchListCard();
-      }
-    } catch (err) {
-      stop();
-      console.log('onSubmit-error :>> ', err.toString());
-    }
-  };
   const fetchListCard = async () => {
     start();
     try {
@@ -139,18 +95,24 @@ const CMSCard: React.FC = () => {
 
   useEffect(() => {
     fetchListCard();
+    const loadTopics = async () => {
+      try {
+        const resp: any = await getListTopicAdmin();
+        if (!resp.data.error) {
+          setTopics(resp.data?.responseData?.topics || []);
+        }
+      } catch (err) {
+        console.log('loadTopics-error :>> ', err.toString());
+      }
+    };
+    loadTopics();
   }, []);
 
   return (
     <PageWrapper>
       <div className="cms-page-title">Manager Card</div>
       <div className="btn-action-box d-flex">
-        <Upload {...props} customRequest={fetchUploadCards}>
-          <Button loading={isLoading} icon={<UploadOutlined />}>
-            Click to Upload
-          </Button>
-        </Upload>
-        <Button onClick={() => setShowModal(true)} className="btn-add ml-3">
+        <Button onClick={() => setShowModal(true)} className="btn-add">
           <PlusOutlined /> Add Card
         </Button>
       </div>
@@ -185,15 +147,13 @@ const CMSCard: React.FC = () => {
           key="stt"
           className="column-id"
           width="2rem"
-          render={(value, record, index) => <div>{index}</div>}
+          render={(value, record, index) => <div>{index + 1}</div>}
         />
         <Column
-          title="ID"
-          key="id"
-          dataIndex=""
+          title="Câu hỏi"
+          key="question-name"
           className="column-question"
-          width="6rem"
-          render={(record) => <div>{record?.id}</div>}
+          render={(record) => <div>{questionName(record)}</div>}
         />
         <Column
           title="Answer"
@@ -220,25 +180,27 @@ const CMSCard: React.FC = () => {
           }}
         />
         <Column
-          title="Question"
-          key="question"
-          dataIndex=""
+          title="Part"
+          key="topic"
+          width="12rem"
+          render={(record) => (
+            <div>{topics.find((topic) => topic.id === record?.topicId)?.name || '—'}</div>
+          )}
+        />
+        <Column
+          title="Media"
+          key="media"
           className="column-question"
           render={(record) => (
             <div>
               {record?.question?.sound && (
                 <div>
-                  <b>Sound:</b> {record?.question?.sound}
+                  <b>Sound:</b> {record.question.sound}
                 </div>
               )}
               {record?.question?.image && (
                 <div>
-                  <b>Image:</b> {record?.question?.image}
-                </div>
-              )}
-              {record?.question?.text && (
-                <div>
-                  <b>Text:</b> {record?.question?.text}
+                  <b>Image:</b> {record.question.image}
                 </div>
               )}
             </div>

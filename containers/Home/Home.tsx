@@ -14,15 +14,20 @@ const PART_META = [
   { key: 'Phần 7', part: '07', en: 'Reading Comprehension', accent: '#8A4A3B' },
 ];
 
-const getPartMeta = (name = '') =>
-  PART_META.find((item) => name.startsWith(item.key)) || {
-    part: 'TOEIC',
-    en: 'Practice',
-    accent: '#0E7C7B',
-  };
+const getPartMeta = (name = '') => {
+  const match = String(name).match(/Phần\s*(\d+)/);
+  const part = match ? Number(match[1]) : 0;
+  return (
+    PART_META.find((item) => Number(item.part) === part) || {
+      part: 'TOEIC',
+      en: 'Practice',
+      accent: '#0E7C7B',
+    }
+  );
+};
 
 const Home = () => {
-  const { topics } = useToeicContext();
+  const { topics, topicsFailed } = useToeicContext();
   return (
     <HomePageWrapper>
       <HomeContentWrap className="container mb-5">
@@ -52,6 +57,9 @@ const Home = () => {
             </div>
           </div>
         </section>
+        {topicsFailed && (
+          <p className="practice-exam-empty">Không tải được danh sách phần.</p>
+        )}
         <div className="toeic-subjects-tab-pane-wrap">
           <div className="toeic-subjects-tab-pane-item">
             {topics.map((skill) => (
@@ -59,7 +67,7 @@ const Home = () => {
                 <h3 className="toeic-subject-item-title">{skill.name}</h3>
                 <div>
                   <Row gutter={[20, 20]}>
-                    {skill.topics.map((topic) => {
+                    {(skill.topics || []).map((topic) => {
                       const meta = getPartMeta(topic.topicName);
                       return (
                         <Col xs={24} sm={12} md={8} lg={6} className="cursor-pointer" key={topic.topicId}>

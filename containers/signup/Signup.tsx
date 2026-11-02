@@ -7,19 +7,14 @@ import Input, { InputPassword } from '@ui/Input/Input';
 import { Message, splitFullName } from '@utils';
 import { Col, DatePicker, Form, Row } from 'antd';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React from 'react';
 import { SignUpPageWrapper } from './Signup.style';
 import { useRouter } from 'next/router';
-import ModalVerifyOTP from '@containers/modal-verify-otp';
 
 const SignUp: React.FC = () => {
   const [form] = Form.useForm();
   const router = useRouter();
   const [{ isLoading }, { start, stop }] = useLoading();
-
-  const [showFormVerify, setShowFormVerify] = useState(false);
-  const [email, setEmail] = useState('');
-  const [devOtp, setDevOtp] = useState('');
 
   const onSubmit = async (data) => {
     start();
@@ -41,9 +36,9 @@ const SignUp: React.FC = () => {
         stop();
         Message.error(error?.message ?? 'Something error!');
       } else {
-        setShowFormVerify(true);
-        setEmail(data.email);
-        setDevOtp(resp.data?.responseData?.otp || '');
+        Message.success('Đăng ký thành công. Hãy đăng nhập.');
+        form.resetFields();
+        router.push(ROUTES.SIGNIN);
       }
     } catch (err) {
       console.log('onSubmit-error :>> ', err.toString());
@@ -51,18 +46,6 @@ const SignUp: React.FC = () => {
     } finally {
       stop();
     }
-  };
-
-  const onCloseModalVerify = () => {
-    setShowFormVerify(false);
-    form.resetFields();
-    router.push(ROUTES.SIGNIN);
-  };
-  const onOkModalVerify = () => {
-    setShowFormVerify(false);
-    form.resetFields();
-    Message.success('Xác minh thành công. Hãy đăng nhập.');
-    router.push(ROUTES.SIGNIN);
   };
 
   return (
@@ -83,10 +66,9 @@ const SignUp: React.FC = () => {
                 requiredMark={false}
                 validateTrigger="onBlur"
               >
-                {(values, formInstance) => {
-                  const isValidateCharacterPass =
-                    formInstance.getFieldError('password')?.length === 0 &&
-                    values?.password?.length > 0;
+                {(values) => {
+                  const passwordValue = values?.password || '';
+                  const hasCharacterRule = /(?=.*\d)(?=.*[a-z])/.test(passwordValue);
                   return (
                     <>
                       <Row gutter={[16, 16]}>
@@ -202,10 +184,10 @@ const SignUp: React.FC = () => {
                         </div>
                         <div
                           className={`validate-character ${
-                            isValidateCharacterPass ? 'is-validated' : ''
+                            hasCharacterRule ? 'is-validated' : ''
                           }`}
                         >
-                          <IconChecked /> Có ít nhất 1 chữ hoa và 1 số
+                          <IconChecked /> Có ít nhất 1 chữ thường và 1 số
                         </div>
                       </div>
                       <div className="action-wrap">
@@ -234,13 +216,6 @@ const SignUp: React.FC = () => {
           </div>
         </div>
       </div>
-      <ModalVerifyOTP
-        show={showFormVerify}
-        onClose={onCloseModalVerify}
-        onOk={onOkModalVerify}
-        email={email}
-        hintOtp={devOtp}
-      />
     </SignUpPageWrapper>
   );
 };

@@ -8,6 +8,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Cookies } from 'react-cookie';
 interface ToeicContextProps {
   topics: Array<TopicType>;
+  topicsFailed: boolean;
   setUserInfos: (data) => void;
   userInfos: any;
 }
@@ -24,6 +25,7 @@ type TopicType = {
 
 export const ToeicContext = React.createContext<ToeicContextProps>({
   topics: [],
+  topicsFailed: false,
   userInfos: {},
   setUserInfos: () => {},
 });
@@ -31,6 +33,7 @@ export const ToeicContext = React.createContext<ToeicContextProps>({
 export const ToeicContextProvider = (props) => {
   const router = useRouter();
   const [topics, setTopics] = useState([]);
+  const [topicsFailed, setTopicsFailed] = useState(false);
   const [userInfos, setUserInfos] = useState({});
 
   const fetchHeaderInfo = async () => {
@@ -40,8 +43,13 @@ export const ToeicContextProvider = (props) => {
       const respData = resp.data?.responseData;
       if (!error && respData) {
         setTopics(respData);
+        setTopicsFailed(false);
+      } else {
+        setTopicsFailed(true);
       }
-    } catch (error) {}
+    } catch (error) {
+      setTopicsFailed(true);
+    }
   };
   useEffect(() => {
     fetchHeaderInfo();
@@ -63,6 +71,7 @@ export const ToeicContextProvider = (props) => {
     <ToeicContext.Provider
       value={{
         topics,
+        topicsFailed,
         userInfos,
         setUserInfos,
       }}

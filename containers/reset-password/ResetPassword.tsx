@@ -33,8 +33,8 @@ const ResetPassword: React.FC = () => {
         router.push(ROUTES.SIGNIN);
       }
     } catch (err) {
-      stop();
       console.log('onSubmit-error :>> ', err.toString());
+      Message.error('Không kết nối được máy chủ');
     } finally {
       stop();
     }

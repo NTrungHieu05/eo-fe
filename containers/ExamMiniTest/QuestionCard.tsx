@@ -3,25 +3,23 @@ import ReactAudioPlayer from 'react-audio-player';
 import QuizPlayZone from './QuizPlayZone';
 import { resolveMediaUrl } from '@utils';
 
-export default function QuestionCard({ question, onUpdateQuestion, isStarting = false }) {
+export default function QuestionCard({ question, onUpdateQuestion, isStarting = false, readOnly = false, reveal = false }) {
   const onChoice = (choice) => {
-    const newQuestion = {
-      ...question,
+    onUpdateQuestion?.((current) => ({
+      ...(current || question),
       userAnswer: [choice],
-    };
-    onUpdateQuestion?.(newQuestion);
+    }));
   };
   const onChoiceQuestionGroup = (choice, index) => {
-    const _childCards = question.childCards;
-    _childCards[index] = {
-      ...question.childCards[index],
-      userAnswer: [choice],
-    };
-    const newQuestion = {
-      ...question,
-      childCards: _childCards,
-    };
-    onUpdateQuestion?.(newQuestion);
+    onUpdateQuestion?.((current) => {
+      const card = current || question;
+      return {
+        ...card,
+        childCards: (card?.childCards || []).map((childCard, childIndex) =>
+          childIndex === index ? { ...childCard, userAnswer: [choice] } : childCard
+        ),
+      };
+    });
   };
   return (
     <div className="game-object-view-container">
@@ -61,8 +59,9 @@ export default function QuestionCard({ question, onUpdateQuestion, isStarting = 
                 )}
               </div>
               <div className="question-group-quiz-box">
-                {question.childCards.map((childCard, index) => (
+                {question.childCards?.map((childCard, index) => (
                   <QuizPlayZone
+                    key={childCard?.questionNo || index}
                     parentQuestion={question}
                     childCard={childCard}
                     index={childCard?.questionNo}
@@ -70,6 +69,8 @@ export default function QuestionCard({ question, onUpdateQuestion, isStarting = 
                     userAnswer={childCard?.userAnswer}
                     onChoice={(choice) => onChoiceQuestionGroup(choice, index)}
                     isStarting={isStarting}
+                    readOnly={readOnly}
+                    reveal={reveal}
                   />
                 ))}
               </div>
@@ -119,6 +120,8 @@ export default function QuestionCard({ question, onUpdateQuestion, isStarting = 
                 userAnswer={question?.userAnswer}
                 onChoice={onChoice}
                 isStarting={isStarting}
+                readOnly={readOnly}
+                reveal={reveal}
               />
             </>
           )}

@@ -7,28 +7,40 @@ import Countdown from 'antd/lib/statistic/Countdown';
 
 const ExamStart = ({
   listQuestion,
+  startIndex = 0,
   onUpdateListQuestion,
   onSetExamStatus,
   answerInfos,
   isMiniTest = false,
+  readOnly = false,
 }) => {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-  const onUpdateQuestion = (newQuestion, index) => {
-    const newListQuestion = [...listQuestion];
-    newListQuestion[index] = newQuestion;
-    onUpdateListQuestion?.(newListQuestion);
+  const questions = listQuestion || [];
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(() => {
+    const last = Math.max(questions.length - 1, 0);
+    const index = Number.isFinite(startIndex) ? startIndex : 0;
+    return Math.min(Math.max(index, 0), last);
+  });
+  const onUpdateQuestion = (updater, index) => {
+    onUpdateListQuestion?.((current) => {
+      const next = [...(current || [])];
+      const card = next[index];
+      next[index] = typeof updater === 'function' ? updater(card) : updater;
+      return next;
+    });
   };
 
   const onNextQuestion = () => {
-    if (currentQuestionIndex !== listQuestion.length - 1) {
-      setCurrentQuestionIndex((prev) => (prev === listQuestion.length - 1 ? prev : prev + 1));
+    if (!questions.length) {
       return;
     }
-
-    onSetExamStatus('reviewing');
+    if (currentQuestionIndex >= questions.length - 1) {
+      onSetExamStatus('reviewing');
+      return;
+    }
+    setCurrentQuestionIndex((prev) => Math.min(prev + 1, questions.length - 1));
   };
   const onPreviousQuestion = () => {
-    setCurrentQuestionIndex((prev) => (prev === 0 ? prev : prev - 1));
+    setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0));
   };
 
   const deadline = Date.now() + 1000 * 60 * 60;
@@ -38,7 +50,13 @@ const ExamStart = ({
   };
 
   return (
-    <ExamLayout listQuestion={listQuestion} answerInfos={answerInfos}>
+    <ExamLayout
+      listQuestion={questions}
+      answerInfos={answerInfos}
+      onSelectCard={(index) =>
+        setCurrentQuestionIndex(Math.min(Math.max(index, 0), Math.max(questions.length - 1, 0)))
+      }
+    >
       {isMiniTest && (
         <Countdown
           className="mini-test-count-down"
@@ -50,12 +68,17 @@ const ExamStart = ({
       <div id="game-view-container" className="game-view-container-main">
         <div id="main-game-view" className="">
           <div id="main-game-scroll-panel" className="main-game-object">
+            {!questions.length ? (
+              <p>Đề này chưa có câu hỏi.</p>
+            ) : (
+              <>
             <QuestionCard
-              question={listQuestion[currentQuestionIndex]}
-              onUpdateQuestion={(newQuestion) =>
-                onUpdateQuestion(newQuestion, currentQuestionIndex)
+              question={questions[Math.min(currentQuestionIndex, questions.length - 1)]}
+              onUpdateQuestion={(updater) =>
+                onUpdateQuestion(updater, Math.min(currentQuestionIndex, questions.length - 1))
               }
-              key={`QuestionCard-${listQuestion[currentQuestionIndex]?._id}`}
+              readOnly={readOnly}
+              key={`QuestionCard-${questions[currentQuestionIndex]?._id || questions[currentQuestionIndex]?.id}-${currentQuestionIndex}`}
             />
             <div
               className={`slide-button-box ${currentQuestionIndex === 0 ? 'first-question' : ''} `}
@@ -67,15 +90,17 @@ const ExamStart = ({
                 </Button>
               )}
 
-              <Button shape="round" onClick={onNextQuestion} className="btn-next">
-                {currentQuestionIndex !== listQuestion.length - 1
-                  ? 'Next '
-                  : isMiniTest
+              <Button shape="round" onClick={onNextQuestion} className="btn-next" disabled={readOnly}>
+                {currentQuestionIndex >= questions.length - 1
+                  ? isMiniTest
                   ? 'Submit'
-                  : 'View Result '}
+                  : 'View Result '
+                  : 'Next '}
                 <RightOutlined />
               </Button>
             </div>
+              </>
+            )}
           </div>
         </div>
       </div>
