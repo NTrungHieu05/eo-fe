@@ -76,7 +76,7 @@ const SignIn: React.FC = () => {
                 name="login"
                 layout={'vertical'}
                 onFinish={onSubmit}
-                autoComplete="off"
+                autoComplete="on"
                 requiredMark={false}
                 validateTrigger="onBlur"
               >
@@ -93,6 +93,7 @@ const SignIn: React.FC = () => {
                 >
                   <Input
                     placeholder="Email"
+                    autoComplete="username"
                     prefix={<UserOutlined style={{ fontSize: '28px' }} />}
                   />
                 </Form.Item>
@@ -104,6 +105,7 @@ const SignIn: React.FC = () => {
                 >
                   <InputPassword
                     placeholder="Mật khẩu"
+                    autoComplete="current-password"
                     prefix={<LockOutlined style={{ fontSize: '28px' }} />}
                   />
                 </Form.Item>
