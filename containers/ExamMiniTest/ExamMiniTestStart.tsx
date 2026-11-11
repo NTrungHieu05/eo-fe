@@ -20,8 +20,8 @@ const ExamStart = ({
   const onUpdateQuestion = (updater, index) => {
     onUpdateListQuestion?.((current) => {
       const next = [...(current || [])];
-      const card = next[index];
-      next[index] = typeof updater === 'function' ? updater(card) : updater;
+      const question = next[index];
+      next[index] = typeof updater === 'function' ? updater(question) : updater;
       return next;
     });
   };
@@ -55,7 +55,7 @@ const ExamStart = ({
       answerInfos={answerInfos}
       examName={examName}
       examStatus={examStatus}
-      onSelectCard={(index) =>
+      onSelectQuestion={(index) =>
         setCurrentQuestionIndex(Math.min(Math.max(index, 0), Math.max(questions.length - 1, 0)))
       }
     >

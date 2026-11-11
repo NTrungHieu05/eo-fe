@@ -163,10 +163,10 @@ const CMSExam: React.FC = () => {
         />
         <Column
           title="Số câu"
-          key="card-count"
+          key="question-count"
           dataIndex=""
           className="column-name"
-          render={(record) => <div>{record?.cardIds?.length}</div>}
+          render={(record) => <div>{record?.questionIds?.length}</div>}
         />
       </Table>
       <Modal

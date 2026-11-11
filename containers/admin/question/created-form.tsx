@@ -1,5 +1,5 @@
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import { getListTopicAdmin, postCreatedCard, postUploadFile, putEditCard } from '@api';
+import { getListTopicAdmin, postCreatedQuestion, postUploadFile, putEditQuestion } from '@api';
 import { useLoading } from '@hooks';
 import { styled } from '@styles/theme';
 import { Button } from '@ui';
@@ -60,7 +60,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
   const onToggleQuestionGroup = (checked: boolean) => {
     if (checked) {
       form.setFieldsValue({
-        childCards: [
+        childQuestions: [
           {
             answer: [
               { choice: '', isCorrectAnswer: false },
@@ -96,7 +96,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
   const onSubmit = async (data) => {
     const groupMissingAnswer =
       data?.isQuestionGroup &&
-      (data?.childCards || []).some((child) => !correctChoice(child?.answer));
+      (data?.childQuestions || []).some((child) => !correctChoice(child?.answer));
     if (groupMissingAnswer || (!data?.isQuestionGroup && !correctChoice(data?.answer))) {
       Message.error('Mỗi câu cần đúng một đáp án được đánh dấu đúng.');
       return;
@@ -110,7 +110,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
         isQuestionGroup: data?.isQuestionGroup ?? false,
         ...(data?.isQuestionGroup
           ? {
-              childCards: (data?.childCards || []).map((child) => {
+              childQuestions: (data?.childQuestions || []).map((child) => {
                 return {
                   question: child?.question,
                   answer: {
@@ -128,7 +128,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
               }),
             }
           : {
-              childCards: [],
+              childQuestions: [],
               answer: {
                 choices: (data?.answer || []).reduce((acc, cur) => {
                   const choice = (cur?.choice || '').trim();
@@ -143,7 +143,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
             }),
       };
 
-      const resp: any = formData ? await putEditCard(params) : await postCreatedCard(params);
+      const resp: any = formData ? await putEditQuestion(params) : await postCreatedQuestion(params);
       const error = resp.data.error;
       if (error) {
         stop();
@@ -174,7 +174,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
       });
       if (isQuestionGroup) {
         form.setFieldsValue({
-          childCards: (formData?.childCards || []).map((child) => {
+          childQuestions: (formData?.childQuestions || []).map((child) => {
             const allAnswer = [
               ...(child?.answer?.choices ?? []),
               ...(child?.answer?.texts ?? []),
@@ -236,7 +236,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
       <div className="form-register">
         <Form
           form={form}
-          name="add-card"
+          name="add-question"
           layout={'vertical'}
           onFinish={onSubmit}
           autoComplete="off"
@@ -321,17 +321,17 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                     </Form.Item>
                   </Col>
                 </Row>
-                <div className="list-title">{isQuestionGroupField ? 'Child Cards' : 'Answer'} </div>
+                <div className="list-title">{isQuestionGroupField ? 'Child Questions' : 'Answer'} </div>
                 {isQuestionGroupField ? (
                   <Row gutter={[8, 8]} className="list-child-card-box">
                     <Col span={24}>
-                      <Form.List name="childCards">
+                      <Form.List name="childQuestions">
                         {(
-                          fieldsChildCard: FormListFieldData[],
-                          operationChildCard: FormListOperation
+                          fieldsChildQuestion: FormListFieldData[],
+                          operationChildQuestion: FormListOperation
                         ) => (
                           <>
-                            {fieldsChildCard.map(({ key, name, ...restField }) => (
+                            {fieldsChildQuestion.map(({ key, name, ...restField }) => (
                               <div className="child-card-box mb-4">
                                 <div className="child-card-title">No {name + 1}.</div>
                                 <Row gutter={[8, 8]}>
@@ -347,11 +347,11 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                                   <Col span={24}>
                                     <Form.List name={[name, 'answer']}>
                                       {(
-                                        fieldsChildCardAnswer: FormListFieldData[],
-                                        operationChildCardAnswer: FormListOperation
+                                        fieldsChildQuestionAnswer: FormListFieldData[],
+                                        operationChildQuestionAnswer: FormListOperation
                                       ) => (
                                         <>
-                                          {fieldsChildCardAnswer?.map(
+                                          {fieldsChildQuestionAnswer?.map(
                                             ({ key, name, ...restField }) => {
                                               return (
                                                 <Space
@@ -387,7 +387,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                                                   </Form.Item>
                                                   <MinusCircleOutlined
                                                     onClick={() =>
-                                                      operationChildCardAnswer?.remove(name)
+                                                      operationChildQuestionAnswer?.remove(name)
                                                     }
                                                   />
                                                 </Space>
@@ -397,7 +397,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                                           <Form.Item>
                                             <Button
                                               type="dashed"
-                                              onClick={() => operationChildCardAnswer?.add()}
+                                              onClick={() => operationChildQuestionAnswer?.add()}
                                               block
                                               icon={<PlusOutlined />}
                                               className="btn-add-answer"
@@ -418,9 +418,9 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                                     <Button
                                       type="primary"
                                       className="btn-remove-card"
-                                      onClick={() => operationChildCard.remove(name)}
+                                      onClick={() => operationChildQuestion.remove(name)}
                                     >
-                                      Remove child card
+                                      Remove child question
                                     </Button>
                                   </Col>
                                 </Row>
@@ -429,12 +429,12 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                             <Form.Item>
                               <Button
                                 type="dashed"
-                                onClick={() => operationChildCard.add()}
+                                onClick={() => operationChildQuestion.add()}
                                 block
                                 icon={<PlusOutlined />}
                                 className="btn-add-card"
                               >
-                                Add child card
+                                Add child question
                               </Button>
                             </Form.Item>
                           </>

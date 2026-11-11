@@ -1,16 +1,16 @@
-import { getListCard, postCollectExam } from '@api';
+import { getListQuestion, postCollectExam } from '@api';
 import { useLoading } from '@hooks';
-import { Message, answersMatch, isQuestionGroupCard, sortAnswer } from '@utils';
+import { Message, answersMatch, isGroupedQuestion, sortAnswer } from '@utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import ExamResult from './ExamResult';
 import ExamStart from './ExamStart';
 import ExamView from './ExamView';
 
 type ExamStatusType = 'initial' | 'starting' | 'reviewing';
-const firstOpenCardIndex = (cards) => {
-  const index = (cards || []).findIndex((question) => {
+const firstOpenQuestionIndex = (questions) => {
+  const index = (questions || []).findIndex((question) => {
     if (question?.isQuestionGroup) {
-      return (question.childCards || []).some((child) => !child?.userAnswer?.[0]);
+      return (question.childQuestions || []).some((child) => !child?.userAnswer?.[0]);
     }
     return !question?.userAnswer?.[0];
   });
@@ -30,17 +30,17 @@ const Exam = ({ examCode }) => {
   const answerInfos = useMemo(() => {
     const flatListQuestion = listQuestion.reduce((acc, question) => {
       if (question?.isQuestionGroup) {
-        if (!question.childCards?.length) {
+        if (!question.childQuestions?.length) {
           return acc;
         }
-        const newCards = question.childCards.map((childCard, index) => {
+        const newQuestions = question.childQuestions.map((childQuestion, index) => {
           return {
             ...question,
-            ...childCard,
-            childCardIndex: index,
+            ...childQuestion,
+            childQuestionIndex: index,
           };
         });
-        return [...acc, ...newCards];
+        return [...acc, ...newQuestions];
       }
       return [...acc, question];
     }, []);
@@ -58,11 +58,11 @@ const Exam = ({ examCode }) => {
     };
   }, [listQuestion]);
 
-  const fetchListCard = async () => {
+  const fetchListQuestion = async () => {
     const requestId = ++loadRequest.current;
     start();
     try {
-      const resp: any = await getListCard(examCode);
+      const resp: any = await getListQuestion(examCode);
       if (requestId !== loadRequest.current) {
         return null;
       }
@@ -73,35 +73,35 @@ const Exam = ({ examCode }) => {
         return null;
       } else {
         let questionNo = 0;
-        const _listData = respData?.cards?.map((card) => {
-          const isQuestionGroup = isQuestionGroupCard(card);
+        const _listData = respData?.questions?.map((question) => {
+          const isQuestionGroup = isGroupedQuestion(question);
           if (isQuestionGroup) {
-            const _childCards = (card?.childCards || []).map((childCard) => {
+            const _childQuestions = (question?.childQuestions || []).map((childQuestion) => {
               questionNo = questionNo + 1;
               return {
-                ...childCard,
+                ...childQuestion,
                 answer: {
-                  ...childCard?.answer,
+                  ...childQuestion?.answer,
                   allAnswer: [
-                    ...(childCard?.answer?.choices ?? []),
-                    ...(childCard?.answer?.texts ?? []),
+                    ...(childQuestion?.answer?.choices ?? []),
+                    ...(childQuestion?.answer?.texts ?? []),
                   ].sort(sortAnswer),
                 },
                 questionNo: questionNo,
               };
             });
             return {
-              ...card,
-              childCards: _childCards,
+              ...question,
+              childQuestions: _childQuestions,
               isQuestionGroup: true,
             };
           } else {
             questionNo = questionNo + 1;
             return {
-              ...card,
+              ...question,
               answer: {
-                ...card?.answer,
-                allAnswer: [...(card?.answer?.choices ?? []), ...(card?.answer?.texts ?? [])].sort(
+                ...question?.answer,
+                allAnswer: [...(question?.answer?.choices ?? []), ...(question?.answer?.texts ?? [])].sort(
                   sortAnswer
                 ),
               },
@@ -155,16 +155,16 @@ const Exam = ({ examCode }) => {
     setExamStatus('initial');
     setListQuestion([]);
     setLoadFailed(false);
-    fetchListCard().then((cards) => {
+    fetchListQuestion().then((questions) => {
       if (!active) {
         return;
       }
-      if (cards == null) {
+      if (questions == null) {
         setLoadFailed(true);
         setListQuestion([]);
         return;
       }
-      setListQuestion(cards);
+      setListQuestion(questions);
     });
     return () => {
       active = false;
@@ -195,11 +195,11 @@ const Exam = ({ examCode }) => {
   };
 
   const onClickTryAgain = async () => {
-    const cards = await fetchListCard();
-    if (cards != null) {
+    const questions = await fetchListQuestion();
+    if (questions != null) {
       submittingRef.current = false;
       setIsSubmitting(false);
-      setListQuestion(cards);
+      setListQuestion(questions);
       setLoadFailed(false);
       setExamStatus('starting');
     }
@@ -228,7 +228,7 @@ const Exam = ({ examCode }) => {
       {examStatus === 'starting' && (
         <ExamStart
           listQuestion={listQuestion}
-          startIndex={firstOpenCardIndex(listQuestion)}
+          startIndex={firstOpenQuestionIndex(listQuestion)}
           onUpdateListQuestion={onUpdateListQuestion}
           onSetExamStatus={onSetExamStatus}
           answerInfos={answerInfos}

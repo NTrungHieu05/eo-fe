@@ -18,7 +18,7 @@ export const listQuestions = [
       texts: ['(A)'],
     },
     topicId: '64bfdda4eadd9108158c40f2',
-    childCards: [
+    childQuestions: [
       {
         version: '1.0',
         deleted: false,
@@ -83,7 +83,7 @@ export const listQuestions = [
       texts: ['(A)'],
     },
     topicId: '64bfdda4eadd9108158c40f2',
-    childCards: [
+    childQuestions: [
       {
         version: '1.0',
         deleted: false,
@@ -148,7 +148,7 @@ export const listQuestions = [
       texts: ['(B)'],
     },
     topicId: '64bfdda4eadd9108158c40f2',
-    childCards: [
+    childQuestions: [
       {
         version: '1.0',
         deleted: false,
@@ -213,7 +213,7 @@ export const listQuestions = [
       texts: ['(C)'],
     },
     topicId: '64bfdda4eadd9108158c40f2',
-    childCards: [
+    childQuestions: [
       {
         version: '1.0',
         deleted: false,
@@ -278,7 +278,7 @@ export const listQuestions = [
       texts: ['(D)'],
     },
     topicId: '64bfdda4eadd9108158c40f2',
-    childCards: [
+    childQuestions: [
       {
         version: '1.0',
         deleted: false,
@@ -343,7 +343,7 @@ export const listQuestions = [
       texts: ['(B)'],
     },
     topicId: '64bfdda4eadd9108158c40f2',
-    childCards: [
+    childQuestions: [
       {
         version: '1.0',
         deleted: false,

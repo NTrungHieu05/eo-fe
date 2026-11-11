@@ -12,11 +12,11 @@ export default function QuestionCard({ question, onUpdateQuestion, isStarting = 
   };
   const onChoiceQuestionGroup = (choice, index) => {
     onUpdateQuestion?.((current) => {
-      const card = current || question;
+      const question = current || question;
       return {
-        ...card,
-        childCards: (card?.childCards || []).map((childCard, childIndex) =>
-          childIndex === index ? { ...childCard, userAnswer: [choice] } : childCard
+        ...question,
+        childQuestions: (question?.childQuestions || []).map((childQuestion, childIndex) =>
+          childIndex === index ? { ...childQuestion, userAnswer: [choice] } : childQuestion
         ),
       };
     });
@@ -59,14 +59,14 @@ export default function QuestionCard({ question, onUpdateQuestion, isStarting = 
                 )}
               </div>
               <div className="question-group-quiz-box">
-                {question.childCards?.map((childCard, index) => (
+                {question.childQuestions?.map((childQuestion, index) => (
                   <QuizPlayZone
-                    key={childCard?.questionNo || index}
+                    key={childQuestion?.questionNo || index}
                     parentQuestion={question}
-                    childCard={childCard}
-                    index={childCard?.questionNo}
-                    answer={childCard?.answer}
-                    userAnswer={childCard?.userAnswer}
+                    childQuestion={childQuestion}
+                    index={childQuestion?.questionNo}
+                    answer={childQuestion?.answer}
+                    userAnswer={childQuestion?.userAnswer}
                     onChoice={(choice) => onChoiceQuestionGroup(choice, index)}
                     isStarting={isStarting}
                     readOnly={readOnly}

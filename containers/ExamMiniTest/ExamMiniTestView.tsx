@@ -54,7 +54,7 @@ const ExamView = ({
                   >
                     <strong>{exam.name}</strong>
                     <span>
-                      {exam.questionCount || exam.cardIds?.length || 0} câu ·{' '}
+                      {exam.questionCount || exam.questionIds?.length || 0} câu ·{' '}
                       {exam.durationMinutes || 120} phút · {practiceResult(exam)}
                     </span>
                   </button>

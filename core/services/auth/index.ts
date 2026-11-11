@@ -31,8 +31,8 @@ export const postCreatedExam = async (postData: any) => {
   return post(ENDPOINTS.EXAM, postData);
 };
 
-export const postCreatedCard = async (postData: any) => {
-  return post(ENDPOINTS.CARD, postData);
+export const postCreatedQuestion = async (postData: any) => {
+  return post(ENDPOINTS.QUESTION, postData);
 };
 
 export const postCollectExam = async (postData: any) => {
@@ -82,16 +82,16 @@ export const putDeleteExam = async (putData: any) => {
   return put(ENDPOINTS.EXAM_DELETE_MULTIPLE, putData);
 };
 
-export const putDeleteCard = async (putData: any) => {
-  return put(ENDPOINTS.CARD_DELETE_MULTIPLE, putData);
+export const putDeleteQuestion = async (putData: any) => {
+  return put(ENDPOINTS.QUESTION_DELETE_MULTIPLE, putData);
 };
 
 export const putEditExam = async (putData: any) => {
   return put(ENDPOINTS.EXAM, putData);
 };
 
-export const putEditCard = async (putData: any) => {
-  return put(ENDPOINTS.CARD, putData);
+export const putEditQuestion = async (putData: any) => {
+  return put(ENDPOINTS.QUESTION, putData);
 };
 
 export const putEditSkill = async (putData: any) => {

@@ -1,4 +1,4 @@
-import { getAdminListCard, getListTopicAdmin, postCreatedExam, putEditExam } from '@api';
+import { getAdminListQuestion, getListTopicAdmin, postCreatedExam, putEditExam } from '@api';
 import { PATTERN_VALIDATE } from '@constants';
 import { useLoading } from '@hooks';
 import { styled } from '@styles/theme';
@@ -12,9 +12,9 @@ type CreatedFormProps = {
   formData?: any;
 };
 
-const cardLabel = (card) => {
-  const own = (card?.question?.text || '').trim();
-  const children = (card?.childCards || [])
+const questionLabel = (question) => {
+  const own = (question?.question?.text || '').trim();
+  const children = (question?.childQuestions || [])
     .map((child) => (child?.question?.text || '').trim())
     .filter(Boolean);
   const text = own || children.join(' · ');
@@ -27,7 +27,7 @@ const cardLabel = (card) => {
 const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
   const [form] = Form.useForm();
   const [{ isLoading }, { start, stop }] = useLoading();
-  const [cards, setCards] = useState<any[]>([]);
+  const [questions, setQuestions] = useState<any[]>([]);
   const [topics, setTopics] = useState<any[]>([]);
   const practiceTest = Form.useWatch('practiceTest', form);
   const topicId = Form.useWatch('topicId', form);
@@ -35,14 +35,14 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
   const fetchDataList = async () => {
     start();
     try {
-      const [cardResp, topicResp]: any[] = await Promise.all([
-        getAdminListCard(),
+      const [questionResp, topicResp]: any[] = await Promise.all([
+        getAdminListQuestion(),
         getListTopicAdmin(),
       ]);
-      if (cardResp.data.error) {
-        Message.error(cardResp.data.error?.message ?? 'Something error!');
+      if (questionResp.data.error) {
+        Message.error(questionResp.data.error?.message ?? 'Something error!');
       } else {
-        setCards(cardResp.data?.responseData?.cards || []);
+        setQuestions(questionResp.data?.responseData?.questions || []);
       }
       if (topicResp.data.error) {
         Message.error(topicResp.data.error?.message ?? 'Something error!');
@@ -61,35 +61,35 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
     [topics]
   );
 
-  const cardOptions = useMemo(() => {
+  const questionOptions = useMemo(() => {
     if (practiceTest) {
       const groups = topics
         .map((topic) => ({
           label: topic.name,
-          options: cards
-            .filter((card) => card.topicId === topic.id)
-            .map((card) => ({ label: cardLabel(card), value: card.id })),
+          options: questions
+            .filter((question) => question.topicId === topic.id)
+            .map((question) => ({ label: questionLabel(question), value: question.id })),
         }))
         .filter((group) => group.options.length);
-      const orphan = cards
-        .filter((card) => !card.topicId)
-        .map((card) => ({ label: cardLabel(card), value: card.id }));
+      const orphan = questions
+        .filter((question) => !question.topicId)
+        .map((question) => ({ label: questionLabel(question), value: question.id }));
       if (orphan.length) {
         groups.push({ label: 'Chưa gán Part', options: orphan });
       }
       return groups;
     }
-    return cards
-      .filter((card) => !topicId || card.topicId === topicId)
-      .map((card) => ({ label: cardLabel(card), value: card.id }));
-  }, [cards, topics, practiceTest, topicId]);
+    return questions
+      .filter((question) => !topicId || question.topicId === topicId)
+      .map((question) => ({ label: questionLabel(question), value: question.id }));
+  }, [questions, topics, practiceTest, topicId]);
 
   const onSubmit = async (data) => {
     start();
     try {
       const params = {
         name: data.name,
-        cardIds: data.cardIds,
+        questionIds: data.questionIds,
         practiceTest: !!data.practiceTest,
         topicId: data.practiceTest ? undefined : data.topicId,
         ...(formData ? { id: formData.id } : {}),
@@ -116,7 +116,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
     if (formData) {
       form.setFieldsValue({
         name: formData.name,
-        cardIds: formData.cardIds,
+        questionIds: formData.questionIds,
         topicId: formData.topicId,
         practiceTest: !!formData.practiceTest,
       });
@@ -130,18 +130,18 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
       form.setFieldsValue({ topicId: undefined });
       return;
     }
-    if (!topicId || !cards.length) {
+    if (!topicId || !questions.length) {
       return;
     }
     const allowed = new Set(
-      cards.filter((card) => card.topicId === topicId).map((card) => card.id)
+      questions.filter((question) => question.topicId === topicId).map((question) => question.id)
     );
-    const current = form.getFieldValue('cardIds') || [];
+    const current = form.getFieldValue('questionIds') || [];
     const next = current.filter((id) => allowed.has(id));
     if (next.length !== current.length) {
-      form.setFieldsValue({ cardIds: next });
+      form.setFieldsValue({ questionIds: next });
     }
-  }, [practiceTest, topicId, cards]);
+  }, [practiceTest, topicId, questions]);
 
   useEffect(() => {
     fetchDataList();
@@ -206,7 +206,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                   )}
                   <Col span={24}>
                     <Form.Item
-                      name="cardIds"
+                      name="questionIds"
                       label={practiceTest ? 'Câu hỏi (theo từng Part)' : 'Câu hỏi của Part'}
                       rules={[{ required: true, message: 'Chọn ít nhất một câu hỏi' }]}
                     >
@@ -224,7 +224,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                             ? 'Chọn câu hỏi thuộc Part này'
                             : 'Chọn Part trước'
                         }
-                        options={cardOptions}
+                        options={questionOptions}
                         disabled={!practiceTest && !topicId}
                       />
                     </Form.Item>

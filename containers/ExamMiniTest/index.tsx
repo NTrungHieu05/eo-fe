@@ -1,7 +1,7 @@
-import { getListCardMiniTest, getPracticeTestById, postCollectExam, postToeicScore } from '@api';
+import { getListQuestionMiniTest, getPracticeTestById, postCollectExam, postToeicScore } from '@api';
 import { useLoading } from '@hooks';
 import Config from '@root/config';
-import { Message, answersMatch, isQuestionGroupCard, reactLocalStorage, sortAnswer, toeicListeningScore, toeicReadingScore, toeicTotalScore } from '@utils';
+import { Message, answersMatch, isGroupedQuestion, reactLocalStorage, sortAnswer, toeicListeningScore, toeicReadingScore, toeicTotalScore } from '@utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import ExamResult from './ExamMiniTestResult';
 import ExamStart from './ExamMiniTestStart';
@@ -13,40 +13,40 @@ type ExamStatusType = 'initial' | 'starting' | 'reviewing';
 const isCorrectAnswer = (question) =>
   answersMatch(question?.userAnswer, question?.answer?.texts);
 
-const mapCards = (cards: any[] = []) => {
+const mapQuestions = (questions: any[] = []) => {
   let questionNo = 0;
-  return cards.map((card) => {
-    const isQuestionGroup = isQuestionGroupCard(card);
-    const partNumber = card?.partNumber;
+  return questions.map((question) => {
+    const isQuestionGroup = isGroupedQuestion(question);
+    const partNumber = question?.partNumber;
     if (isQuestionGroup) {
-      const _childCards = (card?.childCards || []).map((childCard) => {
+      const _childQuestions = (question?.childQuestions || []).map((childQuestion) => {
         questionNo = questionNo + 1;
         return {
-          ...childCard,
+          ...childQuestion,
           partNumber,
           answer: {
-            ...childCard?.answer,
+            ...childQuestion?.answer,
             allAnswer: [
-              ...(childCard?.answer?.choices ?? []),
-              ...(childCard?.answer?.texts ?? []),
+              ...(childQuestion?.answer?.choices ?? []),
+              ...(childQuestion?.answer?.texts ?? []),
             ].sort(sortAnswer),
           },
           questionNo: questionNo,
         };
       });
       return {
-        ...card,
-        childCards: _childCards,
+        ...question,
+        childQuestions: _childQuestions,
         isQuestionGroup: true,
         partNumber,
       };
     }
     questionNo = questionNo + 1;
     return {
-      ...card,
+      ...question,
       answer: {
-        ...card?.answer,
-        allAnswer: [...(card?.answer?.choices ?? []), ...(card?.answer?.texts ?? [])].sort(sortAnswer),
+        ...question?.answer,
+        allAnswer: [...(question?.answer?.choices ?? []), ...(question?.answer?.texts ?? [])].sort(sortAnswer),
       },
       questionNo: questionNo,
       partNumber,
@@ -80,17 +80,17 @@ const ExamMiniTest = () => {
   const answerInfos = useMemo(() => {
     const flatListQuestion = listQuestion.reduce((acc, question) => {
       if (question?.isQuestionGroup) {
-        if (!question.childCards?.length) {
+        if (!question.childQuestions?.length) {
           return acc;
         }
-        const newCards = question.childCards.map((childCard, index) => {
+        const newQuestions = question.childQuestions.map((childQuestion, index) => {
           return {
             ...question,
-            ...childCard,
-            childCardIndex: index,
+            ...childQuestion,
+            childQuestionIndex: index,
           };
         });
-        return [...acc, ...newCards];
+        return [...acc, ...newQuestions];
       }
       return [...acc, question];
     }, []);
@@ -127,7 +127,7 @@ const ExamMiniTest = () => {
   const fetchExamList = async () => {
     start();
     try {
-      const resp: any = await getListCardMiniTest();
+      const resp: any = await getListQuestionMiniTest();
       const error = resp.data.error;
       const respData = resp.data?.responseData;
       if (error) {
@@ -167,7 +167,7 @@ const ExamMiniTest = () => {
       } else {
         setExamId(respData?.id || '');
         setSelectedExam(respData);
-        setListQuestion(mapCards(respData?.cards || []));
+        setListQuestion(mapQuestions(respData?.questions || []));
         setDetailStatus('ready');
         return true;
       }

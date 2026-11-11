@@ -1,7 +1,7 @@
 import { Progress } from 'antd';
 import ExamLayout from './ExamMiniTestLayout';
 import QuestionCard from './QuestionCard';
-import { getCardId } from '@utils';
+import { getQuestionId } from '@utils';
 
 const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfos, examName }) => {
   const {
@@ -18,7 +18,7 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
     readingTotal = 100,
     officialScale = false,
   } = answerInfos;
-  const firstId = getCardId(listQuestion?.[0]);
+  const firstId = getQuestionId(listQuestion?.[0]);
   const onClickReview = () => {
     const question = document.getElementById(`review-${firstId}`);
     if (!question) return;
@@ -262,13 +262,13 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
         </div>
         <div id="main-game-review-section" className="">
           {listQuestion.map((question, index) => (
-            <div id={`review-${getCardId(question)}`} key={getCardId(question)}>
+            <div id={`review-${getQuestionId(question)}`} key={getQuestionId(question)}>
               <QuestionCard
                 question={listQuestion[index]}
                 onUpdateQuestion={(newQuestion) => newQuestion}
                 readOnly
                 reveal
-                key={`QuestionCard-${getCardId(listQuestion[index])}`}
+                key={`QuestionCard-${getQuestionId(listQuestion[index])}`}
               />
               <hr className="MuiDivider-root MuiDivider-fullWidth css-39bbo6" />
             </div>

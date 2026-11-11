@@ -1,14 +1,14 @@
-import CMSCard from '@containers/admin/card';
+import CMSQuestion from '@containers/admin/question';
 import AdminLayout from '@ui/AdminLayout';
 
-const CMSCardPage = () => {
+const CMSQuestionPage = () => {
   return (
     <AdminLayout>
       <div className="admin-page-user">
-        <CMSCard />
+        <CMSQuestion />
       </div>
     </AdminLayout>
   );
 };
 
-export default CMSCardPage;
+export default CMSQuestionPage;

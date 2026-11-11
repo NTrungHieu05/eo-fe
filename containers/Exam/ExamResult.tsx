@@ -4,7 +4,7 @@ import ExamLayout from './ExamLayout';
 import QuizPlayZone from './QuizPlayZone';
 import { Progress } from 'antd';
 import QuestionCard from './QuestionCard';
-import { getCardId } from '@utils';
+import { getQuestionId } from '@utils';
 
 const ExamResult = ({
   listQuestion,
@@ -16,7 +16,7 @@ const ExamResult = ({
 }) => {
   const { total, newAnswerCount, correctAnswerCount, incorrectAnswerCount } = answerInfos;
   const onClickReview = () => {
-    const question = document.getElementById(`review-${getCardId(listQuestion?.[0])}`);
+    const question = document.getElementById(`review-${getQuestionId(listQuestion?.[0])}`);
     if (!question) return;
     window.scrollTo({
       top: question.offsetTop,
@@ -258,12 +258,12 @@ const ExamResult = ({
         </div>
         <div id="main-game-review-section" className="">
           {(listQuestion || []).map((question, index) => (
-            <div id={`review-${getCardId(question)}`} key={getCardId(question) || index}>
+            <div id={`review-${getQuestionId(question)}`} key={getQuestionId(question) || index}>
               <QuestionCard
                 question={listQuestion[index]}
                 onUpdateQuestion={(newQuestion) => newQuestion}
                 readOnly
-                key={`QuestionCard-${getCardId(listQuestion[index]) || index}`}
+                key={`QuestionCard-${getQuestionId(listQuestion[index]) || index}`}
               />
               <hr className="MuiDivider-root MuiDivider-fullWidth css-39bbo6" />
             </div>

@@ -72,9 +72,9 @@ export function buildUrlWithParams(url, params, removeEncode?: boolean) {
   return url + ret;
 }
 
-export const isQuestionGroupCard = (card) =>
-  Boolean(card?.isQuestionGroup) ||
-  (Array.isArray(card?.childCards) && card.childCards.length > 0);
+export const isGroupedQuestion = (question) =>
+  Boolean(question?.isQuestionGroup) ||
+  (Array.isArray(question?.childQuestions) && question.childQuestions.length > 0);
 
 export const sortAnswer = (a, b) => {
   const aValue = String(a ?? '').replace(/["()]/g, '');
@@ -90,7 +90,7 @@ export const sortAnswer = (a, b) => {
   }
 };
 
-export const getCardId = (card) => card?.id || card?._id;
+export const getQuestionId = (question) => question?.id || question?._id;
 
 export const sameAnswerText = (left?: string, right?: string) => {
   const a = String(left ?? '').trim();

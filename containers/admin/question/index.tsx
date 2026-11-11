@@ -1,5 +1,5 @@
 import { CloseCircleOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons';
-import { getAdminListCard, getListTopicAdmin, putDeleteCard } from '@api';
+import { getAdminListQuestion, getListTopicAdmin, putDeleteQuestion } from '@api';
 import { useLoading } from '@hooks';
 import { Message } from '@utils';
 import { Button, Modal, Spin, Table } from 'antd';
@@ -8,12 +8,12 @@ import React, { useEffect, useState } from 'react';
 import CreatedForm from './created-form';
 import { PageWrapper } from './index.style';
 
-const questionName = (card) => {
-  const own = (card?.question?.text || '').trim();
+const questionName = (question) => {
+  const own = (question?.question?.text || '').trim();
   if (own) {
     return own;
   }
-  const children = (card?.childCards || [])
+  const children = (question?.childQuestions || [])
     .map((child) => (child?.question?.text || '').trim())
     .filter(Boolean);
   if (children.length) {
@@ -22,7 +22,7 @@ const questionName = (card) => {
   return 'Câu chưa có nội dung';
 };
 
-const CMSCard: React.FC = () => {
+const CMSQuestion: React.FC = () => {
   const [{ isLoading }, { start, stop }] = useLoading();
 
   const [dataList, setDataList] = useState<any[]>([]);
@@ -31,17 +31,17 @@ const CMSCard: React.FC = () => {
   const [showModalConfirm, setShowModalConfirm] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] = useState<any>(undefined);
 
-  const fetchListCard = async () => {
+  const fetchListQuestion = async () => {
     start();
     try {
-      const resp: any = await getAdminListCard();
+      const resp: any = await getAdminListQuestion();
       const error = resp.data.error;
       const respData = resp.data?.responseData;
       if (error) {
         stop();
         Message.error(error?.message ?? 'Something error!');
       } else {
-        setDataList(respData?.cards);
+        setDataList(respData?.questions);
       }
     } catch (err) {
       console.log('onSubmit-error :>> ', err.toString());
@@ -57,14 +57,14 @@ const CMSCard: React.FC = () => {
         ids: [record.id],
       };
 
-      const resp: any = await putDeleteCard(params);
+      const resp: any = await putDeleteQuestion(params);
       const error = resp.data.error;
       if (error) {
         stop();
         Message.error(error?.message ?? 'Something error!');
       } else {
         Message.success('Successfully!');
-        fetchListCard();
+        fetchListQuestion();
       }
     } catch (err) {
       stop();
@@ -89,12 +89,12 @@ const CMSCard: React.FC = () => {
 
   const onCloseCreatedForm = () => {
     setShowModal(false);
-    fetchListCard();
+    fetchListQuestion();
     setSelectedRow(undefined);
   };
 
   useEffect(() => {
-    fetchListCard();
+    fetchListQuestion();
     const loadTopics = async () => {
       try {
         const resp: any = await getListTopicAdmin();
@@ -110,10 +110,10 @@ const CMSCard: React.FC = () => {
 
   return (
     <PageWrapper>
-      <div className="cms-page-title">Manager Card</div>
+      <div className="cms-page-title">Manager Question</div>
       <div className="btn-action-box d-flex">
         <Button onClick={() => setShowModal(true)} className="btn-add">
-          <PlusOutlined /> Add Card
+          <PlusOutlined /> Add Question
         </Button>
       </div>
       <Table
@@ -167,11 +167,11 @@ const CMSCard: React.FC = () => {
                 ? record?.isQuestionGroup
                 : record?.answer?.choices?.join('')?.length === 0;
             if (isQuestionGroup) {
-              return record?.childCards?.map((card, index) => {
+              return record?.childQuestions?.map((question, index) => {
                 return (
-                  <div key={card.id}>
-                    <b>Card {index + 1}: </b>
-                    {card?.answer?.texts?.[0]}
+                  <div key={question.id}>
+                    <b>Question {index + 1}: </b>
+                    {question?.answer?.texts?.[0]}
                   </div>
                 );
               });
@@ -210,7 +210,7 @@ const CMSCard: React.FC = () => {
       <Modal
         width={755}
         bodyStyle={{ height: 'max-content' }}
-        title={selectedRow ? 'Edit Card' : 'Add Card'}
+        title={selectedRow ? 'Edit Question' : 'Add Question'}
         maskClosable={false}
         visible={showModal}
         onCancel={onCloseCreatedForm}
@@ -237,4 +237,4 @@ const CMSCard: React.FC = () => {
   );
 };
 
-export default CMSCard;
+export default CMSQuestion;

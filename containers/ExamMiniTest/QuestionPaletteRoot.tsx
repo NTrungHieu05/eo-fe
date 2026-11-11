@@ -1,7 +1,7 @@
 type QuestionPaletteRootProps = {
   listQuestion?: any[];
   children?: React.ReactNode;
-  onSelectCard?: (cardIndex: number) => void;
+  onSelectQuestion?: (questionIndex: number) => void;
   answerInfos: {
     total: number;
     newAnswerCount: number;
@@ -12,13 +12,13 @@ type QuestionPaletteRootProps = {
 
 const isAnswered = (question) =>
   question?.isQuestionGroup
-    ? question.childCards?.some((child) => child?.userAnswer?.length > 0)
+    ? question.childQuestions?.some((child) => child?.userAnswer?.length > 0)
     : question?.userAnswer?.length > 0;
 
 const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
   listQuestion,
   answerInfos,
-  onSelectCard,
+  onSelectQuestion,
 }: QuestionPaletteRootProps) => {
   const { total, newAnswerCount, correctAnswerCount, incorrectAnswerCount } = answerInfos;
 
@@ -32,19 +32,19 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
         <div className="question-palette-body">
           <div className="questions-list questions-list-custom" id="question-list-scroll">
             <div className="question-list-row" style={{ gridTemplateColumns: 'repeat(8, 1fr)' }}>
-              {listQuestion?.map((question, cardIndex) =>
+              {listQuestion?.map((question, questionIndex) =>
                 question?.isQuestionGroup
-                  ? question.childCards?.map((childCard) => (
+                  ? question.childQuestions?.map((childQuestion) => (
                       <button
-                        key={childCard?._id || childCard?.id || childCard?.questionNo}
+                        key={childQuestion?._id || childQuestion?.id || childQuestion?.questionNo}
                         className={`question-item question-palette-item-custom ${
-                          childCard?.userAnswer?.length > 0 ? 'p-item-selected' : ''
+                          childQuestion?.userAnswer?.length > 0 ? 'p-item-selected' : ''
                         }`}
                         tabIndex={0}
                         type="button"
-                        onClick={() => onSelectCard?.(cardIndex)}
+                        onClick={() => onSelectQuestion?.(questionIndex)}
                       >
-                        {childCard?.questionNo}
+                        {childQuestion?.questionNo}
                       </button>
                     ))
                   : (
@@ -55,7 +55,7 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
                         }`}
                         tabIndex={0}
                         type="button"
-                        onClick={() => onSelectCard?.(cardIndex)}
+                        onClick={() => onSelectQuestion?.(questionIndex)}
                       >
                         {question?.questionNo}
                       </button>

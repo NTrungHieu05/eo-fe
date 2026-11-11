@@ -7,7 +7,7 @@ type ExamLayoutProps = {
   listQuestion?: any[];
   examStatus?: string;
   examName?: string;
-  onSelectCard?: (cardIndex: number) => void;
+  onSelectQuestion?: (questionIndex: number) => void;
   answerInfos: {
     total: number;
     newAnswerCount: number;
@@ -36,7 +36,7 @@ const ExamLayout: React.FC<ExamLayoutProps> = (props: ExamLayoutProps) => {
                   <QuestionPaletteRoot
                     listQuestion={props.listQuestion}
                     answerInfos={props.answerInfos}
-                    onSelectCard={props.onSelectCard}
+                    onSelectQuestion={props.onSelectQuestion}
                   />
                 )}
               </div>

@@ -67,15 +67,15 @@ const LeftContent: React.FC = () => {
         <Menu.Item key="exam">
           <Link href={ROUTES.ADMIN_EXAM}>Exam</Link>
         </Menu.Item>
-        <Menu.Item key="card">
-          <Link href={ROUTES.ADMIN_CARD}>Card</Link>
+        <Menu.Item key="question">
+          <Link href={ROUTES.ADMIN_QUESTION}>Question</Link>
         </Menu.Item>
         <Menu.Item key="logout">
           <div onClick={onLogoutClick}>
             Logout <LogoutOutlined className="ml-1" style={{ fontSize: '15px' }} />
           </div>
         </Menu.Item>
-        {/* <Menu.Item key="Card">Card</Menu.Item>
+        {/* <Menu.Item key="Question">Question</Menu.Item>
         <Menu.Item key="System-Setting">System Setting</Menu.Item> */}
       </Menu>
     </LeftContentWrap>

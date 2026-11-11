@@ -15,7 +15,7 @@ type ExamLayoutProps = {
     correctAnswerCount: number;
     incorrectAnswerCount: number;
   };
-  onSelectCard?: (cardIndex: number) => void;
+  onSelectQuestion?: (questionIndex: number) => void;
 };
 type TopicType = {
   id: string;
@@ -77,7 +77,7 @@ const ExamLayout: React.FC<ExamLayoutProps> = (props: ExamLayoutProps) => {
                 <QuestionPaletteRoot
                   listQuestion={props.listQuestion}
                   answerInfos={props.answerInfos}
-                  onSelectCard={props.onSelectCard}
+                  onSelectQuestion={props.onSelectQuestion}
                 />
                 {/* <div className="current-level-list-label">Practices</div> */}
                 {/* <div id="current-topic-list" className="current-topic-list" style={{ height: 130 }}>

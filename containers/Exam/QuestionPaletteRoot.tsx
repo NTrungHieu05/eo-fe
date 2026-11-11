@@ -1,11 +1,11 @@
-import { answersMatch, getCardId } from '@utils';
+import { answersMatch, getQuestionId } from '@utils';
 import { useEffect, useState } from 'react';
 import React from 'react';
 
 type QuestionPaletteRootProps = {
   listQuestion?: any[];
   children?: React.ReactNode;
-  onSelectCard?: (cardIndex: number) => void;
+  onSelectQuestion?: (questionIndex: number) => void;
   answerInfos: {
     total: number;
     newAnswerCount: number;
@@ -16,7 +16,7 @@ type QuestionPaletteRootProps = {
 const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
   listQuestion,
   answerInfos,
-  onSelectCard,
+  onSelectQuestion,
 }: QuestionPaletteRootProps) => {
   const { total, newAnswerCount, correctAnswerCount, incorrectAnswerCount } = answerInfos;
 
@@ -30,9 +30,9 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
     });
   };
 
-  const openQuestion = (cardIndex, reviewId) => {
-    if (onSelectCard) {
-      onSelectCard(cardIndex);
+  const openQuestion = (questionIndex, reviewId) => {
+    if (onSelectQuestion) {
+      onSelectQuestion(questionIndex);
       return;
     }
     goToQuestion(reviewId);
@@ -48,25 +48,25 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
         <div className="question-palette-body">
           <div className="questions-list questions-list-custom" id="question-list-scroll">
             <div className="question-list-row" style={{ gridTemplateColumns: 'repeat(8, 1fr)' }}>
-              {listQuestion?.map((question, cardIndex) => (
-                <React.Fragment key={question?._id || question?.id || cardIndex}>
+              {listQuestion?.map((question, questionIndex) => (
+                <React.Fragment key={question?._id || question?.id || questionIndex}>
                   {question?.isQuestionGroup ? (
-                    question.childCards?.map((childCard) => (
+                    question.childQuestions?.map((childQuestion) => (
                       <button
                         className={`question-item question-palette-item-custom ${
-                          childCard?.userAnswer?.length > 0
-                            ? answersMatch(childCard?.userAnswer, childCard?.answer?.texts)
+                          childQuestion?.userAnswer?.length > 0
+                            ? answersMatch(childQuestion?.userAnswer, childQuestion?.answer?.texts)
                               ? 'p-item-correct'
                               : 'p-item-incorrect'
                             : ''
                         }`}
                         tabIndex={0}
                         type="button"
-                        key={childCard?._id || childCard?.id || childCard?.questionNo}
-                        id={`pallete-item-${childCard?._id || childCard?.questionNo}`}
-                        onClick={() => openQuestion(cardIndex, getCardId(question))}
+                        key={childQuestion?._id || childQuestion?.id || childQuestion?.questionNo}
+                        id={`pallete-item-${childQuestion?._id || childQuestion?.questionNo}`}
+                        onClick={() => openQuestion(questionIndex, getQuestionId(question))}
                       >
-                        {childCard?.questionNo}
+                        {childQuestion?.questionNo}
                       </button>
                     ))
                   ) : (
@@ -83,7 +83,7 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
                         type="button"
                         key={question?._id || question?.id}
                         id={`pallete-item-${question?._id || question?.id}`}
-                        onClick={() => openQuestion(cardIndex, getCardId(question))}
+                        onClick={() => openQuestion(questionIndex, getQuestionId(question))}
                       >
                         {question?.questionNo}
                       </button>

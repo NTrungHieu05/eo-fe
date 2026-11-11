@@ -7,7 +7,7 @@ import QuizPlayItem from './QuizPlayItem';
 
 type QuizPlayZoneProps = {
   parentQuestion?: any;
-  childCard?: any;
+  childQuestion?: any;
   userAnswer: string[];
   answer: {
     allAnswer: any[];
@@ -69,8 +69,8 @@ export default function QuizPlayZone(props: QuizPlayZoneProps) {
       <div className="question-index-wrap">
         <div className="game-object-view-question-group-index">
           <span>{props.index}.</span>
-          {props.parentQuestion?.isQuestionGroup && props.childCard?.question?.text && (
-            <span dangerouslySetInnerHTML={{ __html: props.childCard.question.text }}></span>
+          {props.parentQuestion?.isQuestionGroup && props.childQuestion?.question?.text && (
+            <span dangerouslySetInnerHTML={{ __html: props.childQuestion.question.text }}></span>
           )}
         </div>
       </div>

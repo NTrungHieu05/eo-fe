@@ -1,4 +1,4 @@
-import { answersMatch, getCardId } from '@utils';
+import { answersMatch, getQuestionId } from '@utils';
 
 type QuestionPaletteRootResultProps = {
   listQuestion?: any[];
@@ -43,28 +43,28 @@ const QuestionPaletteRootResult: React.FC<QuestionPaletteRootResultProps> = ({
             <div className="question-list-row" style={{ gridTemplateColumns: 'repeat(8, 1fr)' }}>
               {listQuestion?.map((question) =>
                 question?.isQuestionGroup
-                  ? question.childCards?.map((childCard) => (
+                  ? question.childQuestions?.map((childQuestion) => (
                       <button
-                        key={getCardId(childCard) || childCard?.questionNo}
+                        key={getQuestionId(childQuestion) || childQuestion?.questionNo}
                         className={`question-item question-palette-item-custom ${resultClass(
-                          childCard
+                          childQuestion
                         )}`}
                         tabIndex={0}
                         type="button"
-                        onClick={() => goToQuestion(getCardId(question))}
+                        onClick={() => goToQuestion(getQuestionId(question))}
                       >
-                        {childCard?.questionNo}
+                        {childQuestion?.questionNo}
                       </button>
                     ))
                   : (
                       <button
-                        key={getCardId(question)}
+                        key={getQuestionId(question)}
                         className={`question-item question-palette-item-custom ${resultClass(
                           question
                         )}`}
                         tabIndex={0}
                         type="button"
-                        onClick={() => goToQuestion(getCardId(question))}
+                        onClick={() => goToQuestion(getQuestionId(question))}
                       >
                         {question?.questionNo}
                       </button>

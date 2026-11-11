@@ -11,16 +11,16 @@ export const getListExam = async (id) => {
   return get(`${ENDPOINTS.TOPIC_EXAM}/${id}`);
 };
 
-export const getListCard = async (id) => {
-  return get(`${ENDPOINTS.EXAM_CARD}/${id}`);
+export const getListQuestion = async (id) => {
+  return get(`${ENDPOINTS.EXAM_QUESTION}/${id}`);
 };
 
-export const getListCardMiniTest = async () => {
-  return get(ENDPOINTS.MINI_TEST_CARD);
+export const getListQuestionMiniTest = async () => {
+  return get(ENDPOINTS.MINI_TEST_QUESTION);
 };
 
 export const getPracticeTestById = async (id: string) => {
-  return get(`${ENDPOINTS.MINI_TEST_CARD}/${id}`);
+  return get(`${ENDPOINTS.MINI_TEST_QUESTION}/${id}`);
 };
 
 export const getListExamAdmin = async () => {
@@ -39,12 +39,12 @@ export const getListUser = async () => {
   return get(`${ENDPOINTS.ADMIN_USERS}`);
 };
 
-export const getAdminListCard = async () => {
-  return get(`${ENDPOINTS.ADMIN_CARD}`);
+export const getAdminListQuestion = async () => {
+  return get(`${ENDPOINTS.ADMIN_QUESTION}`);
 };
 
-export const postCardImport = async (postData: any) => {
-  return post(ENDPOINTS.ADMIN_CARD_IMPORT, postData);
+export const postQuestionImport = async (postData: any) => {
+  return post(ENDPOINTS.ADMIN_QUESTION_IMPORT, postData);
 };
 
 export const postUploadFile = async (postData: any, type = 0) => {
