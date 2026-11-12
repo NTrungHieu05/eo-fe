@@ -131,7 +131,7 @@ const ExamMiniTest = () => {
       const error = resp.data.error;
       const respData = resp.data?.responseData;
       if (error) {
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
         setListFailed(true);
       } else {
         setListFailed(false);
@@ -160,7 +160,7 @@ const ExamMiniTest = () => {
       const error = resp.data.error;
       const respData = resp.data?.responseData;
       if (error) {
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
         setDetailStatus('failed');
         setListQuestion([]);
         return false;
@@ -222,7 +222,7 @@ const ExamMiniTest = () => {
       });
       const error = resp.data.error;
       if (error) {
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       }
       return saved;
     } catch (err) {
@@ -306,6 +306,15 @@ const ExamMiniTest = () => {
           examStatus={examStatus}
           examName={selectedExam?.name}
           readOnly={isSubmitting}
+          onExit={async () => {
+            submittingRef.current = false;
+            setIsSubmitting(false);
+            setScaledResult(null);
+            if (examId) {
+              await fetchExamDetail(examId);
+            }
+            setExamStatus('initial');
+          }}
         />
       )}
     </ExamMainWrap>

@@ -21,6 +21,7 @@ type QuizPlayZoneProps = {
   index: number;
   readOnly?: boolean;
   reveal?: boolean;
+  hideIndex?: boolean;
 };
 export default function QuizPlayZone(props: QuizPlayZoneProps) {
   const [choices, setChoices] = useState([]);
@@ -54,11 +55,10 @@ export default function QuizPlayZone(props: QuizPlayZoneProps) {
     setChoices(data);
   }, [props.userAnswer, props.answer]);
 
-  const answered = props?.userAnswer?.length > 0;
-  const revealed = Boolean(props.reveal) || answered;
+  const revealed = Boolean(props.reveal);
 
   const onChoice = (choice) => {
-    if (props.readOnly || answered) {
+    if (props.readOnly || revealed) {
       return;
     }
     props.onChoice(choice.text);
@@ -66,14 +66,16 @@ export default function QuizPlayZone(props: QuizPlayZoneProps) {
 
   return (
     <div className="game-object-quiz-playzone">
-      <div className="question-index-wrap">
-        <div className="game-object-view-question-group-index">
-          <span>{props.index}.</span>
-          {props.parentQuestion?.isQuestionGroup && props.childQuestion?.question?.text && (
-            <span dangerouslySetInnerHTML={{ __html: props.childQuestion.question.text }}></span>
-          )}
+      {!props.hideIndex && (
+        <div className="question-index-wrap">
+          <div className="game-object-view-question-group-index">
+            <span>{props.index}.</span>
+            {props.parentQuestion?.isQuestionGroup && props.childQuestion?.question?.text && (
+              <span dangerouslySetInnerHTML={{ __html: props.childQuestion.question.text }}></span>
+            )}
+          </div>
         </div>
-      </div>
+      )}
       <div className="game-object-quiz-choices">
         {choices.length > 0 &&
           choices.map((choice, index) => (

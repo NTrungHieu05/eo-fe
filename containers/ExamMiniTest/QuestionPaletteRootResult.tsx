@@ -36,7 +36,7 @@ const QuestionPaletteRootResult: React.FC<QuestionPaletteRootResultProps> = ({
       <div className="current-topic-label question-palette-game-title">Thi thử</div>
       <div className="question-palette-main">
         <div className="question-palette-header">
-          <div className="question-palette-title">Question Palette</div>
+          <div className="question-palette-title">Câu hỏi</div>
         </div>
         <div className="question-palette-body">
           <div className="questions-list questions-list-custom" id="question-list-scroll">
@@ -76,12 +76,12 @@ const QuestionPaletteRootResult: React.FC<QuestionPaletteRootResultProps> = ({
             <div className="jss28">
               <div className="questions-stat-item">
                 <span className="questions-stat-item-text">
-                  {correctAnswerCount}/{total} Correct
+                  {correctAnswerCount}/{total} đúng
                 </span>
               </div>
               <div className="questions-stat-item">
                 <span className="questions-stat-item-text">
-                  {incorrectAnswerCount}/{total} Incorrect
+                  {incorrectAnswerCount}/{total} sai
                 </span>
               </div>
             </div>

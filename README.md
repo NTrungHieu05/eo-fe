@@ -13,6 +13,10 @@ npm run dev
 
 Mở `http://localhost:3000`.
 
+## Kiểm tra
+
+CI (`.github/workflows/ci.yml`) chạy `npm ci --legacy-peer-deps` rồi `npm run build` trên mỗi push và pull request. Máy ảo dùng Node 18. Build không cần backend đang chạy. Repo chưa có ESLint nên workflow không gọi `npm run lint`.
+
 - Admin: `admin@toeic.local` / `Admin@123`
 - Học viên: `user@toeic.local` / `User@123`
 - Đăng ký xong đăng nhập được ngay. Không có bước OTP.

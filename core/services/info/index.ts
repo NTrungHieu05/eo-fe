@@ -43,10 +43,6 @@ export const getAdminListQuestion = async () => {
   return get(`${ENDPOINTS.ADMIN_QUESTION}`);
 };
 
-export const postQuestionImport = async (postData: any) => {
-  return post(ENDPOINTS.ADMIN_QUESTION_IMPORT, postData);
-};
-
 export const postUploadFile = async (postData: any, type = 0) => {
   return post(`${ENDPOINTS.ADMIN_UPLOAD}?type=${type}`, postData);
 };

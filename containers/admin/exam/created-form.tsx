@@ -40,12 +40,12 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
         getListTopicAdmin(),
       ]);
       if (questionResp.data.error) {
-        Message.error(questionResp.data.error?.message ?? 'Something error!');
+        Message.error(questionResp.data.error?.message ?? 'Có lỗi, thử lại');
       } else {
         setQuestions(questionResp.data?.responseData?.questions || []);
       }
       if (topicResp.data.error) {
-        Message.error(topicResp.data.error?.message ?? 'Something error!');
+        Message.error(topicResp.data.error?.message ?? 'Có lỗi, thử lại');
       } else {
         setTopics(topicResp.data?.responseData?.topics || []);
       }
@@ -99,9 +99,9 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
       const error = resp.data.error;
       if (error) {
         stop();
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
-        Message.success('Successfully!');
+        Message.success('Đã lưu');
         form.resetFields();
         onClose();
       }

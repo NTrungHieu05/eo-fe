@@ -27,9 +27,9 @@ const ResetPassword: React.FC = () => {
       const error = resp.data.error;
       if (error) {
         stop();
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
-        Message.success('Password updated. Please sign in.');
+        Message.success('Đã đổi mật khẩu. Đăng nhập lại.');
         router.push(ROUTES.SIGNIN);
       }
     } catch (err) {
@@ -53,7 +53,7 @@ const ResetPassword: React.FC = () => {
               </Button>
             </Link>
             <div className="des-login">
-              Nhập mã 8 ký tự từ console backend, rồi chọn mật khẩu mới.
+              Nhập mã 8 ký tự trong log server, rồi đặt mật khẩu mới.
             </div>
           </div>
           <div className="form-login-content">
@@ -69,14 +69,14 @@ const ResetPassword: React.FC = () => {
               >
                 <Form.Item
                   name="resetCode"
-                  rules={[{ required: true, message: 'Please input your reset code!' }]}
+                  rules={[{ required: true, message: 'Nhập mã' }]}
                 >
                   <Input placeholder="Mã khôi phục" />
                 </Form.Item>
                 <Form.Item
                   name="newPassword"
                   rules={[
-                    { required: true, message: 'Please input your new password!' },
+                    { required: true, message: 'Nhập mật khẩu mới' },
                     {
                       pattern: PATTERN_VALIDATE.password.value,
                       message: PATTERN_VALIDATE.password.message,
@@ -89,7 +89,7 @@ const ResetPassword: React.FC = () => {
                   name="confirmPassword"
                   dependencies={['newPassword']}
                   rules={[
-                    { required: true, message: 'Please confirm your new password!' },
+                    { required: true, message: 'Nhập lại mật khẩu' },
                     ({ getFieldValue }) => ({
                       validator(_, value) {
                         if (!value || getFieldValue('newPassword') === value) {

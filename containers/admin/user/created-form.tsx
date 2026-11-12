@@ -37,9 +37,9 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
       const error = resp.data.error;
       if (error) {
         stop();
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
-        Message.success('Successfully!');
+        Message.success('Đã lưu');
         onClose();
       }
     } catch (err) {
@@ -85,7 +85,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       name="username"
                       label="User Name"
                       rules={[
-                        { required: true, message: 'Please input your name!' },
+                        { required: true, message: 'Nhập tên' },
                         {
                           pattern: PATTERN_VALIDATE.isBlank.value,
                           message: PATTERN_VALIDATE.isBlank.message,
@@ -102,7 +102,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       rules={[
                         {
                           required: true,
-                          message: 'Please input your email address!',
+                          message: 'Nhập email',
                         },
                         {
                           pattern: PATTERN_VALIDATE.email.value,
@@ -119,7 +119,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                         name="password"
                         label="Password"
                         rules={[
-                          { required: true, message: 'Please input a password!' },
+                          { required: true, message: 'Nhập mật khẩu' },
                           {
                             pattern: PATTERN_VALIDATE.password.value,
                             message: PATTERN_VALIDATE.password.message,
@@ -137,7 +137,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       rules={[
                         {
                           required: true,
-                          message: 'Please input your phone number!',
+                          message: 'Nhập số điện thoại',
                         },
                         {
                           pattern: PATTERN_VALIDATE.phone.value,
@@ -155,7 +155,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       rules={[
                         {
                           required: true,
-                          message: 'Please input your date of birth!',
+                          message: 'Chọn ngày sinh',
                         },
                       ]}
                     >

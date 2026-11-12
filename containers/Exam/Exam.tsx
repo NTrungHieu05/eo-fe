@@ -69,7 +69,7 @@ const Exam = ({ examCode }) => {
       const error = resp.data.error;
       const respData = resp.data?.responseData;
       if (error) {
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
         return null;
       } else {
         let questionNo = 0;
@@ -140,7 +140,7 @@ const Exam = ({ examCode }) => {
       const resp: any = await postCollectExam(params);
       const error = resp.data.error;
       if (error) {
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       }
     } catch (err) {
       console.log('onSubmit-error :>> ', err.toString());

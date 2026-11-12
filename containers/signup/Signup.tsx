@@ -34,7 +34,7 @@ const SignUp: React.FC = () => {
       const error = resp.data.error;
       if (error) {
         stop();
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
         Message.success('Đăng ký thành công. Hãy đăng nhập.');
         form.resetFields();
@@ -42,7 +42,7 @@ const SignUp: React.FC = () => {
       }
     } catch (err) {
       console.log('onSubmit-error :>> ', err.toString());
-      Message.error('Không kết nối được máy chủ. Kiểm tra backend đang chạy.');
+      Message.error('Không kết nối được máy chủ');
     } finally {
       stop();
     }
@@ -136,7 +136,7 @@ const SignUp: React.FC = () => {
                             rules={[
                               {
                                 required: true,
-                                message: 'Please input your password!',
+                                message: 'Vui lòng nhập mật khẩu!',
                               },
                               {
                                 pattern: PATTERN_VALIDATE.password.value,
@@ -154,7 +154,7 @@ const SignUp: React.FC = () => {
                             rules={[
                               {
                                 required: true,
-                                message: 'Please enter confirm your password!',
+                                message: 'Vui lòng nhập lại mật khẩu!',
                               },
                               ({ getFieldValue }) => ({
                                 validator(_, value) {

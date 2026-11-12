@@ -16,6 +16,7 @@ type ExamLayoutProps = {
     incorrectAnswerCount: number;
   };
   onSelectQuestion?: (questionIndex: number) => void;
+  showResult?: boolean;
 };
 type TopicType = {
   id: string;
@@ -42,7 +43,7 @@ const ExamLayout: React.FC<ExamLayoutProps> = (props: ExamLayoutProps) => {
       if (error) {
         setTopicData(undefined);
         setListTest([]);
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
         setListTest(respData?.exams || []);
         setTopicData(respData);
@@ -78,6 +79,7 @@ const ExamLayout: React.FC<ExamLayoutProps> = (props: ExamLayoutProps) => {
                   listQuestion={props.listQuestion}
                   answerInfos={props.answerInfos}
                   onSelectQuestion={props.onSelectQuestion}
+                  showResult={props.showResult}
                 />
                 {/* <div className="current-level-list-label">Practices</div> */}
                 {/* <div id="current-topic-list" className="current-topic-list" style={{ height: 130 }}>

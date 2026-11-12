@@ -100,16 +100,15 @@ export default function QuestionCard({ question, onUpdateQuestion, readOnly = fa
                       </div>
                     )}
 
-                    {question?.question?.text && (
-                      <div className="game-object-question-text">
-                        <div className="game-text-widget-container">
-                          <div
-                            className="question-content"
-                            dangerouslySetInnerHTML={{ __html: question?.question?.text }}
-                          />
-                        </div>
-                      </div>
-                    )}
+                    <div className="exam-question-line">
+                      <span className="exam-question-no">{question?.questionNo}</span>
+                      {question?.question?.text && (
+                        <div
+                          className="question-content"
+                          dangerouslySetInnerHTML={{ __html: question?.question?.text }}
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -120,6 +119,7 @@ export default function QuestionCard({ question, onUpdateQuestion, readOnly = fa
                 onChoice={onChoice}
                 readOnly={readOnly}
                 reveal={reveal}
+                hideIndex
               />
             </>
           )}

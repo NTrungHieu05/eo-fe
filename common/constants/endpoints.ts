@@ -30,7 +30,6 @@ export const ENDPOINTS = {
   ADMIN_TOPIC: `admin/topic`,
   ADMIN_USERS: `admin/users`,
   ADMIN_EDIT_USERS: `user/info`,
-  ADMIN_QUESTION_IMPORT: `question/import`,
   ADMIN_UPLOAD: `upload`,
   EXAM_COLLECT: `exam/collect`,
   EXAM_SCORE: `exam/score`,

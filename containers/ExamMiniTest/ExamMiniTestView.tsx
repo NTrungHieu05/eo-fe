@@ -1,5 +1,6 @@
 import { Progress } from 'antd';
 import ExamLayout from './ExamMiniTestLayout';
+import { PARTS, partGroups } from './examSections';
 
 const practiceResult = (exam) => {
   if (exam?.progress == null) {
@@ -27,6 +28,8 @@ const ExamView = ({
 }) => {
   const { total, newAnswerCount, correctAnswerCount, incorrectAnswerCount } = answerInfos;
   const canStart = !!selectedExam?.id && listQuestion.length > 0 && !isLoading;
+  const listeningParts = partGroups(listQuestion, 'listening');
+  const readingParts = partGroups(listQuestion, 'reading');
 
   return (
     <ExamLayout listQuestion={listQuestion} answerInfos={answerInfos} examName={selectedExam?.name}>
@@ -35,7 +38,7 @@ const ExamView = ({
           <div id="main-game-scroll-panel" className="main-game-object">
             <div className="practice-exam-picker">
               <h2>Chọn đề thi thử</h2>
-              <p>Chọn một đề rồi bấm START. Thời gian làm bài 120 phút.</p>
+              <p>Chọn một đề rồi bấm Bắt đầu. Thời gian làm bài 120 phút. Listening 100 câu, Reading 100 câu.</p>
               {!isLoading && listFailed && (
                 <p className="practice-exam-empty">Không tải được danh sách đề.</p>
               )}
@@ -68,6 +71,33 @@ const ExamView = ({
               <p className="practice-exam-empty">Đề này chưa có câu hỏi.</p>
             )}
             {canStart && (
+              <div className="exam-blueprint">
+                <h3>Cấu trúc đề</h3>
+                <div className="exam-blueprint-columns">
+                  <div>
+                    <strong>Listening · câu 1–100</strong>
+                    <ul>
+                      {listeningParts.map((group) => (
+                        <li key={group.part}>
+                          {PARTS[group.part]?.title} · {PARTS[group.part]?.kind}: {group.to - group.from + 1} câu ({group.from}–{group.to})
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <strong>Reading · câu 101–200</strong>
+                    <ul>
+                      {readingParts.map((group) => (
+                        <li key={group.part}>
+                          {PARTS[group.part]?.title} · {PARTS[group.part]?.kind}: {group.to - group.from + 1} câu ({group.from}–{group.to})
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+            {canStart && (
               <div className="module-game-overview-component">
                 <div className="main-game-overview-bgr">
                   <span className="bubble-top-left" />
@@ -93,7 +123,7 @@ const ExamView = ({
                         >
                           {total}
                         </div>
-                        <div className="questions-stat-item-label">Total</div>
+                        <div className="questions-stat-item-label">Tổng</div>
                       </div>
                       <div className="main-stats-data-questions-stat-item item-correct">
                         <div
@@ -102,7 +132,7 @@ const ExamView = ({
                         >
                           {correctAnswerCount}
                         </div>
-                        <div className="questions-stat-item-label">Correct</div>
+                        <div className="questions-stat-item-label">Đúng</div>
                       </div>
                       <div className="main-stats-data-questions-stat-item item-incorrect">
                         <div
@@ -111,7 +141,7 @@ const ExamView = ({
                         >
                           {incorrectAnswerCount}
                         </div>
-                        <div className="questions-stat-item-label">Incorrect</div>
+                        <div className="questions-stat-item-label">Sai</div>
                       </div>
                     </div>
                     <div className="main-statistics-questions-button">
@@ -121,7 +151,7 @@ const ExamView = ({
                         type="button"
                         onClick={() => onSetExamStatus('starting')}
                       >
-                        START
+                        Bắt đầu
                       </button>
                     </div>
                   </div>

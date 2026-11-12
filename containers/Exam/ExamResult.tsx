@@ -75,7 +75,7 @@ const ExamResult = ({
                         </svg>
                         {total}
                       </div>
-                      <div className="questions-stat-item-label">Total</div>
+                      <div className="questions-stat-item-label">Tổng</div>
                     </div>
                     <div className="main-stats-data-questions-stat-item item-correct">
                       <div
@@ -93,7 +93,7 @@ const ExamResult = ({
                         </svg>
                         {correctAnswerCount}
                       </div>
-                      <div className="questions-stat-item-label">Correct</div>
+                      <div className="questions-stat-item-label">Đúng</div>
                     </div>
                     <div className="main-stats-data-questions-stat-item item-incorrect">
                       <div
@@ -111,7 +111,7 @@ const ExamResult = ({
                         </svg>
                         {incorrectAnswerCount}
                       </div>
-                      <div className="questions-stat-item-label">Incorrect</div>
+                      <div className="questions-stat-item-label">Sai</div>
                     </div>
                   </div>
                   <div className="main-statistics-questions-button">
@@ -122,7 +122,7 @@ const ExamResult = ({
                         type="button"
                         onClick={onClickReview}
                       >
-                        REVIEW
+                        Xem lại
                       </button>
                     ) : (
                       <button
@@ -131,7 +131,7 @@ const ExamResult = ({
                         type="button"
                         onClick={onClickContinue}
                       >
-                        CONTINUE
+                        Làm tiếp
                       </button>
                     )}
 
@@ -141,14 +141,14 @@ const ExamResult = ({
                       type="button"
                       onClick={onClickTryAgain}
                     >
-                      TRY AGAIN
+                      Làm lại
                     </button>
                   </div>
                 </div>
               </div>
               <div className="main-game-overview-question-categories">
                 <div className="question-categories-title">
-                  Press and Practice Your Category Again Below
+                  Số câu trong bài
                 </div>
                 <div className="question-categories-list">
                   <div className="MuiBox-root css-176iyts">
@@ -161,7 +161,7 @@ const ExamResult = ({
                         {total}
                       </button>
                     </div>
-                    <span className="MuiTypography-root MuiTypography-body1 css-gu1cw0">Total</span>
+                    <span className="MuiTypography-root MuiTypography-body1 css-gu1cw0">Tổng</span>
                   </div>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -189,7 +189,7 @@ const ExamResult = ({
                         {newAnswerCount}
                       </button>
                     </div>
-                    <span className="MuiTypography-root MuiTypography-body1 css-ivwblt">New</span>
+                    <span className="MuiTypography-root MuiTypography-body1 css-ivwblt">Chưa làm</span>
                   </div>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -218,7 +218,7 @@ const ExamResult = ({
                       </button>
                     </div>
                     <span className="MuiTypography-root MuiTypography-body1 css-6kw39w">
-                      Correct
+                      Đúng
                     </span>
                   </div>
                   <svg
@@ -248,7 +248,7 @@ const ExamResult = ({
                       </button>
                     </div>
                     <span className="MuiTypography-root MuiTypography-body1 css-js2k7p">
-                      Incorrect
+                      Sai
                     </span>
                   </div>
                 </div>

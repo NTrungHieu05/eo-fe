@@ -1,5 +1,5 @@
 import Icon from '@ant-design/icons/lib/components/Icon';
-import { IconCheckCircle, IconChoiceCircle, IconCloseCircle } from '@ui/Svgs';
+import { IconCheckCircle, IconChoiceCircle, IconCloseCircle, IconSelectedCircle } from '@ui/Svgs';
 import React, { useEffect, useState } from 'react';
 import Hint from './Hint';
 
@@ -22,7 +22,7 @@ export default function QuizPlayItem({ choice, onChoice, isSelected = false }: Q
     >
       <div className="quiz-choice-item-icon show-result">
         {!isSelected ? (
-          <Icon component={IconChoiceCircle} />
+          <Icon component={choice.isChecked ? IconSelectedCircle : IconChoiceCircle} />
         ) : (
           <>
             {choice.isAnswer && <Icon component={IconCheckCircle} />}

@@ -23,6 +23,7 @@ type QuizPlayZoneProps = {
   isStarting?: boolean;
   readOnly?: boolean;
   reveal?: boolean;
+  hideIndex?: boolean;
 };
 export default function QuizPlayZone(props: QuizPlayZoneProps) {
   const [choices, setChoices] = useState([]);
@@ -70,14 +71,16 @@ export default function QuizPlayZone(props: QuizPlayZoneProps) {
 
   return (
     <div className="game-object-quiz-playzone">
+      {!props.hideIndex && (
       <div className="question-index-wrap">
         <div className="game-object-view-question-group-index">
-          <span>{props.index}.</span>
+          <span className="exam-question-no">{props.index}</span>
           {props.parentQuestion?.isQuestionGroup && props.childQuestion?.question?.text && (
-            <span dangerouslySetInnerHTML={{ __html: props.childQuestion.question.text }}></span>
+            <span className="exam-child-question" dangerouslySetInnerHTML={{ __html: props.childQuestion.question.text }}></span>
           )}
         </div>
       </div>
+      )}
       <div className="game-object-quiz-choices">
         {choices.length > 0 &&
           choices.map((choice, index) =>

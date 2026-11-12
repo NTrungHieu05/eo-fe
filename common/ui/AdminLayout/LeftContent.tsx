@@ -26,7 +26,7 @@ const LeftContent: React.FC = () => {
       const resp: any = await doLogout();
       const error = resp.data?.error;
       if (error) {
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
         onLogoutSuccess();
       }

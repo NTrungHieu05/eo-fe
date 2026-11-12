@@ -8,6 +8,8 @@ type ExamLayoutProps = {
   examStatus?: string;
   examName?: string;
   onSelectQuestion?: (questionIndex: number) => void;
+  activeSection?: 'listening' | 'reading';
+  currentQuestionIndex?: number;
   answerInfos: {
     total: number;
     newAnswerCount: number;
@@ -37,6 +39,8 @@ const ExamLayout: React.FC<ExamLayoutProps> = (props: ExamLayoutProps) => {
                     listQuestion={props.listQuestion}
                     answerInfos={props.answerInfos}
                     onSelectQuestion={props.onSelectQuestion}
+                    activeSection={props.activeSection}
+                    currentQuestionIndex={props.currentQuestionIndex}
                   />
                 )}
               </div>

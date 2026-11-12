@@ -33,7 +33,7 @@ const Practice = () => {
       const respData = resp.data?.responseData;
       if (error) {
         setExamData(undefined);
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
         setExamData(respData);
       }
@@ -66,7 +66,7 @@ const Practice = () => {
         <div className="practice-list-view-main">
           <div className="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 css-1h77wgb">
             <Row gutter={[16, 0]}>
-              <Col span={18}>
+              <Col xs={24} lg={18}>
                 <div className="part-contents">
                   <div className="practice-name">{examData?.name}</div>
                   <div className="practice-list">
@@ -75,7 +75,10 @@ const Practice = () => {
                         {examData?.exams?.map((item) => (
                           <Col
                             className="gutter-row"
-                            span={6}
+                            xs={24}
+                            sm={12}
+                            md={8}
+                            lg={6}
                             key={item.id}
                             onClick={() => onClickRouterPush(item)}
                           >
@@ -101,7 +104,7 @@ const Practice = () => {
                   </div>
                 </div>
               </Col>
-              <Col span={6}>
+              <Col xs={24} lg={6}>
                 <div className="other-practices">
                   <div id="other-practices-list">
                     <div className="title">Các phần khác</div>

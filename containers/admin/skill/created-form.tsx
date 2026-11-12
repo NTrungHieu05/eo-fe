@@ -25,7 +25,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
       const respData = resp.data?.responseData;
       if (error) {
         stop();
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
         const listData = (respData?.topics || []).map((item) => {
           return {
@@ -55,9 +55,9 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
       const error = resp.data.error;
       if (error) {
         stop();
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
-        Message.success('Successfully!');
+        Message.success('Đã lưu');
         form.resetFields();
         onClose();
       }
@@ -101,7 +101,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       name="name"
                       label="Skill Name"
                       rules={[
-                        { required: true, message: 'Please input skill name!' },
+                        { required: true, message: 'Nhập tên kỹ năng' },
                         {
                           pattern: PATTERN_VALIDATE.isBlank.value,
                           message: PATTERN_VALIDATE.isBlank.message,

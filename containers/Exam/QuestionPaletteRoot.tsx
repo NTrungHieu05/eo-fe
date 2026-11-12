@@ -6,6 +6,7 @@ type QuestionPaletteRootProps = {
   listQuestion?: any[];
   children?: React.ReactNode;
   onSelectQuestion?: (questionIndex: number) => void;
+  showResult?: boolean;
   answerInfos: {
     total: number;
     newAnswerCount: number;
@@ -17,6 +18,7 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
   listQuestion,
   answerInfos,
   onSelectQuestion,
+  showResult = true,
 }: QuestionPaletteRootProps) => {
   const { total, newAnswerCount, correctAnswerCount, incorrectAnswerCount } = answerInfos;
 
@@ -43,7 +45,7 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
       <div className="current-topic-label question-palette-game-title">Test 1</div>
       <div className="question-palette-main">
         <div className="question-palette-header">
-          <div className="question-palette-title">Question Palette</div>
+          <div className="question-palette-title">Câu hỏi</div>
         </div>
         <div className="question-palette-body">
           <div className="questions-list questions-list-custom" id="question-list-scroll">
@@ -55,7 +57,9 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
                       <button
                         className={`question-item question-palette-item-custom ${
                           childQuestion?.userAnswer?.length > 0
-                            ? answersMatch(childQuestion?.userAnswer, childQuestion?.answer?.texts)
+                            ? !showResult
+                              ? 'p-item-selected'
+                              : answersMatch(childQuestion?.userAnswer, childQuestion?.answer?.texts)
                               ? 'p-item-correct'
                               : 'p-item-incorrect'
                             : ''
@@ -74,7 +78,9 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
                       <button
                         className={`question-item question-palette-item-custom ${
                           question?.userAnswer?.length > 0
-                            ? answersMatch(question?.userAnswer, question?.answer?.texts)
+                            ? !showResult
+                              ? 'p-item-selected'
+                              : answersMatch(question?.userAnswer, question?.answer?.texts)
                               ? 'p-item-correct'
                               : 'p-item-incorrect'
                             : ''
@@ -106,7 +112,9 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
                   <rect y="0.5" width={10} height={10} rx={3} fill="#4caf50" />
                 </svg>
                 <span className="questions-stat-item-text">
-                  {correctAnswerCount}/{total} Correct
+                  {showResult
+                    ? `${correctAnswerCount}/${total} đúng`
+                    : `${total - newAnswerCount}/${total} Đã chọn`}
                 </span>
               </div>
               <div className="questions-stat-item">
@@ -120,7 +128,9 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
                   <rect y="0.5" width={10} height={10} rx={3} fill="#FF5252" />
                 </svg>
                 <span className="questions-stat-item-text">
-                  {incorrectAnswerCount}/{total} Incorrect
+                  {showResult
+                    ? `${incorrectAnswerCount}/${total} sai`
+                    : `${newAnswerCount}/${total} Chưa làm`}
                 </span>
               </div>
             </div>

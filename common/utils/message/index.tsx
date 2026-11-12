@@ -6,7 +6,7 @@ export const Message = {
   success: (content: React.ReactNode, duration?: number) => {
     message.destroy();
     return message.success({
-      content: content ?? 'Successfully!',
+      content: content ?? 'Đã lưu',
       icon: <CheckCircleOutlined />,
       duration: duration ?? 3,
       className: `ant-message-success-wrapper`,
@@ -15,7 +15,7 @@ export const Message = {
   error: (content: React.ReactNode, duration?: number) => {
     message.destroy();
     return message.error({
-      content: content ?? 'Something wrong, try again please!',
+      content: content ?? 'Có lỗi, thử lại',
       icon: <InfoCircleOutlined />,
       duration: duration ?? 3,
       className: `ant-message-error-wrapper`,
@@ -24,7 +24,7 @@ export const Message = {
   info: (content: React.ReactNode, duration?: number) => {
     message.destroy();
     return message.info({
-      content: content ?? 'Infomation',
+      content: content ?? 'Thông báo',
       icon: <InfoCircleOutlined />,
       duration: duration ?? 3,
       className: `ant-message-info-wrapper`,
@@ -33,7 +33,7 @@ export const Message = {
   warning: (content: React.ReactNode, duration?: number) => {
     message.destroy();
     return message.warning({
-      content: content ?? 'Warning',
+      content: content ?? 'Cảnh báo',
       icon: <InfoCircleOutlined />,
       duration: duration ?? 3,
       className: `ant-message-warning-wrapper`,

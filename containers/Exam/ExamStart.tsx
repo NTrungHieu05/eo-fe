@@ -1,6 +1,8 @@
 import { ClockCircleOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Button } from '@ui';
+import { Modal } from 'antd';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 import ExamLayout from './ExamLayout';
 import QuestionCard from './QuestionCard';
 import Countdown from 'antd/lib/statistic/Countdown';
@@ -14,6 +16,7 @@ const ExamStart = ({
   isMiniTest = false,
   readOnly = false,
 }) => {
+  const router = useRouter();
   const questions = listQuestion || [];
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(() => {
     const last = Math.max(questions.length - 1, 0);
@@ -29,12 +32,44 @@ const ExamStart = ({
     });
   };
 
+  const submitExam = () => {
+    if (!questions.length || readOnly) {
+      return;
+    }
+    Modal.confirm({
+      title: 'Nộp bài?',
+      content: 'Đáp án hiện sau khi nộp bài.',
+      okText: 'Nộp bài',
+      cancelText: 'Hủy',
+      onOk: () => onSetExamStatus('reviewing'),
+    });
+  };
+
+  const leaveExam = () => {
+    Modal.confirm({
+      title: 'Hủy bài làm?',
+      content: 'Thoát sẽ không lưu bài làm.',
+      okText: 'Thoát',
+      cancelText: 'Ở lại',
+      okButtonProps: { danger: true },
+      onOk: () => {
+        const topic = router.query.topicCode;
+        const topicId = Array.isArray(topic) ? topic[0] : topic;
+        if (topicId) {
+          router.push(`/practice/${topicId}`);
+          return;
+        }
+        onSetExamStatus('initial');
+      },
+    });
+  };
+
   const onNextQuestion = () => {
     if (!questions.length) {
       return;
     }
     if (currentQuestionIndex >= questions.length - 1) {
-      onSetExamStatus('reviewing');
+      submitExam();
       return;
     }
     setCurrentQuestionIndex((prev) => Math.min(prev + 1, questions.length - 1));
@@ -53,6 +88,7 @@ const ExamStart = ({
     <ExamLayout
       listQuestion={questions}
       answerInfos={answerInfos}
+      showResult={false}
       onSelectQuestion={(index) =>
         setCurrentQuestionIndex(Math.min(Math.max(index, 0), Math.max(questions.length - 1, 0)))
       }
@@ -81,21 +117,20 @@ const ExamStart = ({
               key={`QuestionCard-${questions[currentQuestionIndex]?._id || questions[currentQuestionIndex]?.id}-${currentQuestionIndex}`}
             />
             <div
-              className={`slide-button-box ${currentQuestionIndex === 0 ? 'first-question' : ''} `}
+              className="slide-button-box"
             >
+              <Button shape="round" onClick={leaveExam} className="btn-cancel-exam" disabled={readOnly}>
+                Hủy
+              </Button>
               {currentQuestionIndex !== 0 && (
                 <Button shape="round" onClick={onPreviousQuestion} className="btn-previous">
                   <LeftOutlined />
-                  {' Previous'}
+                  {' Câu trước'}
                 </Button>
               )}
 
               <Button shape="round" onClick={onNextQuestion} className="btn-next" disabled={readOnly}>
-                {currentQuestionIndex >= questions.length - 1
-                  ? isMiniTest
-                  ? 'Submit'
-                  : 'View Result '
-                  : 'Next '}
+                {currentQuestionIndex >= questions.length - 1 ? 'Nộp bài ' : 'Câu sau '}
                 <RightOutlined />
               </Button>
             </div>

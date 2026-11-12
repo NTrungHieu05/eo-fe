@@ -26,11 +26,9 @@ const ForgotPassword: React.FC = () => {
       const error = resp.data.error;
       if (error) {
         stop();
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
-        Message.success(
-          'A reset code was printed on the backend console. Enter it on the next screen.'
-        );
+        Message.success('Đã tạo mã. Nhập mã ở màn hình sau.');
         router.push(ROUTES.RESETPASSWORD);
       }
     } catch (err) {
@@ -55,7 +53,7 @@ const ForgotPassword: React.FC = () => {
               </Button>
             </Link>
             <div className="des-login">
-              Nhập email đã đăng ký. Mã đặt lại mật khẩu sẽ được in trên console backend.
+              Nhập email đã đăng ký. Mã đặt lại nằm trong log của server.
             </div>
           </div>
           <div className="form-login-content">
@@ -72,7 +70,7 @@ const ForgotPassword: React.FC = () => {
                 <Form.Item
                   name="email"
                   rules={[
-                    { required: true, message: 'Please input your email address!' },
+                    { required: true, message: 'Nhập email' },
                     {
                       pattern: PATTERN_VALIDATE.email.value,
                       message: PATTERN_VALIDATE.email.message,

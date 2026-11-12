@@ -28,9 +28,9 @@ const ChangePasswordForm = ({ onClose }: ChangePasswordFormProps) => {
       const error = resp.data.error;
       if (error) {
         stop();
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
-        Message.success('Successfully!');
+        Message.success('Đã đổi mật khẩu');
         form.resetFields();
         onClose();
       }
@@ -64,7 +64,7 @@ const ChangePasswordForm = ({ onClose }: ChangePasswordFormProps) => {
                       rules={[
                         {
                           required: true,
-                          message: 'Please input your password!',
+                          message: 'Nhập mật khẩu hiện tại',
                         },
                       ]}
                     >
@@ -80,7 +80,7 @@ const ChangePasswordForm = ({ onClose }: ChangePasswordFormProps) => {
                       rules={[
                         {
                           required: true,
-                          message: 'Please input your new password!',
+                          message: 'Nhập mật khẩu mới',
                         },
                         {
                           pattern: PATTERN_VALIDATE.password.value,
@@ -102,7 +102,7 @@ const ChangePasswordForm = ({ onClose }: ChangePasswordFormProps) => {
                       rules={[
                         {
                           required: true,
-                          message: 'Please enter confirm your password!',
+                          message: 'Nhập lại mật khẩu',
                         },
                         ({ getFieldValue }) => ({
                           validator(_, value) {

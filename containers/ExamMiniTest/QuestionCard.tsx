@@ -38,7 +38,7 @@ export default function QuestionCard({ question, onUpdateQuestion, isStarting = 
                 )}
                 {question?.question?.image?.length > 0 && (
                   <div className="game-object-question-image">
-                    <div className="game-image-widget-container" style={{ width: 300 }}>
+                    <div className="game-image-widget-container exam-question-image">
                       <img
                         src={resolveMediaUrl(question?.question?.image)}
                         alt={question?.question?.image}
@@ -91,7 +91,7 @@ export default function QuestionCard({ question, onUpdateQuestion, isStarting = 
                     )}
                     {question?.question?.image?.length > 0 && (
                       <div className="game-object-question-image">
-                        <div className="game-image-widget-container" style={{ width: 300 }}>
+                        <div className="game-image-widget-container exam-question-image">
                           <img
                             src={resolveMediaUrl(question?.question?.image)}
                             alt={question?.question?.image}
@@ -101,16 +101,15 @@ export default function QuestionCard({ question, onUpdateQuestion, isStarting = 
                       </div>
                     )}
 
-                    {question?.question?.text && (
-                      <div className="game-object-question-text">
-                        <div className="game-text-widget-container">
-                          <div
-                            className="question-content"
-                            dangerouslySetInnerHTML={{ __html: question?.question?.text }}
-                          />
-                        </div>
-                      </div>
-                    )}
+                    <div className="exam-question-line">
+                      <span className="exam-question-no">{question?.questionNo}</span>
+                      {question?.question?.text && (
+                        <div
+                          className="question-content"
+                          dangerouslySetInnerHTML={{ __html: question?.question?.text }}
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -122,6 +121,7 @@ export default function QuestionCard({ question, onUpdateQuestion, isStarting = 
                 isStarting={isStarting}
                 readOnly={readOnly}
                 reveal={reveal}
+                hideIndex
               />
             </>
           )}

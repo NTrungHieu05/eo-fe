@@ -29,14 +29,14 @@ const SignIn: React.FC = () => {
       const respData = resp.data?.responseData;
       if (error) {
         stop();
-        Message.error(error?.message ?? 'Something error! Try again later');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
         onLoginSuccess(respData);
       }
     } catch (err) {
       stop();
       console.log('onSubmit-error :>> ', err.toString());
-      Message.error('Không kết nối được máy chủ. Kiểm tra backend http://localhost:8080 đang chạy.');
+      Message.error('Không kết nối được máy chủ');
     } finally {
       stop();
     }
@@ -83,7 +83,7 @@ const SignIn: React.FC = () => {
                 <Form.Item
                   name="email"
                   rules={[
-                    { required: true, message: 'Please input your email address!' },
+                    { required: true, message: 'Nhập email' },
                     {
                       pattern: PATTERN_VALIDATE.email.value,
                       message: PATTERN_VALIDATE.email.message,
@@ -100,7 +100,7 @@ const SignIn: React.FC = () => {
 
                 <Form.Item
                   name="password"
-                  rules={[{ required: true, message: 'Please input your password!' }]}
+                  rules={[{ required: true, message: 'Nhập mật khẩu' }]}
                   className="mb-2"
                 >
                   <InputPassword

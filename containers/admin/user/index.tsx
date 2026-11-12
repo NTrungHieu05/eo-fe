@@ -23,7 +23,7 @@ const CMSUser: React.FC = () => {
       const respData = resp.data?.responseData?.data || [];
       if (error) {
         stop();
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
         setDataList(respData);
       }
@@ -45,9 +45,9 @@ const CMSUser: React.FC = () => {
       const error = resp.data.error;
       if (error) {
         stop();
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
-        Message.success('Successfully!');
+        Message.success('Đã lưu');
         fetchDataList();
       }
     } catch (err) {
@@ -69,9 +69,9 @@ const CMSUser: React.FC = () => {
       const error = resp.data.error;
       if (error) {
         stop();
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
-        Message.success('Successfully!');
+        Message.success('Đã lưu');
         fetchDataList();
       }
     } catch (err) {

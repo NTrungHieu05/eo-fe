@@ -26,19 +26,20 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
 
   const uploadMedia = (kind: 'sound' | 'image') => async (options) => {
     const { file, onSuccess, onError } = options;
+    const label = kind === 'image' ? 'ảnh' : 'file nghe';
     try {
       const formData = new FormData();
       formData.append('file', file);
       const resp: any = await postUploadFile(formData, kind === 'image' ? 1 : 2);
       const error = resp.data.error;
       if (error) {
-        Message.error(error?.message ?? 'Tải file thất bại');
+        Message.error(error?.message ?? `Không tải được ${label}`);
         onError?.(new Error(error?.message));
         return;
       }
       const url = resp.data?.responseData?.mediaUrl;
       if (!url) {
-        Message.error('Tải xong nhưng server không trả đường dẫn file');
+        Message.error(`Không nhận được ${label}`);
         onError?.(new Error('missing mediaUrl'));
         return;
       }
@@ -49,10 +50,10 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
           [kind]: url,
         },
       });
-      Message.success('Đã tải file. Đường dẫn đã được điền vào ô bên dưới.');
+      Message.success(kind === 'image' ? 'Đã tải ảnh' : 'Đã tải file nghe');
       onSuccess?.(resp.data?.responseData);
     } catch (err) {
-      Message.error('Không tải được file. Kiểm tra backend đang chạy.');
+      Message.error(kind === 'image' ? 'Không tải được ảnh' : 'Không tải được file nghe');
       onError?.(err);
     }
   };
@@ -98,7 +99,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
       data?.isQuestionGroup &&
       (data?.childQuestions || []).some((child) => !correctChoice(child?.answer));
     if (groupMissingAnswer || (!data?.isQuestionGroup && !correctChoice(data?.answer))) {
-      Message.error('Mỗi câu cần đúng một đáp án được đánh dấu đúng.');
+      Message.error('Chọn một đáp án đúng.');
       return;
     }
     start();
@@ -147,9 +148,9 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
       const error = resp.data.error;
       if (error) {
         stop();
-        Message.error(error?.message ?? 'Something error!');
+        Message.error(error?.message ?? 'Có lỗi, thử lại');
       } else {
-        Message.success('Successfully!');
+        Message.success('Đã lưu');
         form.resetFields();
         onClose();
       }
@@ -339,7 +340,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                                     <Form.Item
                                       {...restField}
                                       name={[name, 'question', 'text']}
-                                      rules={[{ required: true, message: 'Missing question name' }]}
+                                      rules={[{ required: true, message: 'Nhập nội dung câu hỏi' }]}
                                     >
                                       <Input placeholder="Enter question" />
                                     </Form.Item>
@@ -369,7 +370,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                                                     rules={[
                                                       {
                                                         required: true,
-                                                        message: 'Missing answer name',
+                                                        message: 'Nhập đáp án',
                                                       },
                                                     ]}
                                                   >
@@ -457,7 +458,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                                 <Form.Item
                                   {...restField}
                                   name={[name, 'choice']}
-                                  rules={[{ required: true, message: 'Missing answer name' }]}
+                                  rules={[{ required: true, message: 'Nhập đáp án' }]}
                                 >
                                   <Input
                                     style={{ width: '580px' }}
