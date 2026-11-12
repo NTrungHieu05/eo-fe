@@ -32,7 +32,7 @@ export default function QuizPlayStartingItem({
           </>
         )}
       </div>
-      <div className="quiz-choice-item-content not-selected">{choice.text}</div>
+      <div className="quiz-choice-item-content">{choice.text}</div>
     </div>
   );
 }

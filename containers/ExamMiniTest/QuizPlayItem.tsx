@@ -31,7 +31,19 @@ export default function QuizPlayItem({ choice, onChoice, isSelected = false }: Q
           </>
         )}
       </div>
-      <div className="quiz-choice-item-content not-selected">{choice.text}</div>
+      <div
+        className={
+          !isSelected
+            ? 'quiz-choice-item-content'
+            : choice.isAnswer
+            ? 'quiz-choice-item-content correct'
+            : choice.isChecked
+            ? 'quiz-choice-item-content incorrect'
+            : 'quiz-choice-item-content not-selected'
+        }
+      >
+        {choice.text}
+      </div>
     </div>
   );
 }

@@ -263,6 +263,7 @@ const ExamResult = ({
                 question={listQuestion[index]}
                 onUpdateQuestion={(newQuestion) => newQuestion}
                 readOnly
+                reveal
                 key={`QuestionCard-${getQuestionId(listQuestion[index]) || index}`}
               />
               <hr className="MuiDivider-root MuiDivider-fullWidth css-39bbo6" />
