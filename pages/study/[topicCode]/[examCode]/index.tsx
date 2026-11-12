@@ -5,7 +5,7 @@ import { GetServerSideProps } from 'next';
 const ExamPage = ({ topicCode, examCode }) => {
   return (
     <MainLayout className={'exam-page'}>
-      <Exam topicCode={topicCode} examCode={examCode} />
+      <Exam examCode={examCode} />
     </MainLayout>
   );
 };

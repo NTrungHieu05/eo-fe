@@ -61,7 +61,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
     [topics]
   );
 
-  const questionOptions = useMemo(() => {
+  const questionOptions = useMemo((): Array<{ label: string; value?: string; options?: { label: string; value: string }[] }> => {
     if (practiceTest) {
       const groups = topics
         .map((topic) => ({
