@@ -12,10 +12,10 @@ export default function QuestionCard({ question, onUpdateQuestion, isStarting = 
   };
   const onChoiceQuestionGroup = (choice, index) => {
     onUpdateQuestion?.((current) => {
-      const question = current || question;
+      const source = current || question;
       return {
-        ...question,
-        childQuestions: (question?.childQuestions || []).map((childQuestion, childIndex) =>
+        ...source,
+        childQuestions: (source?.childQuestions || []).map((childQuestion, childIndex) =>
           childIndex === index ? { ...childQuestion, userAnswer: [choice] } : childQuestion
         ),
       };
