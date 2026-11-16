@@ -4,7 +4,7 @@ import React from 'react';
 import { HeaderWrap, Layout, FooterWrap } from './index.style';
 import { Dropdown, Menu } from 'antd';
 import { doLogout } from '@api';
-import { Message, reactLocalStorage } from '@utils';
+import { formatName, Message, reactLocalStorage } from '@utils';
 import { useRouter } from 'next/router';
 import Config from '@root/config';
 import { isEmpty } from 'lodash';
@@ -22,19 +22,17 @@ const MainLayout = (props) => {
       const error = resp.data?.error;
       if (error) {
         Message.error(error?.message ?? 'Có lỗi, thử lại');
-      } else {
-        onLogoutSuccess();
       }
     } catch (err) {
       console.log('logout-error :>> ', err.toString());
-    } finally {
     }
+    // Luôn xoá phiên phía trình duyệt, kể cả khi API logout lỗi.
     onLogoutSuccess();
   };
   const onLogoutSuccess = () => {
     reactLocalStorage.clear();
     const cookies = new Cookies();
-    cookies.remove(Config.AUTH_TOKEN_KEY);
+    cookies.remove(Config.AUTH_TOKEN_KEY, { path: '/' });
     router.push(ROUTES.WELCOME);
   };
 
@@ -88,23 +86,24 @@ const MainLayout = (props) => {
             <Link href={ROUTES.HOME}>
               <span className="brand">
                 <span className="brand-mark">EO</span>
-                <span className="brand-name">Exam Online</span>
+                <span className="brand-name">TOEIC Online</span>
               </span>
             </Link>
-            <Menu className="heading-menu" mode="horizontal">
-              <Menu.Item key="home" onClick={() => onRouterPush(ROUTES.HOME)}>
-                Trang chủ
-              </Menu.Item>
-              {topics.map((topic) => (
-                <Menu.SubMenu key={topic.id} title={topic.name}>
-                  {topic?.topics?.map((item) => (
-                    <Menu.Item key={item.topicId}>
-                      <Link href={`/practice/${item?.topicId}`}>{item.topicName}</Link>
-                    </Menu.Item>
-                  ))}
-                </Menu.SubMenu>
-              ))}
-            </Menu>
+            <Menu
+              className="heading-menu"
+              mode="horizontal"
+              items={[
+                { key: 'home', label: 'Trang chủ', onClick: () => onRouterPush(ROUTES.HOME) },
+                ...topics.map((topic) => ({
+                  key: topic.id,
+                  label: topic.name,
+                  children: (topic?.topics || []).map((item) => ({
+                    key: item.topicId,
+                    label: <Link href={`/practice/${item?.topicId}`}>{formatName(item.topicName)}</Link>,
+                  })),
+                })),
+              ]}
+            />
             <Link href={ROUTES.MINI_TEST}>
               <a className="cta-test-btn">Thi thử TOEIC</a>
             </Link>
@@ -137,7 +136,7 @@ const MainLayout = (props) => {
                 TOEIC is a registered trademark of Educational Testing Service (ETS). This site is not
                 affiliated with or endorsed by ETS.
               </div>
-              <div className="footer-brand">Exam Online</div>
+              <div className="footer-brand">TOEIC Online</div>
             </div>
           </div>
         </FooterWrap>

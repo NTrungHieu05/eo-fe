@@ -1,14 +1,24 @@
-import { getListQuestionMiniTest, getPracticeTestById, postCollectExam, postToeicScore } from '@api';
+import { getListQuestionMiniTest, getPracticeTestById, postSubmitExam } from '@api';
 import { useLoading } from '@hooks';
-import Config from '@root/config';
-import { Message, answersMatch, isGroupedQuestion, reactLocalStorage, sortAnswer, toeicListeningScore, toeicReadingScore, toeicTotalScore } from '@utils';
+import { Message, answersMatch, applyAnswerKey, applySavedAnswers, buildSubmitAnswers, isGroupedQuestion, reactLocalStorage, sortAnswer, toeicListeningScore, toeicReadingScore, toeicTotalScore } from '@utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useToeicContext } from '@contexts/toeicContext';
 import ExamResult from './ExamMiniTestResult';
 import ExamStart from './ExamMiniTestStart';
 import ExamView from './ExamMiniTestView';
 import { ExamMainWrap } from './MiniTest.style';
 
 type ExamStatusType = 'initial' | 'starting' | 'reviewing';
+
+// Bài thi dở được lưu theo user. Khoá có tiền tố toeic- nên bị xoá khi đăng xuất.
+const PROGRESS_KEY = 'toeic-exam-progress';
+const EXAM_DURATION_MS = 1000 * 60 * 120;
+const readProgress = () => reactLocalStorage.getObject(PROGRESS_KEY) || {};
+const clearProgress = () => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.removeItem(PROGRESS_KEY);
+  }
+};
 
 const isCorrectAnswer = (question) =>
   answersMatch(question?.userAnswer, question?.answer?.texts);
@@ -74,6 +84,9 @@ const ExamMiniTest = () => {
   const [detailStatus, setDetailStatus] = useState<'idle' | 'ready' | 'failed'>('idle');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [scaledResult, setScaledResult] = useState<any>(null);
+  const [deadline, setDeadline] = useState<number>(0);
+  const { userInfos } = useToeicContext();
+  const restoredRef = useRef(false);
   const detailRequest = useRef(0);
   const submittingRef = useRef(false);
 
@@ -146,16 +159,16 @@ const ExamMiniTest = () => {
     }
   };
 
-  const fetchExamDetail = async (id: string) => {
+  const fetchExamDetail = async (id: string, savedAnswers?: any[]) => {
     if (!id) {
-      return;
+      return null;
     }
     const requestId = ++detailRequest.current;
     start();
     try {
       const resp: any = await getPracticeTestById(id);
       if (requestId !== detailRequest.current) {
-        return false;
+        return null;
       }
       const error = resp.data.error;
       const respData = resp.data?.responseData;
@@ -163,13 +176,15 @@ const ExamMiniTest = () => {
         Message.error(error?.message ?? 'Có lỗi, thử lại');
         setDetailStatus('failed');
         setListQuestion([]);
-        return false;
+        return null;
       } else {
+        const mapped = mapQuestions(respData?.questions || []);
+        const questions = savedAnswers ? applySavedAnswers(mapped, savedAnswers) : mapped;
         setExamId(respData?.id || '');
         setSelectedExam(respData);
-        setListQuestion(mapQuestions(respData?.questions || []));
+        setListQuestion(questions);
         setDetailStatus('ready');
-        return true;
+        return questions;
       }
     } catch (err) {
       console.log('onSubmit-error :>> ', err.toString());
@@ -177,7 +192,7 @@ const ExamMiniTest = () => {
         setDetailStatus('failed');
         Message.error('Không tải được đề');
       }
-      return false;
+      return null;
     } finally {
       if (requestId === detailRequest.current) {
         stop();
@@ -189,71 +204,119 @@ const ExamMiniTest = () => {
     fetchExamList();
   }, []);
 
-  const onCollectionExam = async () => {
-    if (!examId) {
-      return;
+  // Trả về undefined khi nộp lỗi, null hoặc điểm quy đổi khi nộp được.
+  const onSubmitExam = async (questions = listQuestion, id = examId) => {
+    if (!id) {
+      return undefined;
     }
     try {
-      let progress = answerInfos.toeicScore;
-      let saved = null;
-      if (answerInfos.officialScale) {
-        try {
-          const scoreResp: any = await postToeicScore({
-            listeningCorrect: answerInfos.listeningCorrect,
-            readingCorrect: answerInfos.readingCorrect,
-          });
-          const scaled = scoreResp.data?.responseData;
-          if (!scoreResp.data?.error && scaled && typeof scaled.totalScore === 'number') {
-            progress = scaled.totalScore;
-            saved = {
-              toeicScore: scaled.totalScore,
-              ...(typeof scaled.listeningScore === 'number' ? { listeningScore: scaled.listeningScore } : {}),
-              ...(typeof scaled.readingScore === 'number' ? { readingScore: scaled.readingScore } : {}),
-            };
-          }
-        } catch (scoreError) {
-          console.log('score-error :>> ', scoreError?.toString?.() || scoreError);
-        }
-      }
-      const resp: any = await postCollectExam({
-        progress,
-        status: 1,
-        examId,
-      });
+      const resp: any = await postSubmitExam({ examId: id, answers: buildSubmitAnswers(questions) });
       const error = resp.data.error;
       if (error) {
         Message.error(error?.message ?? 'Có lỗi, thử lại');
+        return undefined;
       }
-      return saved;
+      const result = resp.data?.responseData;
+      clearProgress();
+      setListQuestion((current) => applyAnswerKey(current, result?.results));
+      if (result?.officialScale && typeof result.totalScore === 'number') {
+        return {
+          toeicScore: result.totalScore,
+          listeningScore: result.listeningScore,
+          readingScore: result.readingScore,
+        };
+      }
+      return null;
     } catch (err) {
       console.log('onSubmit-error :>> ', err.toString());
-      Message.error('Không lưu được kết quả');
-      return null;
+      Message.error('Không nộp được bài, thử lại');
+      return undefined;
     }
   };
 
-  const onSetExamStatus = async (status: ExamStatusType) => {
+  const onSetExamStatus = async (status: ExamStatusType, questions?: any[], id?: string) => {
     if (status === 'reviewing') {
       if (submittingRef.current) {
         return;
       }
       submittingRef.current = true;
       setIsSubmitting(true);
-      const saved = await onCollectionExam();
+      const saved = await onSubmitExam(questions ?? listQuestion, id ?? examId);
+      if (saved === undefined) {
+        submittingRef.current = false;
+        setIsSubmitting(false);
+        return;
+      }
       setScaledResult(saved);
     } else {
       submittingRef.current = false;
       setIsSubmitting(false);
+      if (status === 'starting') {
+        setDeadline(Date.now() + EXAM_DURATION_MS);
+      }
     }
     setExamStatus(status);
   };
+
+  // Lưu bài đang làm sau mỗi lần chọn đáp án để tải lại trang không mất bài.
+  useEffect(() => {
+    if (examStatus !== 'starting' || !examId || !deadline || isSubmitting) {
+      return;
+    }
+    reactLocalStorage.setObject(PROGRESS_KEY, {
+      userId: userInfos?.userId,
+      examId,
+      deadline,
+      answers: buildSubmitAnswers(listQuestion),
+    });
+  }, [examStatus, examId, deadline, listQuestion, isSubmitting]);
+
+  // Cảnh báo trước khi đóng tab hoặc tải lại khi đang làm bài.
+  useEffect(() => {
+    if (examStatus !== 'starting') {
+      return;
+    }
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => window.removeEventListener('beforeunload', onBeforeUnload);
+  }, [examStatus]);
+
+  // Mở lại trang: khôi phục bài thi dở của đúng user này, hết giờ thì nộp luôn.
+  useEffect(() => {
+    if (restoredRef.current || !userInfos?.userId) {
+      return;
+    }
+    restoredRef.current = true;
+    const saved = readProgress();
+    if (!saved?.examId || saved.userId !== userInfos.userId) {
+      return;
+    }
+    fetchExamDetail(saved.examId, saved.answers).then((questions) => {
+      if (!questions) {
+        clearProgress();
+        return;
+      }
+      if (!saved.deadline || saved.deadline <= Date.now()) {
+        Message.info('Bài thi dở đã hết giờ, hệ thống nộp bài với các câu bạn đã chọn.');
+        onSetExamStatus('reviewing', questions, saved.examId);
+        return;
+      }
+      submittingRef.current = false;
+      setIsSubmitting(false);
+      setDeadline(saved.deadline);
+      setExamStatus('starting');
+      Message.info('Đã khôi phục bài thi đang làm dở.');
+    });
+  }, [userInfos?.userId]);
 
   const onUpdateListQuestion = (questions) => {
     if (submittingRef.current) {
       return;
     }
     setListQuestion(questions);
-    reactLocalStorage.setObject(Config.EXAM_KEY, questions);
   };
 
   const onClickTryAgain = async () => {
@@ -262,6 +325,7 @@ const ExamMiniTest = () => {
       submittingRef.current = false;
       setIsSubmitting(false);
       setScaledResult(null);
+      setDeadline(Date.now() + EXAM_DURATION_MS);
       setExamStatus('starting');
     }
   };
@@ -306,7 +370,9 @@ const ExamMiniTest = () => {
           examStatus={examStatus}
           examName={selectedExam?.name}
           readOnly={isSubmitting}
+          deadline={deadline}
           onExit={async () => {
+            clearProgress();
             submittingRef.current = false;
             setIsSubmitting(false);
             setScaledResult(null);

@@ -1,7 +1,7 @@
 import { CloseCircleOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons';
 import { getAdminListQuestion, getListTopicAdmin, putDeleteQuestion } from '@api';
 import { useLoading } from '@hooks';
-import { Message } from '@utils';
+import { formatName, Message } from '@utils';
 import { Button, Modal, Spin, Table } from 'antd';
 import Column from 'antd/lib/table/Column';
 import React, { useEffect, useState } from 'react';
@@ -110,16 +110,17 @@ const CMSQuestion: React.FC = () => {
 
   return (
     <PageWrapper>
-      <div className="cms-page-title">Manager Question</div>
+      <div className="cms-page-title">Quản lý câu hỏi</div>
       <div className="btn-action-box d-flex">
         <Button onClick={() => setShowModal(true)} className="btn-add">
-          <PlusOutlined /> Add Question
+          <PlusOutlined /> Thêm câu hỏi
         </Button>
       </div>
       <Table
+        scroll={{ x: 960 }}
         dataSource={dataList}
         pagination={false}
-        rowKey={(record, index) => index}
+        rowKey={(record) => record?.id || record?._id}
         // onChange={onTableChange}
         // loading={isLoading}
         loading={{ indicator: <Spin />, spinning: isLoading }}
@@ -128,22 +129,22 @@ const CMSQuestion: React.FC = () => {
         // }}
       >
         <Column
-          title="Action"
+          title="Thao tác"
           key="action"
           width="6rem"
           render={(record) => (
             <div className="cursor-pointer">
               <CloseCircleOutlined
                 className="mr-3"
-                alt="Delete"
+                alt="Xóa"
                 onClick={() => onClickDelete(record)}
               />
-              <FormOutlined alt="Edit" onClick={() => onClickEdit(record)} />
+              <FormOutlined alt="Sửa" onClick={() => onClickEdit(record)} />
             </div>
           )}
         />
         <Column
-          title="No"
+          title="STT"
           key="stt"
           className="column-id"
           width="2rem"
@@ -156,7 +157,7 @@ const CMSQuestion: React.FC = () => {
           render={(record) => <div>{questionName(record)}</div>}
         />
         <Column
-          title="Answer"
+          title="Đáp án"
           key="answer"
           dataIndex=""
           className="column-answer"
@@ -169,8 +170,8 @@ const CMSQuestion: React.FC = () => {
             if (isQuestionGroup) {
               return record?.childQuestions?.map((question, index) => {
                 return (
-                  <div key={question.id}>
-                    <b>Question {index + 1}: </b>
+                  <div key={question?.id || index}>
+                    <b>Câu {index + 1}: </b>
                     {question?.answer?.texts?.[0]}
                   </div>
                 );
@@ -184,23 +185,23 @@ const CMSQuestion: React.FC = () => {
           key="topic"
           width="12rem"
           render={(record) => (
-            <div>{topics.find((topic) => topic.id === record?.topicId)?.name || '—'}</div>
+            <div className="text-nowrap">{formatName(topics.find((topic) => topic.id === record?.topicId)?.name) || '—'}</div>
           )}
         />
         <Column
-          title="Media"
+          title="Tệp đính kèm"
           key="media"
           className="column-question"
           render={(record) => (
             <div>
               {record?.question?.sound && (
                 <div>
-                  <b>Sound:</b> {record.question.sound}
+                  <b>Âm thanh:</b> {record.question.sound}
                 </div>
               )}
               {record?.question?.image && (
                 <div>
-                  <b>Image:</b> {record.question.image}
+                  <b>Ảnh:</b> {record.question.image}
                 </div>
               )}
             </div>
@@ -210,7 +211,7 @@ const CMSQuestion: React.FC = () => {
       <Modal
         width={755}
         bodyStyle={{ height: 'max-content' }}
-        title={selectedRow ? 'Edit Question' : 'Add Question'}
+        title={selectedRow ? 'Sửa câu hỏi' : 'Thêm câu hỏi'}
         maskClosable={false}
         visible={showModal}
         onCancel={onCloseCreatedForm}
@@ -223,7 +224,9 @@ const CMSQuestion: React.FC = () => {
       <Modal
         width={450}
         bodyStyle={{ height: 'max-content' }}
-        title={'Confirm Delete'}
+        title={'Xác nhận xóa'}
+        okText="Xóa"
+        okButtonProps={{ danger: true }}
         maskClosable={false}
         visible={showModalConfirm}
         onCancel={onCancelConfirm}
@@ -231,7 +234,7 @@ const CMSQuestion: React.FC = () => {
         destroyOnClose
         className="edit-profile-modal"
       >
-        Are you sure?
+        Bạn có chắc chắn không?
       </Modal>
     </PageWrapper>
   );

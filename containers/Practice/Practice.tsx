@@ -1,7 +1,7 @@
 import { RightOutlined } from '@ant-design/icons';
 import { getListExam } from '@api';
 import { useLoading } from '@hooks';
-import { Message } from '@utils';
+import { formatName, Message } from '@utils';
 import { Col, Row } from 'antd';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
@@ -61,14 +61,14 @@ const Practice = () => {
     <ContentWrapper className="container">
       <div id="practice-list-view" className="practice-detail-view">
         <div className="practice-list-view-title">
-          Luyện TOEIC {examData?.name}
+          Luyện TOEIC {formatName(examData?.name)}
         </div>
         <div className="practice-list-view-main">
           <div className="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 css-1h77wgb">
             <Row gutter={[16, 0]}>
-              <Col xs={24} lg={18}>
+              <Col xs={24} lg={16}>
                 <div className="part-contents">
-                  <div className="practice-name">{examData?.name}</div>
+                  <div className="practice-name">{formatName(examData?.name)}</div>
                   <div className="practice-list">
                     <TestWrap>
                       <Row gutter={[16, 16]}>
@@ -77,8 +77,7 @@ const Practice = () => {
                             className="gutter-row"
                             xs={24}
                             sm={12}
-                            md={8}
-                            lg={6}
+                            xl={8}
                             key={item.id}
                             onClick={() => onClickRouterPush(item)}
                           >
@@ -90,7 +89,7 @@ const Practice = () => {
                               >
                                 {item.progress == null ? 'Chưa làm' : `${item.progress}%`}
                               </div>
-                              <div className="practice-list-box-item--content">{item.name}</div>
+                              <div className="practice-list-box-item--content">{formatName(item.name)}</div>
                               {/* <div className="practice-list-box-item--participants">
                                 <span>{item.participants}</span>
                                 <div className="line"></div>
@@ -104,16 +103,18 @@ const Practice = () => {
                   </div>
                 </div>
               </Col>
-              <Col xs={24} lg={6}>
+              <Col xs={24} lg={8}>
                 <div className="other-practices">
                   <div id="other-practices-list">
                     <div className="title">Các phần khác</div>
                     <div className="list">
                       {(topics || []).map((topic) =>
                         topic?.topics?.map((item) => (
-                          <Link href={`/practice/${item?.topicId}`}>
+                          <Link href={`/practice/${item?.topicId}`} key={item?.topicId}>
                             <div className="list-item cursor-pointer">
-                              <div className="list-item-name">{item.topicName}</div>
+                              <div className="list-item-name" title={formatName(item.topicName)}>
+                                {formatName(item.topicName)}
+                              </div>
                               <div className="list-item-icon">
                                 <RightOutlined />
                               </div>

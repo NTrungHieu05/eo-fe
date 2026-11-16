@@ -27,19 +27,17 @@ const LeftContent: React.FC = () => {
       const error = resp.data?.error;
       if (error) {
         Message.error(error?.message ?? 'Có lỗi, thử lại');
-      } else {
-        onLogoutSuccess();
       }
     } catch (err) {
       console.log('logout-error :>> ', err.toString());
-    } finally {
     }
+    // Luôn xoá phiên phía trình duyệt, kể cả khi API logout lỗi.
     onLogoutSuccess();
   };
   const onLogoutSuccess = () => {
     reactLocalStorage.clear();
     const cookies = new Cookies();
-    cookies.remove(Config.AUTH_TOKEN_KEY);
+    cookies.remove(Config.AUTH_TOKEN_KEY, { path: '/' });
     router.push(ROUTES.WELCOME);
   };
 
@@ -54,30 +52,27 @@ const LeftContent: React.FC = () => {
           height={52}
         />
       </div>
-      <Menu selectedKeys={selectedKeys} mode="inline" theme="dark" className="heading-menu">
-        <Menu.Item key="user">
-          <Link href={ROUTES.ADMIN_USER}>User</Link>
-        </Menu.Item>
-        <Menu.Item key="skill">
-          <Link href={ROUTES.ADMIN_SKILL}>Skill</Link>
-        </Menu.Item>
-        <Menu.Item key="topic">
-          <Link href={ROUTES.ADMIN_TOPIC}>Topic</Link>
-        </Menu.Item>
-        <Menu.Item key="exam">
-          <Link href={ROUTES.ADMIN_EXAM}>Exam</Link>
-        </Menu.Item>
-        <Menu.Item key="question">
-          <Link href={ROUTES.ADMIN_QUESTION}>Question</Link>
-        </Menu.Item>
-        <Menu.Item key="logout">
-          <div onClick={onLogoutClick}>
-            Logout <LogoutOutlined className="ml-1" style={{ fontSize: '15px' }} />
-          </div>
-        </Menu.Item>
-        {/* <Menu.Item key="Question">Question</Menu.Item>
-        <Menu.Item key="System-Setting">System Setting</Menu.Item> */}
-      </Menu>
+      <Menu
+        selectedKeys={selectedKeys}
+        mode="inline"
+        theme="dark"
+        className="heading-menu"
+        items={[
+          { key: 'user', label: <Link href={ROUTES.ADMIN_USER}>Người dùng</Link> },
+          { key: 'skill', label: <Link href={ROUTES.ADMIN_SKILL}>Kỹ năng</Link> },
+          { key: 'topic', label: <Link href={ROUTES.ADMIN_TOPIC}>Part</Link> },
+          { key: 'exam', label: <Link href={ROUTES.ADMIN_EXAM}>Đề thi</Link> },
+          { key: 'question', label: <Link href={ROUTES.ADMIN_QUESTION}>Câu hỏi</Link> },
+          {
+            key: 'logout',
+            label: (
+              <div onClick={onLogoutClick}>
+                Đăng xuất <LogoutOutlined className="ml-1" style={{ fontSize: '15px' }} />
+              </div>
+            ),
+          },
+        ]}
+      />
     </LeftContentWrap>
   );
 };

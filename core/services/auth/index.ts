@@ -35,8 +35,9 @@ export const postCreatedQuestion = async (postData: any) => {
   return post(ENDPOINTS.QUESTION, postData);
 };
 
-export const postCollectExam = async (postData: any) => {
-  return post(ENDPOINTS.EXAM_COLLECT, postData);
+// Server chấm điểm, lưu lịch sử và trả về đáp án đúng của từng câu.
+export const postSubmitExam = async (postData: any) => {
+  return post(ENDPOINTS.EXAM_SUBMIT, postData);
 };
 
 export const postToeicScore = async (postData: any) => {

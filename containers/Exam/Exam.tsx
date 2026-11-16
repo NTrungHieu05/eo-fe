@@ -1,6 +1,6 @@
-import { getListQuestion, postCollectExam } from '@api';
+import { getListQuestion, postSubmitExam } from '@api';
 import { useLoading } from '@hooks';
-import { Message, answersMatch, isGroupedQuestion, sortAnswer } from '@utils';
+import { Message, answersMatch, applyAnswerKey, buildSubmitAnswers, isGroupedQuestion, sortAnswer } from '@utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import ExamResult from './ExamResult';
 import ExamStart from './ExamStart';
@@ -125,26 +125,26 @@ const Exam = ({ examCode }) => {
     }
   };
 
-  const onCollectionExam = async () => {
+  const onSubmitExam = async () => {
     if (!examCode) {
-      return;
+      return false;
     }
     try {
-      const { total, correctAnswerCount } = answerInfos;
-      const progress = total ? Math.round((correctAnswerCount / total) * 100) : 0;
-      const params = {
-        progress,
-        status: 1,
+      const resp: any = await postSubmitExam({
         examId: examCode,
-      };
-      const resp: any = await postCollectExam(params);
+        answers: buildSubmitAnswers(listQuestion),
+      });
       const error = resp.data.error;
       if (error) {
         Message.error(error?.message ?? 'Có lỗi, thử lại');
+        return false;
       }
+      setListQuestion((current) => applyAnswerKey(current, resp.data?.responseData?.results));
+      return true;
     } catch (err) {
       console.log('onSubmit-error :>> ', err.toString());
-      Message.error('Không lưu được kết quả');
+      Message.error('Không nộp được bài, thử lại');
+      return false;
     }
   };
 
@@ -178,7 +178,12 @@ const Exam = ({ examCode }) => {
       }
       submittingRef.current = true;
       setIsSubmitting(true);
-      await onCollectionExam();
+      const submitted = await onSubmitExam();
+      if (!submitted) {
+        submittingRef.current = false;
+        setIsSubmitting(false);
+        return;
+      }
     } else {
       submittingRef.current = false;
       setIsSubmitting(false);

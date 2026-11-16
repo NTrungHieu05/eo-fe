@@ -16,7 +16,8 @@ const ExamStart = ({
   examName,
   readOnly = false,
   onExit,
-}) => {
+  deadline = 0,
+}: any) => {
   const questions = listQuestion || [];
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
 
@@ -55,7 +56,7 @@ const ExamStart = ({
   const leaveExam = () => {
     Modal.confirm({
       title: 'Hủy bài làm?',
-      content: 'Thoát sẽ không lưu bài làm.',
+      content: 'Thoát sẽ xoá bài đang làm.',
       okText: 'Thoát',
       cancelText: 'Ở lại',
       okButtonProps: { danger: true },
@@ -77,7 +78,8 @@ const ExamStart = ({
     setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0));
   };
 
-  const examCountDown = useMemo(() => Date.now() + 1000 * 60 * 120, [examStatus]);
+  // Mốc hết giờ do trang cha giữ, để tải lại trang vẫn đếm tiếp chứ không đặt lại 120 phút.
+  const examCountDown = useMemo(() => deadline || Date.now() + 1000 * 60 * 120, [deadline, examStatus]);
 
   const onFinishCountdown = async () => {
     if (!questions.length || readOnly) {
