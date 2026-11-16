@@ -21,6 +21,8 @@ export const ENDPOINTS = {
   EXAM_ADD_QUESTION: `exam/add-question`,
   USER_BLOCK: `admin/users/block`,
   USER_UNBLOCK: `admin/users/unblock`,
+  FORGOTPASS: `user/pwd/forgot`,
+  RESETPASS: `user/pwd/reset`,
   CHANGEPASS: `user/changepassword`,
   ADMIN_EXAM: `admin/exam`,
   ADMIN_QUESTION: `admin/question`,

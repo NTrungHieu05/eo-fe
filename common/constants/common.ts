@@ -62,3 +62,10 @@ export const PATTERN_VALIDATE = {
     message: 'Invalid phone number format',
   },
 };
+
+export const STEP_FORGOT_PASSWORD = {
+  sendEmail: 'SEND_EMAIL',
+  verificationCode: 'VERIFICATION_CODE',
+  changePassword: 'CHANGE_PASS',
+  success: 'SUCCESS',
+};

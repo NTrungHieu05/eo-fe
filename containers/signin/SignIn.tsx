@@ -110,6 +110,11 @@ const SignIn: React.FC = () => {
                   />
                 </Form.Item>
 
+                <div className="action-forgotpassword">
+                  <div className="link-to-forgotpassword">
+                    <Link href={ROUTES.FORGOTPASSWORD}>Quên mật khẩu?</Link>
+                  </div>
+                </div>
                 <div className="action-login">
                   <Button
                     type="primary"

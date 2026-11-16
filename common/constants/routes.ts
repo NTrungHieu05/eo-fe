@@ -3,6 +3,8 @@ export const ROUTES = {
   SIGNIN: '/login',
   SIGNUP: '/signup',
   USER: '/user',
+  FORGOTPASSWORD: '/forgot-password',
+  RESETPASSWORD: '/reset-password',
   WELCOME: '/welcome',
   MINI_TEST: '/test/practice',
   ADMIN_EXAM: '/admin/exam',
@@ -15,4 +17,6 @@ export const PUBLIC_ROUTER = [
   ROUTES.WELCOME,
   ROUTES.SIGNIN,
   ROUTES.SIGNUP,
+  ROUTES.FORGOTPASSWORD,
+  ROUTES.RESETPASSWORD,
 ];

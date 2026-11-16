@@ -44,6 +44,9 @@ export const postToeicScore = async (postData: any) => {
   return post(ENDPOINTS.EXAM_SCORE, postData);
 };
 
+export const postForgotPassword = async (data) => {
+  return post(ENDPOINTS.FORGOTPASS, data);
+};
 export const postCreateAdminUser = async (postData: any) => {
   return post(ENDPOINTS.ADMIN_USERS, postData);
 };
@@ -54,6 +57,14 @@ export const postBlockUser = async (data) => {
 
 export const postUnblockUser = async (data) => {
   return post(`${ENDPOINTS.USER_UNBLOCK}`, data);
+};
+
+export const putResetPassword = async (data) => {
+  return post(`${ENDPOINTS.RESETPASS}`, data);
+};
+
+export const postResetPassword = async (data) => {
+  return post(`${ENDPOINTS.RESETPASS}`, data);
 };
 
 export const putChangePassword = async (data) => {

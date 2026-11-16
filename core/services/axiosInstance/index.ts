@@ -6,6 +6,8 @@ import { Message, reactLocalStorage } from '@utils';
 
 const PUBLIC_URLS = [
   ENDPOINTS.LOGIN,
+  ENDPOINTS.FORGOTPASS,
+  ENDPOINTS.RESETPASS,
   ENDPOINTS.REGISTER,
 ];
 
