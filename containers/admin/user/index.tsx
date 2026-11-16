@@ -108,7 +108,7 @@ const CMSUser: React.FC = () => {
 
   return (
     <PageWrapper>
-      <div className="cms-page-title">Manager User</div>
+      <div className="cms-page-title">Quản lý người dùng</div>
       <div className="btn-action-box">
         <Button
           onClick={() => {
@@ -117,23 +117,24 @@ const CMSUser: React.FC = () => {
           }}
           className="btn-add"
         >
-          <PlusOutlined /> Add User
+          <PlusOutlined /> Thêm người dùng
         </Button>
       </div>
       <Table
+        scroll={{ x: 960 }}
         dataSource={dataList}
         pagination={false}
         rowKey={(obj) => obj.userId}
         loading={{ indicator: <Spin />, spinning: isLoading }}
       >
         <Column
-          title="Action"
+          title="Thao tác"
           key="action"
           dataIndex=""
           width="6rem"
           render={(record) => (
             <div className="cursor-pointer">
-              <FormOutlined className="mr-3" alt="Edit" onClick={() => onClickEdit(record)} />
+              <FormOutlined className="mr-3" alt="Sửa" onClick={() => onClickEdit(record)} />
               {record.accountNonLocked ? (
                 <UnlockOutlined onClick={() => onClickLock(record)} />
               ) : (
@@ -143,7 +144,7 @@ const CMSUser: React.FC = () => {
           )}
         />
         <Column
-          title="User Name"
+          title="Họ tên"
           key="displayName"
           className="column-name"
           render={(record) => <div>{record.displayName}</div>}
@@ -157,7 +158,7 @@ const CMSUser: React.FC = () => {
           render={(record) => <div>{record.email}</div>}
         />
         <Column
-          title="Phone"
+          title="Số điện thoại"
           key="phone"
           dataIndex=""
           className="column-image"
@@ -165,7 +166,7 @@ const CMSUser: React.FC = () => {
           render={(record) => <div>{record.phone}</div>}
         />
         <Column
-          title="Date of Birth"
+          title="Ngày sinh"
           key="dob"
           dataIndex=""
           className="column-image"
@@ -173,7 +174,7 @@ const CMSUser: React.FC = () => {
           render={(record) => <div>{record.dob}</div>}
         />
         <Column
-          title="gender"
+          title="Giới tính"
           key="gender"
           dataIndex=""
           className="column-image"
@@ -184,7 +185,7 @@ const CMSUser: React.FC = () => {
       <Modal
         width={755}
         bodyStyle={{ height: 'max-content' }}
-        title={selectedRow ? 'Edit User' : 'Add User'}
+        title={selectedRow ? 'Sửa người dùng' : 'Thêm người dùng'}
         maskClosable={false}
         visible={showModal}
         onCancel={onCloseCreatedForm}
@@ -197,7 +198,8 @@ const CMSUser: React.FC = () => {
       <Modal
         width={450}
         bodyStyle={{ height: 'max-content' }}
-        title={'Confirm Modal'}
+        title={'Xác nhận'}
+        okText="Đồng ý"
         maskClosable={false}
         visible={showModalConfirm}
         onCancel={onCancelConfirm}
@@ -205,7 +207,7 @@ const CMSUser: React.FC = () => {
         destroyOnClose
         className="edit-profile-modal"
       >
-        Are you sure?
+        Bạn có chắc chắn không?
       </Modal>
     </PageWrapper>
   );

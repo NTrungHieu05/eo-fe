@@ -99,7 +99,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                   <Col span={24}>
                     <Form.Item
                       name="name"
-                      label="Skill Name"
+                      label="Tên kỹ năng"
                       rules={[
                         { required: true, message: 'Nhập tên kỹ năng' },
                         {
@@ -108,13 +108,13 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                         },
                       ]}
                     >
-                      <Input placeholder="Enter skill name" />
+                      <Input placeholder="Nhập tên kỹ năng" />
                     </Form.Item>
                   </Col>
                   <Col span={24}>
                     <Form.Item
                       name="topicIds"
-                      label="List Topic"
+                      label="Danh sách Part"
                       rules={
                         [
                           // { required: true, message: 'Please input exam name!' },
@@ -129,7 +129,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                         mode="multiple"
                         allowClear
                         style={{ width: '100%' }}
-                        placeholder="Please select"
+                        placeholder="Chọn Part"
                         options={dataList}
                       />
                     </Form.Item>
@@ -143,7 +143,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       className="btn-cancel btn-cancel-edit-profile btn-edit-talent-profile mr-3"
                       onClick={onClose}
                     >
-                      {'Cancel'}
+                      {'Hủy'}
                     </Button>
                   </Col>
                   <Col span={8}>
@@ -152,7 +152,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       className="btn-loading btn-edit-talent-profile"
                       loading={isLoading}
                     >
-                      {formData ? 'Update' : 'Add'}
+                      {formData ? 'Cập nhật' : 'Thêm'}
                     </Button>
                   </Col>
                 </Row>

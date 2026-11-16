@@ -1,7 +1,7 @@
 import { CloseCircleOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons';
 import { getListSkillAdmin, putDeleteSkill } from '@api';
 import { useLoading } from '@hooks';
-import { Message } from '@utils';
+import { formatName, Message } from '@utils';
 import { Button, Modal, Spin, Table } from 'antd';
 import Column from 'antd/lib/table/Column';
 import React, { useEffect, useState } from 'react';
@@ -84,13 +84,14 @@ const CMSSkill: React.FC = () => {
 
   return (
     <PageWrapper>
-      <div className="cms-page-title">Manager Skill</div>
+      <div className="cms-page-title">Quản lý kỹ năng</div>
       <div className="btn-action-box">
         <Button onClick={() => setShowModal(true)} className="btn-add">
-          <PlusOutlined /> Add Skill
+          <PlusOutlined /> Thêm kỹ năng
         </Button>
       </div>
       <Table
+        scroll={{ x: 960 }}
         dataSource={dataList}
         pagination={false}
         rowKey={(obj) => obj.id}
@@ -102,7 +103,7 @@ const CMSSkill: React.FC = () => {
         // }}
       >
         <Column
-          title="Action"
+          title="Thao tác"
           key="action"
           dataIndex=""
           width="6rem"
@@ -110,10 +111,10 @@ const CMSSkill: React.FC = () => {
             <div className="cursor-pointer">
               <CloseCircleOutlined
                 className="mr-3"
-                alt="Delete"
+                alt="Xóa"
                 onClick={() => onClickDelete(record)}
               />
-              <FormOutlined alt="Edit" onClick={() => onClickEdit(record)} />
+              <FormOutlined alt="Sửa" onClick={() => onClickEdit(record)} />
             </div>
           )}
         />
@@ -125,14 +126,14 @@ const CMSSkill: React.FC = () => {
           render={(record) => <div>{record?.id}</div>}
         />
         <Column
-          title="Skill Name"
+          title="Tên kỹ năng"
           key="name"
           dataIndex=""
           className="column-name"
-          render={(record) => <div>{record?.name}</div>}
+          render={(record) => <div>{formatName(record?.name)}</div>}
         />
         <Column
-          title="Topic count"
+          title="Số Part"
           key="topic-count"
           dataIndex=""
           className="column-name"
@@ -142,7 +143,7 @@ const CMSSkill: React.FC = () => {
       <Modal
         width={755}
         bodyStyle={{ height: 'max-content' }}
-        title={selectedRow ? 'Edit Skill' : 'Add Skill'}
+        title={selectedRow ? 'Sửa kỹ năng' : 'Thêm kỹ năng'}
         maskClosable={false}
         visible={showModal}
         onCancel={onCloseCreatedForm}
@@ -155,7 +156,9 @@ const CMSSkill: React.FC = () => {
       <Modal
         width={450}
         bodyStyle={{ height: 'max-content' }}
-        title={'Confirm Delete'}
+        title={'Xác nhận xóa'}
+        okText="Xóa"
+        okButtonProps={{ danger: true }}
         maskClosable={false}
         visible={showModalConfirm}
         onCancel={onCancelConfirm}
@@ -163,7 +166,7 @@ const CMSSkill: React.FC = () => {
         destroyOnClose
         className="edit-profile-modal"
       >
-        Are you sure?
+        Bạn có chắc chắn không?
       </Modal>
     </PageWrapper>
   );

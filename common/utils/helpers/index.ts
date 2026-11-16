@@ -188,3 +188,86 @@ export const parseDob = (dob) => {
   const parsed = moment(dob, ['DD/MM/YYYY', 'DD-MM-YYYY', 'YYYY-MM-DD'], true);
   return parsed.isValid() ? parsed : null;
 };
+
+// Chuẩn hoá tên Part/đề lấy từ DB: "Phần 1:Mô Tả Tranh" -> "Phần 1: Mô Tả Tranh", gộp khoảng trắng thừa.
+export const formatName = (name?: string) =>
+  String(name ?? '')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*:\s*/g, ': ')
+    .trim();
+
+// --- Nộp bài: đáp án chỉ có sau khi server chấm ---
+
+const leafKey = (questionId: string, childIndex?: number | null) =>
+  `${questionId}#${childIndex === null || childIndex === undefined ? '' : childIndex}`;
+
+/** Gom đáp án đã chọn thành body cho POST /exam/submit. */
+export const buildSubmitAnswers = (questions: any[] = []) => {
+  const answers: Array<{ questionId: string; childIndex: number | null; answer: string }> = [];
+  questions.forEach((question) => {
+    const questionId = getQuestionId(question);
+    if (!questionId) return;
+    if (isGroupedQuestion(question)) {
+      (question.childQuestions || []).forEach((child, childIndex) => {
+        if (child?.userAnswer?.[0]) {
+          answers.push({ questionId, childIndex, answer: child.userAnswer[0] });
+        }
+      });
+    } else if (question?.userAnswer?.[0]) {
+      answers.push({ questionId, childIndex: null, answer: question.userAnswer[0] });
+    }
+  });
+  return answers;
+};
+
+/** Gắn đáp án đúng và giải thích server trả về vào danh sách câu để màn xem lại hiển thị. */
+export const applyAnswerKey = (questions: any[] = [], results: any[] = []) => {
+  const byKey = new Map<string, any>();
+  (results || []).forEach((result) => byKey.set(leafKey(result.questionId, result.childIndex), result));
+  const withKey = (item, result) =>
+    result
+      ? {
+          ...item,
+          answer: {
+            ...item?.answer,
+            texts: result.correctAnswers || [],
+            hint: result.hint ?? item?.answer?.hint,
+          },
+        }
+      : item;
+  return questions.map((question) => {
+    const questionId = getQuestionId(question);
+    if (isGroupedQuestion(question)) {
+      return {
+        ...question,
+        childQuestions: (question.childQuestions || []).map((child, childIndex) =>
+          withKey(child, byKey.get(leafKey(questionId, childIndex)))
+        ),
+      };
+    }
+    return withKey(question, byKey.get(leafKey(questionId, null)));
+  });
+};
+
+/** Ngược với buildSubmitAnswers: gắn lại đáp án đã lưu (bài làm dở) vào danh sách câu. */
+export const applySavedAnswers = (questions: any[] = [], answers: any[] = []) => {
+  const byKey = new Map<string, string>();
+  (answers || []).forEach((item) => {
+    if (item?.questionId && item?.answer) {
+      byKey.set(leafKey(item.questionId, item.childIndex), item.answer);
+    }
+  });
+  const withAnswer = (item, answer) => (answer ? { ...item, userAnswer: [answer] } : item);
+  return questions.map((question) => {
+    const questionId = getQuestionId(question);
+    if (isGroupedQuestion(question)) {
+      return {
+        ...question,
+        childQuestions: (question.childQuestions || []).map((child, childIndex) =>
+          withAnswer(child, byKey.get(leafKey(questionId, childIndex)))
+        ),
+      };
+    }
+    return withAnswer(question, byKey.get(leafKey(questionId, null)));
+  });
+};

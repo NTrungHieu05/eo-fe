@@ -32,10 +32,16 @@ export const ContentWrapper = styled.div`
       .list-item-name {
         color: #12343d;
         font-weight: 600;
+        font-size: 14px;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .list-item-icon {
         color: #0e7c7b;
-        flex: 1;
+        flex: 1 0 auto;
+        padding-left: 8px;
         display: flex;
         justify-content: flex-end;
         align-items: center;
@@ -48,8 +54,13 @@ export const ContentWrapper = styled.div`
       text-align: left;
       font-weight: 800;
       font-size: 28px;
+      line-height: 1.3;
       color: #12343d;
       padding: 8px 0 24px;
+      @media (max-width: 576px) {
+        font-size: 22px;
+        padding-bottom: 16px;
+      }
     }
     .practice-list-view-main {
       .practice-name {

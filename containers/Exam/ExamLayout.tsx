@@ -2,7 +2,7 @@ import { Col, Progress, Row } from 'antd';
 import { ContentWrapper } from './Exam.style';
 import QuestionPaletteRoot from './QuestionPaletteRoot';
 import { getListExam } from '@api';
-import { Message } from '@utils';
+import { formatName, Message } from '@utils';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 
@@ -73,7 +73,7 @@ const ExamLayout: React.FC<ExamLayoutProps> = (props: ExamLayoutProps) => {
             <div className="study-layout-item study-layout-left">
               <div className="study-layout-left-wrap expand">
                 <h2 className="MuiTypography-root MuiTypography-body1 root-topic-name css-100vuwi">
-                  {topicData?.name}
+                  {formatName(topicData?.name)}
                 </h2>
                 <QuestionPaletteRoot
                   listQuestion={props.listQuestion}
@@ -94,7 +94,7 @@ const ExamLayout: React.FC<ExamLayoutProps> = (props: ExamLayoutProps) => {
                             } `}
                           >
                             <span className="level-wrap">
-                              <span className="level-name">{item.name}</span>
+                              <span className="level-name">{formatName(item.name)}</span>
                             </span>
                           </div>
                         </div>

@@ -83,7 +83,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                   <Col span={12}>
                     <Form.Item
                       name="username"
-                      label="User Name"
+                      label="Họ tên"
                       rules={[
                         { required: true, message: 'Nhập tên' },
                         {
@@ -92,7 +92,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                         },
                       ]}
                     >
-                      <Input placeholder="Enter your name" />
+                      <Input placeholder="Nhập họ tên" />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
@@ -110,14 +110,14 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                         },
                       ]}
                     >
-                      <Input placeholder="Email (Account)" readOnly={!!formData} />
+                      <Input placeholder="Email đăng nhập" readOnly={!!formData} />
                     </Form.Item>
                   </Col>
                   {!formData && (
                     <Col span={12}>
                       <Form.Item
                         name="password"
-                        label="Password"
+                        label="Mật khẩu"
                         rules={[
                           { required: true, message: 'Nhập mật khẩu' },
                           {
@@ -133,7 +133,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                   <Col span={12}>
                     <Form.Item
                       name="phone"
-                      label="Phone"
+                      label="Số điện thoại"
                       rules={[
                         {
                           required: true,
@@ -145,13 +145,13 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                         },
                       ]}
                     >
-                      <Input placeholder="Phone" />
+                      <Input placeholder="Số điện thoại" />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
                     <Form.Item
                       name="dob"
-                      label="Date of Birth"
+                      label="Ngày sinh"
                       rules={[
                         {
                           required: true,
@@ -163,11 +163,11 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                     </Form.Item>
                   </Col>
                   <Col span={12}>
-                    <Form.Item name="gender" label="Gender">
-                      <Select placeholder="Select a option and change input text above">
-                        <Option value="male">Male</Option>
-                        <Option value="female">Female</Option>
-                        <Option value="other">Other</Option>
+                    <Form.Item name="gender" label="Giới tính">
+                      <Select placeholder="Chọn giới tính">
+                        <Option value="male">Nam</Option>
+                        <Option value="female">Nữ</Option>
+                        <Option value="other">Khác</Option>
                       </Select>
                     </Form.Item>
                   </Col>
@@ -180,7 +180,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       className="btn-cancel btn-cancel-edit-profile btn-edit-talent-profile mr-3"
                       onClick={onClose}
                     >
-                      {'Cancel'}
+                      {'Hủy'}
                     </Button>
                   </Col>
                   <Col span={8}>
@@ -189,7 +189,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       className="btn-loading btn-edit-talent-profile"
                       loading={isLoading}
                     >
-                      {formData ? 'Update' : 'Add'}
+                      {formData ? 'Cập nhật' : 'Thêm'}
                     </Button>
                   </Col>
                 </Row>

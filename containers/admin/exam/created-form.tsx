@@ -191,7 +191,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                     <Col span={24}>
                       <Form.Item
                         name="topicId"
-                        label="Part (topic)"
+                        label="Part"
                         rules={[{ required: true, message: 'Chọn Part để lấy câu hỏi' }]}
                       >
                         <Select
@@ -238,7 +238,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       className="btn-cancel btn-cancel-edit-profile btn-edit-talent-profile mr-3"
                       onClick={onClose}
                     >
-                      {'Cancel'}
+                      {'Hủy'}
                     </Button>
                   </Col>
                   <Col span={8}>
@@ -247,7 +247,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       className="btn-loading btn-edit-talent-profile"
                       loading={isLoading}
                     >
-                      {formData ? 'Update' : 'Add'}
+                      {formData ? 'Cập nhật' : 'Thêm'}
                     </Button>
                   </Col>
                 </Row>

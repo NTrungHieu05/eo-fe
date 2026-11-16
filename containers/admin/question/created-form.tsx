@@ -251,7 +251,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                   <Col span={24}>
                     <Form.Item
                       name="topicId"
-                      label="Part (topic)"
+                      label="Part"
                       rules={[{ required: true, message: 'Câu hỏi phải thuộc một Part' }]}
                     >
                       <Select
@@ -263,7 +263,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                     </Form.Item>
                   </Col>
                   <Col span={24}>
-                    <div className="list-title">Question</div>
+                    <div className="list-title">Câu hỏi</div>
                   </Col>
                   <Col span={24}>
                     <div className="media-label">File nghe (Part 1–4)</div>
@@ -309,7 +309,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                   </Col>
                   <Col span={24}>
                     <Form.Item name={['question', 'text']}>
-                      <Input placeholder="Enter question text" />
+                      <Input placeholder="Nhập nội dung đoạn / câu hỏi" />
                     </Form.Item>
                   </Col>
                   <Col span={24}>
@@ -317,12 +317,12 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       <Checkbox
                         onChange={(event) => onToggleQuestionGroup(event.target.checked)}
                       >
-                        Is question group?
+                        Câu hỏi nhóm?
                       </Checkbox>
                     </Form.Item>
                   </Col>
                 </Row>
-                <div className="list-title">{isQuestionGroupField ? 'Child Questions' : 'Answer'} </div>
+                <div className="list-title">{isQuestionGroupField ? 'Câu hỏi con' : 'Đáp án'} </div>
                 {isQuestionGroupField ? (
                   <Row gutter={[8, 8]} className="list-child-card-box">
                     <Col span={24}>
@@ -342,7 +342,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                                       name={[name, 'question', 'text']}
                                       rules={[{ required: true, message: 'Nhập nội dung câu hỏi' }]}
                                     >
-                                      <Input placeholder="Enter question" />
+                                      <Input placeholder="Nhập câu hỏi" />
                                     </Form.Item>
                                   </Col>
                                   <Col span={24}>
@@ -376,7 +376,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                                                   >
                                                     <Input
                                                       style={{ width: '580px' }}
-                                                      placeholder={`Enter answer ${name + 1}`}
+                                                      placeholder={`Nhập đáp án ${name + 1}`}
                                                     />
                                                   </Form.Item>
                                                   <Form.Item
@@ -403,7 +403,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                                               icon={<PlusOutlined />}
                                               className="btn-add-answer"
                                             >
-                                              Add answer
+                                              Thêm đáp án
                                             </Button>
                                           </Form.Item>
                                         </>
@@ -412,7 +412,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                                   </Col>
                                   <Col span={24}>
                                     <Form.Item name={[name, 'hint']}>
-                                      <Input placeholder="Enter Answer hint" />
+                                      <Input placeholder="Nhập gợi ý / giải thích" />
                                     </Form.Item>
                                   </Col>
                                   <Col span={8}>
@@ -421,7 +421,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                                       className="btn-remove-card"
                                       onClick={() => operationChildQuestion.remove(name)}
                                     >
-                                      Remove child question
+                                      Xóa câu hỏi con
                                     </Button>
                                   </Col>
                                 </Row>
@@ -435,7 +435,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                                 icon={<PlusOutlined />}
                                 className="btn-add-card"
                               >
-                                Add child question
+                                Thêm câu hỏi con
                               </Button>
                             </Form.Item>
                           </>
@@ -462,7 +462,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                                 >
                                   <Input
                                     style={{ width: '580px' }}
-                                    placeholder={`Enter answer ${name + 1}`}
+                                    placeholder={`Nhập đáp án ${name + 1}`}
                                   />
                                 </Form.Item>
                                 <Form.Item
@@ -482,7 +482,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                                 block
                                 icon={<PlusOutlined />}
                               >
-                                Add answer
+                                Thêm đáp án
                               </Button>
                             </Form.Item>
                           </>
@@ -491,7 +491,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                     </Col>
                     <Col span={24}>
                       <Form.Item name={['hint']}>
-                        <Input placeholder="Enter Answer hint" />
+                        <Input placeholder="Nhập gợi ý / giải thích" />
                       </Form.Item>
                     </Col>
                   </Row>
@@ -505,7 +505,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       className="btn-cancel btn-cancel-edit-profile btn-edit-talent-profile mr-3"
                       onClick={onClose}
                     >
-                      {'Cancel'}
+                      {'Hủy'}
                     </Button>
                   </Col>
                   <Col span={8}>
@@ -514,7 +514,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       className="btn-loading btn-edit-talent-profile"
                       loading={isLoading}
                     >
-                      {formData ? 'Update' : 'Add'}
+                      {formData ? 'Cập nhật' : 'Thêm'}
                     </Button>
                   </Col>
                 </Row>

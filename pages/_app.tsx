@@ -8,6 +8,9 @@ import { globalStyles } from '@styles/global';
 import 'bootstrap-utilities/bootstrap-utilities.css';
 import '@styles/global.css';
 import { BreakpointsContextProvider } from '@contexts/breakpointsContext';
+import { ConfigProvider } from 'antd';
+import viVN from 'antd/lib/locale/vi_VN';
+import 'moment/locale/vi';
 
 require('@styles/antd.less');
 
@@ -18,6 +21,7 @@ const MyApp = ({ Component, pageProps, user, router }) => {
         components={[
           [CookiesProvider],
           [ThemeProvider, { theme }],
+          [ConfigProvider, { locale: viVN }],
           [ToeicContextProvider],
           [BreakpointsContextProvider],
         ]}

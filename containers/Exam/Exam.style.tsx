@@ -454,7 +454,27 @@ export const ContentWrapper = styled.div`
     .module-game-overview-component
       .main-game-overview-question-categories
       .question-categories-list {
-      gap: 5px;
+      gap: 8px;
+      padding: 0;
+      .divider-continue-box {
+        display: none;
+      }
+      .css-176iyts {
+        flex: 1 1 0;
+        min-width: 0;
+      }
+      .css-tkw370 {
+        width: 60px;
+        height: 60px;
+      }
+      .MuiIconButton-root {
+        font-size: 20px;
+      }
+      .MuiTypography-root {
+        font-size: 14px;
+        margin-top: 8px;
+        white-space: nowrap;
+      }
     }
   }
 

@@ -18,6 +18,7 @@ export const HomeContentWrap = styled.div`
     margin-bottom: 36px;
     box-shadow: var(--cardShadow);
     h1 {
+      color: #fff;
       font-size: 36px;
       font-weight: 800;
       margin: 8px 0 12px;
@@ -68,6 +69,20 @@ export const HomeContentWrap = styled.div`
       flex-direction: column;
       align-items: flex-start;
     }
+    @media (max-width: 576px) {
+      padding: 28px 22px;
+      h1 {
+        font-size: 28px;
+      }
+      .hero-stats {
+        gap: 10px;
+        width: 100%;
+        div {
+          flex: 1;
+          min-width: 0;
+        }
+      }
+    }
   }
 
   .part-card {
@@ -106,11 +121,18 @@ export const HomeContentWrap = styled.div`
     font-weight: 800;
     background: var(--accent, #0e7c7b);
   }
+  .part-no {
+    flex-shrink: 0;
+  }
   .part-en {
     font-size: 12px;
     color: #6b8084;
     text-align: right;
-    max-width: 58%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    margin-left: 12px;
   }
   .part-card-name {
     font-weight: 700;

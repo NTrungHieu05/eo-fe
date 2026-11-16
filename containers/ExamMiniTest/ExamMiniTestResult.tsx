@@ -9,8 +9,6 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
     newAnswerCount,
     correctAnswerCount,
     incorrectAnswerCount,
-    listeningScore = 5,
-    readingScore = 5,
     toeicScore = 10,
     listeningCorrect = 0,
     readingCorrect = 0,
@@ -82,21 +80,9 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
                       <div className="questions-stat-item-label">{officialScale ? 'TOEIC' : 'Đúng'}</div>
                     </div>
                     <div className="main-stats-data-questions-stat-item item-correct">
-                      <div
-                        className="questions-stat-item-value"
-                        style={{ color: 'rgb(130, 188, 36)' }}
-                      >
-                        {officialScale ? `L ${listeningScore}` : listeningCorrect}
-                      </div>
                       <div className="questions-stat-item-label">Listening {listeningCorrect}/{listeningTotal}</div>
                     </div>
                     <div className="main-stats-data-questions-stat-item item-incorrect">
-                      <div
-                        className="questions-stat-item-value"
-                        style={{ color: 'rgb(101, 110, 241)' }}
-                      >
-                        {officialScale ? `R ${readingScore}` : readingCorrect}
-                      </div>
                       <div className="questions-stat-item-label">Reading {readingCorrect}/{readingTotal}</div>
                     </div>
                   </div>

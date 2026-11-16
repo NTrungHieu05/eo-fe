@@ -21,7 +21,11 @@ export const AdminLayoutWrap = styled.div`
     }
     .right-content-wrap {
       width: 100%;
+      min-width: 0;
       position: relative;
+      .ant-table-thead > tr > th {
+        white-space: nowrap;
+      }
     }
   }
 `;

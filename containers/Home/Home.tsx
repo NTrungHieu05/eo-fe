@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { HomeContentWrap, HomePageWrapper } from './Home.style';
 import { useToeicContext } from '@contexts/toeicContext';
 import { ROUTES } from '@constants';
+import { formatName } from '@utils';
 
 const PART_META = [
   { key: 'Phần 1', part: '01', en: 'Photographs', accent: '#0E7C7B' },
@@ -70,7 +71,7 @@ const Home = () => {
                     {(skill.topics || []).map((topic) => {
                       const meta = getPartMeta(topic.topicName);
                       return (
-                        <Col xs={24} sm={12} md={8} lg={6} className="cursor-pointer" key={topic.topicId}>
+                        <Col xs={24} sm={12} lg={8} xl={6} className="cursor-pointer" key={topic.topicId}>
                           <Link href={`/practice/${topic?.topicId}`}>
                             <a>
                             <div className="part-card" style={{ ['--accent' as any]: meta.accent }}>
@@ -78,7 +79,7 @@ const Home = () => {
                                 <span className="part-no">{meta.part}</span>
                                 <span className="part-en">{meta.en}</span>
                               </div>
-                              <div className="part-card-name">{topic.topicName}</div>
+                              <div className="part-card-name">{formatName(topic.topicName)}</div>
                               <div className="part-card-go">Luyện ngay →</div>
                             </div>
                             </a>

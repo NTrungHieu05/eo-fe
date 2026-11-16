@@ -69,7 +69,7 @@ const ChangePasswordForm = ({ onClose }: ChangePasswordFormProps) => {
                       ]}
                     >
                       <InputPassword
-                        placeholder="Enter your password"
+                        placeholder="Mật khẩu hiện tại"
                         prefix={<LockOutlined style={{ fontSize: '28px' }} />}
                       />
                     </Form.Item>
@@ -90,7 +90,7 @@ const ChangePasswordForm = ({ onClose }: ChangePasswordFormProps) => {
                     >
                       <InputPassword
                         key={'reg-password'}
-                        placeholder="Enter your password"
+                        placeholder="Mật khẩu mới"
                         prefix={<LockOutlined style={{ fontSize: '28px' }} />}
                       />
                     </Form.Item>
@@ -116,7 +116,7 @@ const ChangePasswordForm = ({ onClose }: ChangePasswordFormProps) => {
                     >
                       <InputPassword
                         key={'reg-confirmPassword'}
-                        placeholder="Enter your confirm password"
+                        placeholder="Nhập lại mật khẩu mới"
                         prefix={<LockOutlined style={{ fontSize: '28px' }} />}
                       />
                     </Form.Item>

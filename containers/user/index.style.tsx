@@ -45,8 +45,35 @@ export const UserPageWrapper = styled.div`
     font-size: 16px;
     font-weight: 500;
   }
+  .css-p6esn3 {
+    flex: 1;
+    min-width: 0;
+  }
   .user-account-info {
-    margin-bottom: 10px;
+    margin-bottom: 16px;
+    overflow-wrap: anywhere;
+  }
+  @media (max-width: 767px) {
+    .css-wzp03g {
+      padding-top: 24px;
+    }
+    .css-1aw1ced {
+      font-size: 28px;
+    }
+    .css-uc4fey {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+    }
+    .css-0 {
+      text-align: center;
+    }
+    .css-16uqvxn {
+      font-size: 120px;
+    }
+    .css-c9z8ga {
+      margin-top: 8px;
+    }
   }
   .css-1o9npbs {
     display: inline-flex;
@@ -133,7 +160,7 @@ export const UserPageWrapper = styled.div`
   .form-datepicker {
     border: 1px solid #dae0ea;
     height: 55px;
-    padding-left: 40px;
+    padding-left: 15px;
     border-radius: 10px;
     padding-right: 15px;
     vertical-align: middle;

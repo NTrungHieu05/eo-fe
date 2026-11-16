@@ -1,7 +1,7 @@
 import { CloseCircleOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons';
 import { getListExamAdmin, getListTopicAdmin, putDeleteExam } from '@api';
 import { useLoading } from '@hooks';
-import { Message } from '@utils';
+import { formatName, Message } from '@utils';
 import { Button, Modal, Spin, Table } from 'antd';
 import Column from 'antd/lib/table/Column';
 import React, { useEffect, useState } from 'react';
@@ -96,13 +96,14 @@ const CMSExam: React.FC = () => {
 
   return (
     <PageWrapper>
-      <div className="cms-page-title">Manager Exam</div>
+      <div className="cms-page-title">Quản lý đề</div>
       <div className="btn-action-box">
         <Button onClick={() => setShowModal(true)} className="btn-add">
-          <PlusOutlined /> Add Exam
+          <PlusOutlined /> Thêm đề
         </Button>
       </div>
       <Table
+        scroll={{ x: 960 }}
         dataSource={dataList}
         pagination={false}
         rowKey={(obj) => obj.id}
@@ -114,7 +115,7 @@ const CMSExam: React.FC = () => {
         // }}
       >
         <Column
-          title="Action"
+          title="Thao tác"
           key="action"
           dataIndex=""
           width="6rem"
@@ -122,10 +123,10 @@ const CMSExam: React.FC = () => {
             <div className="cursor-pointer">
               <CloseCircleOutlined
                 className="mr-3"
-                alt="Delete"
+                alt="Xóa"
                 onClick={() => onClickDelete(record)}
               />
-              <FormOutlined alt="Edit" onClick={() => onClickEdit(record)} />
+              <FormOutlined alt="Sửa" onClick={() => onClickEdit(record)} />
             </div>
           )}
         />
@@ -137,27 +138,27 @@ const CMSExam: React.FC = () => {
           render={(record) => <div>{record?.id}</div>}
         />
         <Column
-          title="Exam Name"
+          title="Tên đề"
           key="name"
           dataIndex=""
           className="column-name"
-          render={(record) => <div>{record?.name}</div>}
+          render={(record) => <div>{formatName(record?.name)}</div>}
         />
         <Column
           title="Loại"
           key="kind"
           render={(record) => (
-            <div>{record?.practiceTest ? 'Thi thử' : 'Luyện Part'}</div>
+            <div className="text-nowrap">{record?.practiceTest ? 'Thi thử' : 'Luyện Part'}</div>
           )}
         />
         <Column
           title="Part"
           key="topic"
           render={(record) => (
-            <div>
+            <div className="text-nowrap">
               {record?.practiceTest
                 ? 'Nhiều Part'
-                : topics.find((topic) => topic.id === record?.topicId)?.name || record?.topicId || '—'}
+                : formatName(topics.find((topic) => topic.id === record?.topicId)?.name) || record?.topicId || '—'}
             </div>
           )}
         />
@@ -172,7 +173,7 @@ const CMSExam: React.FC = () => {
       <Modal
         width={755}
         bodyStyle={{ height: 'max-content' }}
-        title={selectedRow ? 'Edit Exam' : 'Add Exam'}
+        title={selectedRow ? 'Sửa đề' : 'Thêm đề'}
         maskClosable={false}
         visible={showModal}
         onCancel={onCloseCreatedForm}
@@ -185,7 +186,9 @@ const CMSExam: React.FC = () => {
       <Modal
         width={450}
         bodyStyle={{ height: 'max-content' }}
-        title={'Confirm Delete'}
+        title={'Xác nhận xóa'}
+        okText="Xóa"
+        okButtonProps={{ danger: true }}
         maskClosable={false}
         visible={showModalConfirm}
         onCancel={onCancelConfirm}
@@ -193,7 +196,7 @@ const CMSExam: React.FC = () => {
         destroyOnClose
         className="edit-profile-modal"
       >
-        Are you sure?
+        Bạn có chắc chắn không?
       </Modal>
     </PageWrapper>
   );
