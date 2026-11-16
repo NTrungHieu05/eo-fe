@@ -79,22 +79,9 @@ export const SignInPageWrapper = styled.div`
       margin-top: 5px;
     }
   }
-  .link-to-forgotpassword {
-    color: #0e7c7b;
-    font-size: 14px;
-    font-weight: 600;
-    padding-bottom: 20px;
-    text-align: right;
-    cursor: pointer;
-    a {
-      color: inherit;
-    }
-    &:hover {
-      text-decoration: underline;
-    }
-  }
   .action-login {
     text-align: center;
+    margin-top: 8px;
   }
   .btn-signin {
     display: inline-flex;
