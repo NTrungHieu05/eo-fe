@@ -5,6 +5,7 @@ export const ROUTES = {
   USER: '/user',
   WELCOME: '/welcome',
   MINI_TEST: '/test/practice',
+  HISTORY: '/history',
   ADMIN_EXAM: '/admin/exam',
   ADMIN_TOPIC: '/admin/topic',
   ADMIN_SKILL: '/admin/skill',

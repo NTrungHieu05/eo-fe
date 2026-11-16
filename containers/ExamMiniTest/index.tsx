@@ -23,7 +23,7 @@ const clearProgress = () => {
 const isCorrectAnswer = (question) =>
   answersMatch(question?.userAnswer, question?.answer?.texts);
 
-const mapQuestions = (questions: any[] = []) => {
+export const mapQuestions = (questions: any[] = []) => {
   let questionNo = 0;
   return questions.map((question) => {
     const isQuestionGroup = isGroupedQuestion(question);

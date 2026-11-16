@@ -52,6 +52,16 @@ const MainLayout = (props) => {
             </Link>
           ),
         },
+        {
+          key: 'history',
+          label: (
+            <Link href={ROUTES.HISTORY}>
+              <div>
+                <span className="sub-title">Lịch sử làm bài</span>
+              </div>
+            </Link>
+          ),
+        },
         ...(Array.isArray(userInfos?.roles) && userInfos.roles.includes(ROLE.ADMIN)
           ? [
               {

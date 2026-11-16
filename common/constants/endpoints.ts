@@ -30,5 +30,6 @@ export const ENDPOINTS = {
   ADMIN_EDIT_USERS: `user/info`,
   ADMIN_UPLOAD: `upload`,
   EXAM_SUBMIT: `exam/submit`,
+  EXAM_ATTEMPT: `exam/attempt`,
   EXAM_SCORE: `exam/score`,
 };

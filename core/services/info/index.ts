@@ -19,6 +19,15 @@ export const getListQuestionMiniTest = async () => {
   return get(ENDPOINTS.MINI_TEST_QUESTION);
 };
 
+// Lịch sử làm bài của người đang đăng nhập.
+export const getMyAttempts = async () => {
+  return get(ENDPOINTS.EXAM_ATTEMPT);
+};
+
+export const getMyAttempt = async (id: string) => {
+  return get(`${ENDPOINTS.EXAM_ATTEMPT}/${id}`);
+};
+
 export const getPracticeTestById = async (id: string) => {
   return get(`${ENDPOINTS.MINI_TEST_QUESTION}/${id}`);
 };
