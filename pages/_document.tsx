@@ -30,7 +30,7 @@ class MyDocument extends Document {
     return (
       <Html lang="vi">
         <Head>
-          <title>{'Exam Online — Luyện thi TOEIC'}</title>
+          <title>{'TOEIC Online — Luyện thi TOEIC'}</title>
           <meta charSet="utf-8" />
           <meta name="viewport" content="initial-scale=1.0, width=device-width" />
           <link rel="shortcut icon" href="/static/images/icons/icon-hicon.svg" />

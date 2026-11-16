@@ -23,6 +23,8 @@ LICENSE
 .docker
 .gitlab
 .git
+.env
+.env.development
 .env.local
 .env*.local
 .vercel

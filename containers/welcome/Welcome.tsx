@@ -8,7 +8,7 @@ const Welcome = () => {
       <div className="welcome-shell">
         <div className="brand">
           <span className="brand-mark">EO</span>
-          Exam Online
+          TOEIC Online
         </div>
         <h1>Luyện TOEIC Listening & Reading</h1>
         <p>

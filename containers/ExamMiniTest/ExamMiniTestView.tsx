@@ -6,13 +6,13 @@ const practiceResult = (exam) => {
   if (exam?.progress == null) {
     return 'Chưa làm';
   }
-  if (exam.scaledScore) {
-    return `${exam.progress} điểm`;
+  if (!exam.scaledScore) {
+    if (exam.questionCount) {
+      return `Đúng ${exam.progress}/${exam.questionCount}`;
+    }
+    return `Đúng ${exam.progress} câu`;
   }
-  if (exam.questionCount) {
-    return `${exam.progress}/${exam.questionCount}`;
-  }
-  return `${exam.progress}`;
+  return `${exam.progress} điểm`;
 };
 
 const ExamView = ({
