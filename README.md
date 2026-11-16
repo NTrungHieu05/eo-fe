@@ -17,8 +17,7 @@ Mở `http://localhost:3000`.
 
 CI (`.github/workflows/ci.yml`) chạy `npm ci --legacy-peer-deps` rồi `npm run build` trên mỗi push và pull request. Máy ảo dùng Node 18. Build không cần backend đang chạy. Repo chưa có ESLint nên workflow không gọi `npm run lint`.
 
-- Admin: `admin@toeic.local` / `Admin@123`
-- Học viên: `user@toeic.local` / `User@123`
+- Admin: `admin@toeic.local`, học viên: `user@toeic.local`. Mật khẩu đặt bằng `SEED_ADMIN_PASSWORD` và `SEED_USER_PASSWORD` ở backend (xem `eo-be/docs/PLAN.md`).
 - Đăng ký xong đăng nhập được ngay. Không có bước OTP.
 - Trang: `/welcome`, `/login`, `/signup`, `/`, `/practice/[slugTopic]`, `/study/[topicCode]/[examCode]`, `/test/practice`, `/user`, `/admin/user|skill|topic|exam|question`
 - Thi thử: `/test/practice`. Đề đủ 100 câu nghe và 100 câu đọc dùng đồng hồ 120 phút và thang 10–990.
