@@ -122,7 +122,7 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
                       type="button"
                       onClick={onClickReview}
                     >
-                      REVIEW
+                      Xem lại
                     </button>
 
                     <button
@@ -131,7 +131,7 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
                       type="button"
                       onClick={onClickTryAgain}
                     >
-                      TRY AGAIN
+                      Làm lại
                     </button>
                   </div>
                 </div>
