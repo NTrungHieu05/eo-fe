@@ -108,32 +108,57 @@ const ExamStart = ({
               <p>Đề này chưa có câu hỏi.</p>
             ) : (
               <>
-            <QuestionCard
-              question={questions[Math.min(currentQuestionIndex, questions.length - 1)]}
-              onUpdateQuestion={(updater) =>
-                onUpdateQuestion(updater, Math.min(currentQuestionIndex, questions.length - 1))
-              }
-              readOnly={readOnly}
-              key={`QuestionCard-${questions[currentQuestionIndex]?._id || questions[currentQuestionIndex]?.id}-${currentQuestionIndex}`}
-            />
-            <div
-              className="slide-button-box"
-            >
-              <Button shape="round" onClick={leaveExam} className="btn-cancel-exam" disabled={readOnly}>
-                Hủy
-              </Button>
-              {currentQuestionIndex !== 0 && (
-                <Button shape="round" onClick={onPreviousQuestion} className="btn-previous">
-                  <LeftOutlined />
-                  {' Câu trước'}
-                </Button>
-              )}
+                <QuestionCard
+                  question={questions[Math.min(currentQuestionIndex, questions.length - 1)]}
+                  onUpdateQuestion={(updater) =>
+                    onUpdateQuestion(updater, Math.min(currentQuestionIndex, questions.length - 1))
+                  }
+                  readOnly={readOnly}
+                  key={`QuestionCard-${
+                    questions[currentQuestionIndex]?._id || questions[currentQuestionIndex]?.id
+                  }-${currentQuestionIndex}`}
+                />
+                <div className="slide-button-box">
+                  <div className="slide-button-group">
+                    <Button
+                      shape="round"
+                      onClick={leaveExam}
+                      className="btn-cancel-exam"
+                      disabled={readOnly}
+                    >
+                      Hủy
+                    </Button>
+                    {/* Nộp được ở bất kỳ câu nào; ở câu cuối nút "Câu sau" đã thành "Nộp bài" nên ẩn nút này. */}
+                    {currentQuestionIndex < questions.length - 1 && (
+                      <Button
+                        shape="round"
+                        onClick={submitExam}
+                        className="btn-submit-exam"
+                        disabled={readOnly}
+                      >
+                        Nộp bài
+                      </Button>
+                    )}
+                  </div>
+                  <div className="slide-button-group">
+                    {currentQuestionIndex !== 0 && (
+                      <Button shape="round" onClick={onPreviousQuestion} className="btn-previous">
+                        <LeftOutlined />
+                        {' Câu trước'}
+                      </Button>
+                    )}
 
-              <Button shape="round" onClick={onNextQuestion} className="btn-next" disabled={readOnly}>
-                {currentQuestionIndex >= questions.length - 1 ? 'Nộp bài ' : 'Câu sau '}
-                <RightOutlined />
-              </Button>
-            </div>
+                    <Button
+                      shape="round"
+                      onClick={onNextQuestion}
+                      className="btn-next"
+                      disabled={readOnly}
+                    >
+                      {currentQuestionIndex >= questions.length - 1 ? 'Nộp bài ' : 'Câu sau '}
+                      <RightOutlined />
+                    </Button>
+                  </div>
+                </div>
               </>
             )}
           </div>

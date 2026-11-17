@@ -51,9 +51,12 @@ export const ToeicContextProvider = (props) => {
       setTopicsFailed(true);
     }
   };
+  // Tải lại menu kỹ năng/Part khi người đăng nhập thay đổi: lần tải lúc mở trang có thể
+  // thất bại (phiên cũ hết hạn), khi đó đăng nhập xong menu vẫn trống nếu không tải lại.
+  const currentUserId = (userInfos as any)?.userId;
   useEffect(() => {
     fetchHeaderInfo();
-  }, []);
+  }, [currentUserId]);
   useEffect(() => {
     const cookies = new Cookies();
     const accessToken = cookies.get(Config.AUTH_TOKEN_KEY);

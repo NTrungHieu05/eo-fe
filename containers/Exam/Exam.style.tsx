@@ -5401,6 +5401,23 @@ export const ContentWrapper = styled.div`
     background: #fff;
     border: 1px solid #cbd5e1;
   }
+  .slide-button-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .btn-submit-exam {
+    color: #ff5252;
+    background-color: transparent;
+    border: 1px solid #ff5252;
+    &:hover,
+    &:focus {
+      color: #fff;
+      background-color: #ff5252;
+      border-color: #ff5252;
+    }
+  }
   .slide-button-box {
     display: flex;
     align-items: center;
