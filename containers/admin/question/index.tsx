@@ -1,6 +1,6 @@
 import { CloseCircleOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons';
 import { getAdminListQuestion, getListTopicAdmin, putDeleteQuestion } from '@api';
-import { useLoading } from '@hooks';
+import { useLoading, useTablePagination } from '@hooks';
 import { formatName, Message } from '@utils';
 import { Button, Modal, Spin, Table } from 'antd';
 import Column from 'antd/lib/table/Column';
@@ -26,6 +26,7 @@ const CMSQuestion: React.FC = () => {
   const [{ isLoading }, { start, stop }] = useLoading();
 
   const [dataList, setDataList] = useState<any[]>([]);
+  const { pagination, rowNumber } = useTablePagination(dataList?.length || 0, 'câu');
   const [topics, setTopics] = useState<any[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showModalConfirm, setShowModalConfirm] = useState<boolean>(false);
@@ -119,7 +120,7 @@ const CMSQuestion: React.FC = () => {
       <Table
         scroll={{ x: 960 }}
         dataSource={dataList}
-        pagination={false}
+        pagination={pagination}
         rowKey={(record) => record?.id || record?._id}
         // onChange={onTableChange}
         // loading={isLoading}
@@ -148,7 +149,7 @@ const CMSQuestion: React.FC = () => {
           key="stt"
           className="column-id"
           width="2rem"
-          render={(value, record, index) => <div>{index + 1}</div>}
+          render={(value, record, index) => <div>{rowNumber(index)}</div>}
         />
         <Column
           title="Câu hỏi"

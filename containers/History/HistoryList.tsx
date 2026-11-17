@@ -1,8 +1,8 @@
 import { getMyAttempts } from '@api';
 import { ROUTES } from '@constants';
-import { useLoading } from '@hooks';
+import { useLoading, useTablePagination } from '@hooks';
 import { formatName, Message } from '@utils';
-import { Spin } from 'antd';
+import { Pagination, Spin } from 'antd';
 import moment from 'moment';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -25,6 +25,8 @@ const HistoryList = () => {
   const [{ isLoading }, { start, stop }] = useLoading();
   const [attempts, setAttempts] = useState<any[]>([]);
   const [failed, setFailed] = useState(false);
+  const { pagination, page, pageSize } = useTablePagination(attempts.length, 'bài', 10);
+  const shown = attempts.slice((page - 1) * pageSize, page * pageSize);
 
   useEffect(() => {
     const load = async () => {
@@ -58,7 +60,7 @@ const HistoryList = () => {
           </div>
         )}
         <div className="history-list">
-          {attempts.map((attempt) => {
+          {shown.map((attempt) => {
             const score = attemptScore(attempt);
             return (
               <div className="history-item" key={attempt.id}>
@@ -86,6 +88,11 @@ const HistoryList = () => {
             );
           })}
         </div>
+        {attempts.length > 10 && (
+          <div className="history-pagination">
+            <Pagination {...pagination} pageSizeOptions={['10', '20', '50']} />
+          </div>
+        )}
       </Spin>
     </HistoryWrapper>
   );

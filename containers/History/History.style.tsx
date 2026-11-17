@@ -92,6 +92,12 @@ export const HistoryWrapper = styled.div`
     }
   }
 
+  .history-pagination {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+  }
+
   .history-empty {
     background: #fff;
     border: 1px dashed #c9dada;

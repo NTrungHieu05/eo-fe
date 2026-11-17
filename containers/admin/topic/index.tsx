@@ -1,6 +1,6 @@
 import { CloseCircleOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons';
 import { getListTopicAdmin, putDeleteTopic } from '@api';
-import { useLoading } from '@hooks';
+import { useLoading, useTablePagination } from '@hooks';
 import { formatName, Message } from '@utils';
 import { Button, Modal, Spin, Table } from 'antd';
 import Column from 'antd/lib/table/Column';
@@ -11,6 +11,7 @@ import { PageWrapper } from './index.style';
 const CMSTopic: React.FC = () => {
   const [{ isLoading }, { start, stop }] = useLoading();
   const [dataList, setDataList] = useState<any[]>([]);
+  const { pagination } = useTablePagination(dataList?.length || 0, 'Part');
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showModalConfirm, setShowModalConfirm] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] = useState<any>(undefined);
@@ -93,7 +94,7 @@ const CMSTopic: React.FC = () => {
       <Table
         scroll={{ x: 960 }}
         dataSource={dataList}
-        pagination={false}
+        pagination={pagination}
         rowKey={(obj) => obj.id}
         // onChange={onTableChange}
         // loading={isLoading}

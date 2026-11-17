@@ -1,5 +1,5 @@
 import { FormOutlined, LockOutlined, PlusOutlined, UnlockOutlined } from '@ant-design/icons';
-import { useLoading } from '@hooks';
+import { useLoading, useTablePagination } from '@hooks';
 import { Button, Modal, Spin, Table } from 'antd';
 import Column from 'antd/lib/table/Column';
 import React, { useEffect, useState } from 'react';
@@ -14,6 +14,7 @@ const GENDER_LABEL: Record<string, string> = { male: 'Nam', female: 'Nữ', othe
 const CMSUser: React.FC = () => {
   const [{ isLoading }, { start, stop }] = useLoading();
   const [dataList, setDataList] = useState<any[]>([]);
+  const { pagination } = useTablePagination(dataList?.length || 0, 'người dùng');
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showModalConfirm, setShowModalConfirm] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] = useState<any>(undefined);
@@ -126,7 +127,7 @@ const CMSUser: React.FC = () => {
       <Table
         scroll={{ x: 960 }}
         dataSource={dataList}
-        pagination={false}
+        pagination={pagination}
         rowKey={(obj) => obj.userId}
         loading={{ indicator: <Spin />, spinning: isLoading }}
       >
