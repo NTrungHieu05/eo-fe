@@ -1,6 +1,6 @@
-import { FormOutlined, LockOutlined, PlusOutlined, UnlockOutlined } from '@ant-design/icons';
+import { FormOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { useLoading, useTablePagination } from '@hooks';
-import { Button, Modal, Spin, Table } from 'antd';
+import { Modal, Spin, Table } from 'antd';
 import Column from 'antd/lib/table/Column';
 import React, { useEffect, useState } from 'react';
 import CreatedForm from './created-form';
@@ -113,17 +113,6 @@ const CMSUser: React.FC = () => {
   return (
     <PageWrapper>
       <div className="cms-page-title">Quản lý người dùng</div>
-      <div className="btn-action-box">
-        <Button
-          onClick={() => {
-            setSelectedRow(undefined);
-            setShowModal(true);
-          }}
-          className="btn-add"
-        >
-          <PlusOutlined /> Thêm người dùng
-        </Button>
-      </div>
       <Table
         scroll={{ x: 960 }}
         dataSource={dataList}
