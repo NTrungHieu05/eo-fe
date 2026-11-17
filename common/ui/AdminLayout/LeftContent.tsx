@@ -8,7 +8,7 @@ import { Message, reactLocalStorage } from '@utils';
 import { Cookies } from 'react-cookie';
 import Config from '@root/config';
 import { doLogout } from '@api';
-import { LogoutOutlined } from '@ant-design/icons';
+import { HomeOutlined, LogoutOutlined } from '@ant-design/icons';
 
 const LeftContent: React.FC = () => {
   const router = useRouter();
@@ -44,13 +44,17 @@ const LeftContent: React.FC = () => {
   return (
     <LeftContentWrap>
       <div className="cms-logo text-center mt-3 mb-3">
-        <img
-          src="/static/images/app-icon.png"
-          alt="toeic-test"
-          className="logo-img"
-          width={52}
-          height={52}
-        />
+        <Link href={ROUTES.HOME}>
+          <a title="Về trang học viên">
+            <img
+              src="/static/images/app-icon.png"
+              alt="toeic-test"
+              className="logo-img"
+              width={52}
+              height={52}
+            />
+          </a>
+        </Link>
       </div>
       <Menu
         selectedKeys={selectedKeys}
@@ -63,6 +67,16 @@ const LeftContent: React.FC = () => {
           { key: 'topic', label: <Link href={ROUTES.ADMIN_TOPIC}>Part</Link> },
           { key: 'exam', label: <Link href={ROUTES.ADMIN_EXAM}>Đề thi</Link> },
           { key: 'question', label: <Link href={ROUTES.ADMIN_QUESTION}>Câu hỏi</Link> },
+          {
+            key: 'home',
+            label: (
+              <Link href={ROUTES.HOME}>
+                <a>
+                  Về trang học viên <HomeOutlined className="ml-1" style={{ fontSize: '15px' }} />
+                </a>
+              </Link>
+            ),
+          },
           {
             key: 'logout',
             label: (
