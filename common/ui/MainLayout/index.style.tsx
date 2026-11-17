@@ -33,6 +33,11 @@ export const HeaderWrap = styled.header`
     align-items: center;
     gap: 10px;
     color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    &:hover {
+      color: #fff;
+    }
     font-weight: 700;
     letter-spacing: 0.02em;
     white-space: nowrap;

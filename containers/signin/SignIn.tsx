@@ -134,7 +134,7 @@ const SignIn: React.FC = () => {
                   Chưa có tài khoản?{' '}
                   <span>
                     <Link href={ROUTES.SIGNUP}>
-                      <span className="link-to">Đăng ký</span>
+                      <a className="link-to">Đăng ký</a>
                     </Link>
                   </span>
                 </div>

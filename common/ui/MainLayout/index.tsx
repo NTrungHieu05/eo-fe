@@ -94,10 +94,10 @@ const MainLayout = (props) => {
         <HeaderWrap>
           <div className="container heading-wrap">
             <Link href={ROUTES.HOME}>
-              <span className="brand">
+              <a className="brand" title="Về trang chủ">
                 <span className="brand-mark">EO</span>
                 <span className="brand-name">TOEIC Online</span>
-              </span>
+              </a>
             </Link>
             <Menu
               className="heading-menu"
