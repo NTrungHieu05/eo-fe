@@ -8,6 +8,9 @@ import { PageWrapper } from './index.style';
 import { Message } from '@utils';
 import { getListUser, postBlockUser, postUnblockUser } from '@api';
 
+// Giá trị lưu trong DB là male/female/other, hiển thị bằng tiếng Việt.
+const GENDER_LABEL: Record<string, string> = { male: 'Nam', female: 'Nữ', other: 'Khác' };
+
 const CMSUser: React.FC = () => {
   const [{ isLoading }, { start, stop }] = useLoading();
   const [dataList, setDataList] = useState<any[]>([]);
@@ -179,7 +182,7 @@ const CMSUser: React.FC = () => {
           dataIndex=""
           className="column-image"
           width="3rem"
-          render={(record) => <div>{record.gender}</div>}
+          render={(record) => <div>{GENDER_LABEL[record.gender] ?? record.gender ?? ''}</div>}
         />
       </Table>
       <Modal
