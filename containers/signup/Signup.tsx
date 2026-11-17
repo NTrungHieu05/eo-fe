@@ -101,7 +101,7 @@ const SignUp: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input placeholder="Email" />
+                            <Input placeholder="Email" autoComplete="off" />
                           </Form.Item>
                         </Col>
                         <Col span={12}>
@@ -144,7 +144,7 @@ const SignUp: React.FC = () => {
                               },
                             ]}
                           >
-                            <InputPassword key={'reg-password'} placeholder="Mật khẩu" />
+                            <InputPassword key={'reg-password'} placeholder="Mật khẩu" autoComplete="new-password" />
                           </Form.Item>
                         </Col>
                         <Col span={24}>
@@ -169,6 +169,7 @@ const SignUp: React.FC = () => {
                             <InputPassword
                               key={'reg-confirmPassword'}
                               placeholder="Xác nhận mật khẩu"
+                              autoComplete="new-password"
                             />
                           </Form.Item>
                         </Col>
