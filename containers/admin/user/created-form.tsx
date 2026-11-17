@@ -110,7 +110,12 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                         },
                       ]}
                     >
-                      <Input placeholder="Email đăng nhập" readOnly={!!formData} />
+                      <Input
+                        placeholder="Email đăng nhập"
+                        readOnly={!!formData}
+                        // Form tạo tài khoản cho người khác: không để trình duyệt điền email đã lưu.
+                        autoComplete="off"
+                      />
                     </Form.Item>
                   </Col>
                   {!formData && (
@@ -126,7 +131,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                           },
                         ]}
                       >
-                        <InputPassword placeholder="Mật khẩu đăng nhập" />
+                        <InputPassword placeholder="Mật khẩu đăng nhập" autoComplete="new-password" />
                       </Form.Item>
                     </Col>
                   )}
