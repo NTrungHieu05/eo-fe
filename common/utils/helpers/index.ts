@@ -271,3 +271,36 @@ export const applySavedAnswers = (questions: any[] = [], answers: any[] = []) =>
     return withAnswer(question, byKey.get(leafKey(questionId, null)));
   });
 };
+
+// --- Tìm kiếm ở trang quản trị: không phân biệt hoa thường, không cần gõ dấu, bỏ thẻ HTML ---
+export const normalizeSearch = (value: any) =>
+  String(value ?? '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const flattenSearchFields = (fields: any[]): any[] =>
+  fields.reduce(
+    (acc, field) => (Array.isArray(field) ? acc.concat(flattenSearchFields(field)) : acc.concat(field)),
+    []
+  );
+
+/** Đúng khi mọi từ trong `keyword` đều xuất hiện trong ít nhất một trường. Từ khóa rỗng luôn đúng. */
+export const matchesSearch = (keyword: string, ...fields: any[]) => {
+  const normalizedKeyword = normalizeSearch(keyword);
+  if (!normalizedKeyword) {
+    return true;
+  }
+  const haystack = normalizeSearch(
+    flattenSearchFields(fields)
+      .filter((field) => field !== null && field !== undefined)
+      .join(' ')
+  );
+  return normalizedKeyword.split(' ').every((word) => haystack.includes(word));
+};

@@ -2,10 +2,11 @@ import { FormOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { useLoading, useTablePagination } from '@hooks';
 import { Modal, Spin, Table } from 'antd';
 import Column from 'antd/lib/table/Column';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import AdminToolbar from '@ui/AdminToolbar';
 import CreatedForm from './created-form';
 import { PageWrapper } from './index.style';
-import { Message } from '@utils';
+import { Message, matchesSearch } from '@utils';
 import { getListUser, postBlockUser, postUnblockUser } from '@api';
 
 // Giá trị lưu trong DB là male/female/other, hiển thị bằng tiếng Việt.
@@ -14,10 +15,23 @@ const GENDER_LABEL: Record<string, string> = { male: 'Nam', female: 'Nữ', othe
 const CMSUser: React.FC = () => {
   const [{ isLoading }, { start, stop }] = useLoading();
   const [dataList, setDataList] = useState<any[]>([]);
-  const { pagination } = useTablePagination(dataList?.length || 0, 'người dùng');
+  const [keyword, setKeyword] = useState<string>('');
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showModalConfirm, setShowModalConfirm] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] = useState<any>(undefined);
+
+  const filteredList = useMemo(
+    () =>
+      (dataList || []).filter((item) =>
+        matchesSearch(keyword, item?.displayName, item?.email, item?.phone)
+      ),
+    [dataList, keyword]
+  );
+  const { pagination, setPage } = useTablePagination(filteredList.length, 'người dùng');
+  const onKeywordChange = (value: string) => {
+    setKeyword(value);
+    setPage(1);
+  };
 
   const fetchDataList = async () => {
     start();
@@ -113,9 +127,15 @@ const CMSUser: React.FC = () => {
   return (
     <PageWrapper>
       <div className="cms-page-title">Quản lý người dùng</div>
+      <AdminToolbar
+        keyword={keyword}
+        onKeywordChange={onKeywordChange}
+        placeholder="Tìm người dùng theo họ tên, email, số điện thoại..."
+        resultCount={filteredList.length}
+      />
       <Table
         scroll={{ x: 960 }}
-        dataSource={dataList}
+        dataSource={filteredList}
         pagination={pagination}
         rowKey={(obj) => obj.userId}
         loading={{ indicator: <Spin />, spinning: isLoading }}

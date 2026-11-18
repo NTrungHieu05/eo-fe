@@ -1,12 +1,13 @@
 import { getMyAttempts } from '@api';
 import { ROUTES } from '@constants';
 import { useLoading, useTablePagination } from '@hooks';
-import { formatName, Message } from '@utils';
-import { Pagination, Spin } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import { formatName, matchesSearch, Message } from '@utils';
+import { Input, Pagination, Select, Spin } from 'antd';
 import moment from 'moment';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { HistoryWrapper } from './History.style';
 
 /** Điểm hiển thị cho một lần làm: điểm TOEIC với đề đủ 200 câu, còn lại là số câu đúng. */
@@ -25,8 +26,26 @@ const HistoryList = () => {
   const [{ isLoading }, { start, stop }] = useLoading();
   const [attempts, setAttempts] = useState<any[]>([]);
   const [failed, setFailed] = useState(false);
-  const { pagination, page, pageSize } = useTablePagination(attempts.length, 'bài', 10);
-  const shown = attempts.slice((page - 1) * pageSize, page * pageSize);
+  const [keyword, setKeyword] = useState('');
+  const [kind, setKind] = useState<'all' | 'part' | 'test'>('all');
+  const filtered = useMemo(
+    () =>
+      attempts.filter((attempt) => {
+        if (kind === 'part' && attempt.practiceTest) return false;
+        if (kind === 'test' && !attempt.practiceTest) return false;
+        const submitted = attempt.submittedAt ? moment(attempt.submittedAt) : null;
+        return matchesSearch(
+          keyword,
+          attempt.examName || 'Đề đã xoá',
+          attempt.practiceTest ? 'Thi thử' : 'Luyện Part',
+          submitted ? [submitted.format('DD/MM/YYYY'), submitted.format('HH:mm')] : ''
+        );
+      }),
+    [attempts, keyword, kind]
+  );
+  const { pagination, page, pageSize, setPage } = useTablePagination(filtered.length, 'bài', 10);
+  const shown = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const isFiltering = Boolean(keyword.trim()) || kind !== 'all';
 
   useEffect(() => {
     const load = async () => {
@@ -53,7 +72,41 @@ const HistoryList = () => {
     <HistoryWrapper className="container">
       <h1 className="history-title">Lịch sử làm bài</h1>
       <p className="history-subtitle">Các bài đã nộp, mới nhất ở trên. Bấm Xem lại để xem đáp án từng câu.</p>
+      {attempts.length > 0 && (
+        <div className="history-filter">
+          <Input
+            allowClear
+            className="history-filter-search"
+            prefix={<SearchOutlined />}
+            placeholder="Tìm theo tên đề hoặc ngày nộp (vd: 18/11)"
+            aria-label="Tìm trong lịch sử làm bài"
+            value={keyword}
+            onChange={(event) => {
+              setKeyword(event.target.value);
+              setPage(1);
+            }}
+          />
+          <Select
+            className="history-filter-kind"
+            value={kind}
+            aria-label="Lọc theo loại bài"
+            onChange={(value) => {
+              setKind(value);
+              setPage(1);
+            }}
+            options={[
+              { value: 'all', label: 'Tất cả' },
+              { value: 'part', label: 'Luyện Part' },
+              { value: 'test', label: 'Thi thử' },
+            ]}
+          />
+          {isFiltering && <span className="history-filter-count">{filtered.length} kết quả</span>}
+        </div>
+      )}
       <Spin spinning={isLoading}>
+        {isFiltering && attempts.length > 0 && filtered.length === 0 && (
+          <div className="history-empty">Không có bài nào khớp. Thử từ khóa khác.</div>
+        )}
         {!isLoading && !failed && attempts.length === 0 && (
           <div className="history-empty">
             Bạn chưa nộp bài nào. <Link href={ROUTES.HOME}>Bắt đầu luyện tập</Link>
@@ -88,7 +141,7 @@ const HistoryList = () => {
             );
           })}
         </div>
-        {attempts.length > 10 && (
+        {filtered.length > 10 && (
           <div className="history-pagination">
             <Pagination {...pagination} pageSizeOptions={['10', '20', '50']} />
           </div>

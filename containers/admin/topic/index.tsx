@@ -1,20 +1,34 @@
 import { CloseCircleOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons';
 import { getListTopicAdmin, putDeleteTopic } from '@api';
 import { useLoading, useTablePagination } from '@hooks';
-import { formatName, Message } from '@utils';
+import { formatName, Message, matchesSearch } from '@utils';
 import { Button, Modal, Spin, Table } from 'antd';
 import Column from 'antd/lib/table/Column';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import AdminToolbar from '@ui/AdminToolbar';
 import CreatedForm from './created-form';
 import { PageWrapper } from './index.style';
 
 const CMSTopic: React.FC = () => {
   const [{ isLoading }, { start, stop }] = useLoading();
   const [dataList, setDataList] = useState<any[]>([]);
-  const { pagination } = useTablePagination(dataList?.length || 0, 'Part');
+  const [keyword, setKeyword] = useState<string>('');
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showModalConfirm, setShowModalConfirm] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] = useState<any>(undefined);
+
+  const filteredList = useMemo(
+    () =>
+      (dataList || []).filter((item) =>
+        matchesSearch(keyword, item?.name, item?.id)
+      ),
+    [dataList, keyword]
+  );
+  const { pagination, setPage } = useTablePagination(filteredList.length, 'Part');
+  const onKeywordChange = (value: string) => {
+    setKeyword(value);
+    setPage(1);
+  };
 
   const fetchDataList = async () => {
     start();
@@ -86,14 +100,19 @@ const CMSTopic: React.FC = () => {
   return (
     <PageWrapper>
       <div className="cms-page-title">Quản lý Part</div>
-      <div className="btn-action-box">
+      <AdminToolbar
+        keyword={keyword}
+        onKeywordChange={onKeywordChange}
+        placeholder="Tìm Part theo tên hoặc ID..."
+        resultCount={filteredList.length}
+      >
         <Button onClick={() => setShowModal(true)} className="btn-add">
           <PlusOutlined /> Thêm Part
         </Button>
-      </div>
+      </AdminToolbar>
       <Table
         scroll={{ x: 960 }}
-        dataSource={dataList}
+        dataSource={filteredList}
         pagination={pagination}
         rowKey={(obj) => obj.id}
         // onChange={onTableChange}

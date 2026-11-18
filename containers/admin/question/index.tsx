@@ -1,10 +1,11 @@
 import { CloseCircleOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons';
 import { getAdminListQuestion, getListTopicAdmin, putDeleteQuestion } from '@api';
 import { useLoading, useTablePagination } from '@hooks';
-import { formatName, Message } from '@utils';
+import { formatName, Message, matchesSearch } from '@utils';
 import { Button, Modal, Spin, Table } from 'antd';
 import Column from 'antd/lib/table/Column';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import AdminToolbar from '@ui/AdminToolbar';
 import CreatedForm from './created-form';
 import { PageWrapper } from './index.style';
 
@@ -26,11 +27,33 @@ const CMSQuestion: React.FC = () => {
   const [{ isLoading }, { start, stop }] = useLoading();
 
   const [dataList, setDataList] = useState<any[]>([]);
-  const { pagination, rowNumber } = useTablePagination(dataList?.length || 0, 'câu');
+  const [keyword, setKeyword] = useState<string>('');
   const [topics, setTopics] = useState<any[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showModalConfirm, setShowModalConfirm] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] = useState<any>(undefined);
+
+  const filteredList = useMemo(
+    () =>
+      (dataList || []).filter((item) =>
+        matchesSearch(
+          keyword,
+          questionName(item),
+          item?.answer?.texts,
+          item?.answer?.choices,
+          (item?.childQuestions || []).map((child) => [child?.question?.text, child?.answer?.texts, child?.answer?.choices]),
+          topics.find((topic) => topic.id === item?.topicId)?.name,
+          item?.question?.sound,
+          item?.question?.image
+        )
+      ),
+    [dataList, keyword, topics]
+  );
+  const { pagination, rowNumber, setPage } = useTablePagination(filteredList.length, 'câu');
+  const onKeywordChange = (value: string) => {
+    setKeyword(value);
+    setPage(1);
+  };
 
   const fetchListQuestion = async () => {
     start();
@@ -112,14 +135,19 @@ const CMSQuestion: React.FC = () => {
   return (
     <PageWrapper>
       <div className="cms-page-title">Quản lý câu hỏi</div>
-      <div className="btn-action-box d-flex">
+      <AdminToolbar
+        keyword={keyword}
+        onKeywordChange={onKeywordChange}
+        placeholder="Tìm câu hỏi theo nội dung, đáp án, Part, tệp..."
+        resultCount={filteredList.length}
+      >
         <Button onClick={() => setShowModal(true)} className="btn-add">
           <PlusOutlined /> Thêm câu hỏi
         </Button>
-      </div>
+      </AdminToolbar>
       <Table
         scroll={{ x: 960 }}
-        dataSource={dataList}
+        dataSource={filteredList}
         pagination={pagination}
         rowKey={(record) => record?.id || record?._id}
         // onChange={onTableChange}

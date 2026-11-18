@@ -1,6 +1,24 @@
 import { styled } from '@styles/theme';
 
 export const HistoryWrapper = styled.div`
+  .history-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .history-filter-search {
+    flex: 1 1 260px;
+    max-width: 420px;
+  }
+  .history-filter-kind {
+    width: 140px;
+  }
+  .history-filter-count {
+    color: #5b6b7c;
+    font-size: 13px;
+  }
   padding: 28px 0 48px;
 
   .history-title {
