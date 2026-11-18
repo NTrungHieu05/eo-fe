@@ -12,7 +12,7 @@ type QuestionPaletteRootResultProps = {
 };
 
 const resultClass = (item) => {
-  if (!item?.userAnswer?.length) return '';
+  // Câu bỏ trống tính là sai.
   return answersMatch(item.userAnswer, item?.answer?.texts) ? 'p-item-correct' : 'p-item-incorrect';
 };
 

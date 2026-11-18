@@ -115,7 +115,11 @@ const ExamMiniTest = () => {
 
     const newAnswerCount = flatListQuestion.filter((question) => !question?.userAnswer?.[0]).length;
     const correctAnswerCount = flatListQuestion.filter(isCorrectAnswer)?.length;
-    const incorrectAnswerCount = flatListQuestion?.length - newAnswerCount - correctAnswerCount;
+    // Sau khi nộp, câu bỏ trống tính là sai; lúc đang làm thì chưa tính.
+    const incorrectAnswerCount =
+      examStatus === 'reviewing'
+        ? flatListQuestion.length - correctAnswerCount
+        : flatListQuestion.length - newAnswerCount - correctAnswerCount;
     const listeningQuestions = flatListQuestion.filter(isListeningQuestion);
     const readingQuestions = flatListQuestion.filter((question) => !isListeningQuestion(question));
     const listeningCorrect = listeningQuestions.filter(isCorrectAnswer).length;
@@ -127,7 +131,7 @@ const ExamMiniTest = () => {
       ? toeicTotalScore(listeningCorrect, readingCorrect)
       : correctAnswerCount;
     return {
-      total: newAnswerCount + correctAnswerCount + incorrectAnswerCount,
+      total: flatListQuestion.length,
       newAnswerCount,
       correctAnswerCount,
       incorrectAnswerCount,
@@ -140,7 +144,7 @@ const ExamMiniTest = () => {
       readingScore,
       toeicScore,
     };
-  }, [listQuestion]);
+  }, [listQuestion, examStatus]);
 
   const fetchExamList = async () => {
     start();

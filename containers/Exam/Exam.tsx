@@ -90,14 +90,18 @@ const Exam = ({ examCode }) => {
     const correctAnswerCount = flatListQuestion.filter((question) =>
       answersMatch(question?.userAnswer, question?.answer?.texts)
     )?.length;
-    const incorrectAnswerCount = flatListQuestion?.length - newAnswerCount - correctAnswerCount;
+    // Sau khi nộp, câu bỏ trống tính là sai; lúc đang làm thì chưa tính.
+    const incorrectAnswerCount =
+      examStatus === 'reviewing'
+        ? flatListQuestion.length - correctAnswerCount
+        : flatListQuestion.length - newAnswerCount - correctAnswerCount;
     return {
-      total: newAnswerCount + correctAnswerCount + incorrectAnswerCount,
+      total: flatListQuestion.length,
       newAnswerCount,
       correctAnswerCount,
       incorrectAnswerCount,
     };
-  }, [listQuestion]);
+  }, [listQuestion, examStatus]);
 
   const fetchListQuestion = async () => {
     const requestId = ++loadRequest.current;

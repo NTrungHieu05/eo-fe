@@ -71,7 +71,8 @@ const HistoryReview = () => {
     total: attempt.total,
     newAnswerCount: attempt.unanswered,
     correctAnswerCount: attempt.correct,
-    incorrectAnswerCount: attempt.incorrect,
+    // Câu bỏ trống tính là sai (kể cả bài nộp trước khi đổi cách tính).
+    incorrectAnswerCount: Math.max(0, (attempt.total ?? 0) - (attempt.correct ?? 0)),
     listeningCorrect: attempt.listeningCorrect,
     readingCorrect: attempt.readingCorrect,
     listeningTotal: attempt.listeningTotal,

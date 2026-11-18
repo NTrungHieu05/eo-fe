@@ -56,12 +56,12 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
                     question.childQuestions?.map((childQuestion) => (
                       <button
                         className={`question-item question-palette-item-custom ${
-                          childQuestion?.userAnswer?.length > 0
-                            ? !showResult
-                              ? 'p-item-selected'
-                              : answersMatch(childQuestion?.userAnswer, childQuestion?.answer?.texts)
+                          showResult
+                            ? answersMatch(childQuestion?.userAnswer, childQuestion?.answer?.texts)
                               ? 'p-item-correct'
                               : 'p-item-incorrect'
+                            : childQuestion?.userAnswer?.length > 0
+                            ? 'p-item-selected'
                             : ''
                         }`}
                         tabIndex={0}
@@ -77,12 +77,12 @@ const QuestionPaletteRoot: React.FC<QuestionPaletteRootProps> = ({
                     <>
                       <button
                         className={`question-item question-palette-item-custom ${
-                          question?.userAnswer?.length > 0
-                            ? !showResult
-                              ? 'p-item-selected'
-                              : answersMatch(question?.userAnswer, question?.answer?.texts)
+                          showResult
+                            ? answersMatch(question?.userAnswer, question?.answer?.texts)
                               ? 'p-item-correct'
                               : 'p-item-incorrect'
+                            : question?.userAnswer?.length > 0
+                            ? 'p-item-selected'
                             : ''
                         }`}
                         tabIndex={0}

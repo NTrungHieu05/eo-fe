@@ -179,7 +179,7 @@ const ExamResult = ({ listQuestion, onSetExamStatus, onClickTryAgain, answerInfo
                         {newAnswerCount}
                       </button>
                     </div>
-                    <span className="MuiTypography-root MuiTypography-body1 css-ivwblt">Chưa làm</span>
+                    <span className="MuiTypography-root MuiTypography-body1 css-ivwblt">Bỏ trống (tính sai)</span>
                   </div>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

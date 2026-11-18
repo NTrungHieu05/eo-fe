@@ -24,10 +24,6 @@ const ExamResult = ({
     });
   };
 
-  const onClickContinue = () => {
-    onSetExamStatus('starting');
-  };
-
   const percent = total ? (correctAnswerCount / total) * 100 : 0;
   return (
     <ExamLayout listQuestion={listQuestion} answerInfos={answerInfos}>
@@ -115,25 +111,15 @@ const ExamResult = ({
                     </div>
                   </div>
                   <div className="main-statistics-questions-button">
-                    {newAnswerCount === 0 ? (
-                      <button
-                        className="MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButtonBase-root  css-1bya90x"
-                        tabIndex={0}
-                        type="button"
-                        onClick={onClickReview}
-                      >
-                        Xem lại
-                      </button>
-                    ) : (
-                      <button
-                        className="MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButtonBase-root  css-1bya90x"
-                        tabIndex={0}
-                        type="button"
-                        onClick={onClickContinue}
-                      >
-                        Làm tiếp
-                      </button>
-                    )}
+                    {/* Đã nộp thì không làm tiếp được: câu bỏ trống đã tính là sai. */}
+                    <button
+                      className="MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButtonBase-root  css-1bya90x"
+                      tabIndex={0}
+                      type="button"
+                      onClick={onClickReview}
+                    >
+                      Xem lại
+                    </button>
 
                     <button
                       className="MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButtonBase-root  css-lv9ort"
@@ -189,7 +175,7 @@ const ExamResult = ({
                         {newAnswerCount}
                       </button>
                     </div>
-                    <span className="MuiTypography-root MuiTypography-body1 css-ivwblt">Chưa làm</span>
+                    <span className="MuiTypography-root MuiTypography-body1 css-ivwblt">Bỏ trống (tính sai)</span>
                   </div>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
