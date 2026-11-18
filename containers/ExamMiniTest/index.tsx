@@ -1,9 +1,9 @@
 import { getListQuestionMiniTest, getPracticeTestById, postSubmitExam } from '@api';
 import { useLoading } from '@hooks';
-import { Message, answersMatch, applyAnswerKey, applySavedAnswers, buildSubmitAnswers, isGroupedQuestion, reactLocalStorage, sortAnswer, toeicListeningScore, toeicReadingScore, toeicTotalScore } from '@utils';
+import { Message, answersMatch, formatName, applyAnswerKey, applySavedAnswers, buildSubmitAnswers, isGroupedQuestion, reactLocalStorage, sortAnswer, toeicListeningScore, toeicReadingScore, toeicTotalScore } from '@utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useToeicContext } from '@contexts/toeicContext';
-import ExamResult from './ExamMiniTestResult';
+import ExamResult from '@containers/Exam/ExamResult';
 import ExamStart from './ExamMiniTestStart';
 import ExamView from './ExamMiniTestView';
 import { ExamMainWrap } from './MiniTest.style';
@@ -321,6 +321,18 @@ const ExamMiniTest = () => {
     setListQuestion(questions);
   };
 
+  // Bỏ bài đang làm / đã xem kết quả, quay về màn chọn đề.
+  const backToList = async () => {
+    clearProgress();
+    submittingRef.current = false;
+    setIsSubmitting(false);
+    setScaledResult(null);
+    if (examId) {
+      await fetchExamDetail(examId);
+    }
+    setExamStatus('initial');
+  };
+
   const onClickTryAgain = async () => {
     const loaded = await fetchExamDetail(examId);
     if (loaded) {
@@ -337,10 +349,20 @@ const ExamMiniTest = () => {
       {examStatus === 'reviewing' && (
         <ExamResult
           listQuestion={listQuestion}
-          onSetExamStatus={onSetExamStatus}
-          answerInfos={scaledResult ? { ...answerInfos, ...scaledResult } : answerInfos}
+          answerInfos={answerInfos}
           onClickTryAgain={onClickTryAgain}
-          examName={selectedExam?.name}
+          subtitle={`Thi thử TOEIC · ${formatName(selectedExam?.name) || 'Đề thi thử'}`}
+          secondaryAction={{ label: 'Danh sách đề →', onClick: backToList }}
+          toeic={{
+            officialScale: answerInfos.officialScale,
+            totalScore: scaledResult?.toeicScore ?? (answerInfos.officialScale ? answerInfos.toeicScore : null),
+            listeningScore: scaledResult?.listeningScore ?? answerInfos.listeningScore,
+            readingScore: scaledResult?.readingScore ?? answerInfos.readingScore,
+            listeningCorrect: answerInfos.listeningCorrect,
+            listeningTotal: answerInfos.listeningTotal,
+            readingCorrect: answerInfos.readingCorrect,
+            readingTotal: answerInfos.readingTotal,
+          }}
         />
       )}
       {examStatus === 'initial' && (
@@ -373,16 +395,7 @@ const ExamMiniTest = () => {
           examName={selectedExam?.name}
           readOnly={isSubmitting}
           deadline={deadline}
-          onExit={async () => {
-            clearProgress();
-            submittingRef.current = false;
-            setIsSubmitting(false);
-            setScaledResult(null);
-            if (examId) {
-              await fetchExamDetail(examId);
-            }
-            setExamStatus('initial');
-          }}
+          onExit={backToList}
         />
       )}
     </ExamMainWrap>

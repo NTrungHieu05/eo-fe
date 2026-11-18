@@ -97,6 +97,24 @@ export const ResultWrap = styled.div`
         color: #2c5a5b;
       }
     }
+    &.is-listening {
+      background: #e1eef7;
+      strong {
+        color: #1f4e79;
+      }
+      span {
+        color: #2c4f6b;
+      }
+    }
+    &.is-reading {
+      background: var(--warm-soft);
+      strong {
+        color: var(--warm-ink);
+      }
+      span {
+        color: #6b3f12;
+      }
+    }
     &.is-wrong {
       background: var(--danger-soft);
       strong {

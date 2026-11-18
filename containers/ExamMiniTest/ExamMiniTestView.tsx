@@ -1,5 +1,7 @@
-import { Progress } from 'antd';
-import ExamLayout from './ExamMiniTestLayout';
+import { ClockCircleOutlined, FileTextOutlined } from '@ant-design/icons';
+import { formatName } from '@utils';
+import { Spin } from 'antd';
+import { MiniTestViewWrap } from './ExamMiniTestView.style';
 import { PARTS, partGroups } from './examSections';
 
 const practiceResult = (exam) => {
@@ -8,160 +10,148 @@ const practiceResult = (exam) => {
   }
   if (!exam.scaledScore) {
     if (exam.questionCount) {
-      return `Đúng ${exam.progress}/${exam.questionCount}`;
+      return `Lần gần nhất: đúng ${exam.progress}/${exam.questionCount}`;
     }
-    return `Đúng ${exam.progress} câu`;
+    return `Lần gần nhất: đúng ${exam.progress} câu`;
   }
-  return `${exam.progress} điểm`;
+  return `Lần gần nhất: ${exam.progress} điểm`;
 };
 
+// Màn chọn đề thi thử: danh sách đề bên trái, cấu trúc đề và nút Bắt đầu bên phải.
 const ExamView = ({
   examList = [],
   selectedExam,
   listQuestion,
   onSelectExam,
   onSetExamStatus,
-  answerInfos,
   isLoading = false,
   listFailed = false,
   detailStatus = 'idle',
-}) => {
-  const { total, newAnswerCount, correctAnswerCount, incorrectAnswerCount } = answerInfos;
-  const canStart = !!selectedExam?.id && listQuestion.length > 0 && !isLoading;
-  const listeningParts = partGroups(listQuestion, 'listening');
-  const readingParts = partGroups(listQuestion, 'reading');
+}: any) => {
+  const questions = listQuestion || [];
+  const canStart = !!selectedExam?.id && questions.length > 0 && !isLoading;
+  const listeningParts = partGroups(questions, 'listening');
+  const readingParts = partGroups(questions, 'reading');
+  const countOf = (groups) => groups.reduce((sum, group) => sum + group.items.length, 0);
+  const minutes = selectedExam?.durationMinutes || 120;
+
+  const renderParts = (title, groups, tone) => (
+    <div className={`blueprint-col tone-${tone}`}>
+      <div className="blueprint-head">
+        <strong>{title}</strong>
+        <span>{countOf(groups)} câu</span>
+      </div>
+      <ul>
+        {groups.map((group) => (
+          <li key={group.part}>
+            <span className="blueprint-part">{PARTS[group.part]?.title || `Part ${group.part}`}</span>
+            <span className="blueprint-kind">{PARTS[group.part]?.kind}</span>
+            <span className="blueprint-range">
+              câu {group.from}–{group.to}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 
   return (
-    <ExamLayout listQuestion={listQuestion} answerInfos={answerInfos} examName={selectedExam?.name}>
-      <div id="game-view-container" className="game-view-container-main">
-        <div id="main-game-view" className="">
-          <div id="main-game-scroll-panel" className="main-game-object">
-            <div className="practice-exam-picker">
-              <h2>Chọn đề thi thử</h2>
-              <p>Chọn một đề rồi bấm Bắt đầu. Thời gian làm bài 120 phút. Listening 100 câu, Reading 100 câu.</p>
-              {!isLoading && listFailed && (
-                <p className="practice-exam-empty">Không tải được danh sách đề.</p>
-              )}
-              {!isLoading && !listFailed && examList.length === 0 && (
-                <p className="practice-exam-empty">Chưa có đề thi thử.</p>
-              )}
-              <div className="practice-exam-list">
-                {examList.map((exam) => (
-                  <button
-                    key={exam.id}
-                    type="button"
-                    className={`practice-exam-item ${
-                      selectedExam?.id === exam.id ? 'selected' : ''
-                    }`}
-                    onClick={() => onSelectExam(exam)}
-                  >
-                    <strong>{exam.name}</strong>
-                    <span>
-                      {exam.questionCount || exam.questionIds?.length || 0} câu ·{' '}
-                      {exam.durationMinutes || 120} phút · {practiceResult(exam)}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-            {selectedExam?.id && !isLoading && detailStatus === 'failed' && (
-              <p className="practice-exam-empty">Không tải được đề.</p>
-            )}
-            {selectedExam?.id && !isLoading && detailStatus === 'ready' && listQuestion.length === 0 && (
-              <p className="practice-exam-empty">Đề này chưa có câu hỏi.</p>
-            )}
-            {canStart && (
-              <div className="exam-blueprint">
-                <h3>Cấu trúc đề</h3>
-                <div className="exam-blueprint-columns">
-                  <div>
-                    <strong>Listening · câu 1–100</strong>
-                    <ul>
-                      {listeningParts.map((group) => (
-                        <li key={group.part}>
-                          {PARTS[group.part]?.title} · {PARTS[group.part]?.kind}: {group.to - group.from + 1} câu ({group.from}–{group.to})
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <strong>Reading · câu 101–200</strong>
-                    <ul>
-                      {readingParts.map((group) => (
-                        <li key={group.part}>
-                          {PARTS[group.part]?.title} · {PARTS[group.part]?.kind}: {group.to - group.from + 1} câu ({group.from}–{group.to})
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            )}
-            {canStart && (
-              <div className="module-game-overview-component">
-                <div className="main-game-overview-bgr">
-                  <span className="bubble-top-left" />
-                  <span className="small-bubble-left" />
-                  <span className="ellipse-left" />
-                  <span className="ellipse-right" />
-                  <span className="bubble-right" />
-                </div>
-                <div className="main-game-overview-data">
-                  <div className="main-progress">
-                    <div className="main-progress-box" />
-                    <div className="box-layer-2" />
-                    <div className="box-layer-3">
-                      <Progress type="circle" percent={0} width={130} />
-                    </div>
-                  </div>
-                  <div className="main-statistics">
-                    <div className="main-statistics-questions-stat">
-                      <div className="main-stats-data-questions-stat-item item-total">
-                        <div
-                          className="questions-stat-item-value"
-                          style={{ color: 'rgb(132, 155, 182)' }}
-                        >
-                          {total}
-                        </div>
-                        <div className="questions-stat-item-label">Tổng</div>
-                      </div>
-                      <div className="main-stats-data-questions-stat-item item-correct">
-                        <div
-                          className="questions-stat-item-value"
-                          style={{ color: 'rgb(130, 188, 36)' }}
-                        >
-                          {correctAnswerCount}
-                        </div>
-                        <div className="questions-stat-item-label">Đúng</div>
-                      </div>
-                      <div className="main-stats-data-questions-stat-item item-incorrect">
-                        <div
-                          className="questions-stat-item-value"
-                          style={{ color: 'rgb(255, 84, 84)' }}
-                        >
-                          {incorrectAnswerCount}
-                        </div>
-                        <div className="questions-stat-item-label">Sai</div>
-                      </div>
-                    </div>
-                    <div className="main-statistics-questions-button">
-                      <button
-                        className="MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButtonBase-root css-bktioj"
-                        tabIndex={0}
-                        type="button"
-                        onClick={() => onSetExamStatus('starting')}
-                      >
-                        Bắt đầu
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+    <MiniTestViewWrap className="container">
+      <div className="view-heading">
+        <h1>Thi thử TOEIC</h1>
+        <p>Chọn một đề, xem cấu trúc rồi bấm Bắt đầu. Đề full gồm 200 câu Listening và Reading, tính điểm quy đổi theo thang TOEIC.</p>
       </div>
-    </ExamLayout>
+
+      <div className="view-body">
+        <section className="exam-list-card" aria-labelledby="exam-list-title">
+          <h2 id="exam-list-title">Chọn đề</h2>
+          {isLoading && !examList.length && <Spin />}
+          {!isLoading && listFailed && <p className="view-empty">Không tải được danh sách đề.</p>}
+          {!isLoading && !listFailed && examList.length === 0 && <p className="view-empty">Chưa có đề thi thử.</p>}
+          <div className="exam-list" role="list">
+            {examList.map((exam) => {
+              const selected = selectedExam?.id === exam.id;
+              return (
+                <button
+                  key={exam.id}
+                  type="button"
+                  role="listitem"
+                  aria-pressed={selected}
+                  className={`practice-exam-item exam-option${selected ? ' is-selected' : ''}`}
+                  onClick={() => onSelectExam(exam)}
+                >
+                  <span className="exam-option-icon" aria-hidden="true">
+                    <FileTextOutlined />
+                  </span>
+                  <span className="exam-option-text">
+                    <strong>{formatName(exam.name)}</strong>
+                    <span>
+                      {exam.questionCount || exam.questionIds?.length || 0} câu · {exam.durationMinutes || 120} phút
+                    </span>
+                  </span>
+                  <span className={`exam-option-result${exam.progress == null ? '' : ' is-done'}`}>
+                    {practiceResult(exam)}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="exam-detail-card" aria-label="Thông tin đề">
+          {!selectedExam?.id ? (
+            <div className="detail-empty">
+              <FileTextOutlined aria-hidden="true" />
+              <p>Chọn một đề ở danh sách để xem cấu trúc và bắt đầu làm bài.</p>
+            </div>
+          ) : isLoading ? (
+            <div className="detail-empty">
+              <Spin />
+            </div>
+          ) : detailStatus === 'failed' ? (
+            <p className="view-empty">Không tải được đề.</p>
+          ) : detailStatus === 'ready' && questions.length === 0 ? (
+            <p className="view-empty">Đề này chưa có câu hỏi.</p>
+          ) : (
+            <>
+              <div className="detail-head">
+                <span>Đề đã chọn</span>
+                <h2>{formatName(selectedExam?.name)}</h2>
+              </div>
+              <div className="detail-stats">
+                <div>
+                  <strong>{countOf(listeningParts) + countOf(readingParts)}</strong>
+                  <span>câu hỏi</span>
+                </div>
+                <div>
+                  <strong>{minutes}</strong>
+                  <span>phút làm bài</span>
+                </div>
+                <div>
+                  <strong>{listeningParts.length + readingParts.length}</strong>
+                  <span>Part</span>
+                </div>
+              </div>
+              <div className="blueprint">
+                {listeningParts.length > 0 && renderParts('Listening', listeningParts, 'listening')}
+                {readingParts.length > 0 && renderParts('Reading', readingParts, 'reading')}
+              </div>
+              <button
+                type="button"
+                className="btn-start"
+                disabled={!canStart}
+                onClick={() => canStart && onSetExamStatus('starting')}
+              >
+                <ClockCircleOutlined aria-hidden="true" /> Bắt đầu làm bài · {minutes} phút
+              </button>
+              <p className="detail-note">
+                Đồng hồ chạy ngay khi bắt đầu. Hết giờ hoặc tải lại trang, bài sẽ được nộp với các câu đã chọn.
+              </p>
+            </>
+          )}
+        </section>
+      </div>
+    </MiniTestViewWrap>
   );
 };
 

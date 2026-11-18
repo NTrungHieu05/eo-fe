@@ -1,9 +1,7 @@
 import { getMyAttempt } from '@api';
 import { ROUTES } from '@constants';
 import { mapQuestions } from '@containers/ExamMiniTest';
-import ExamResult from '@containers/ExamMiniTest/ExamMiniTestResult';
 import PracticeResult from '@containers/Exam/ExamResult';
-import { ExamMainWrap } from '@containers/ExamMiniTest/MiniTest.style';
 import { useLoading } from '@hooks';
 import { applySavedAnswers, formatName, Message } from '@utils';
 import { Spin } from 'antd';
@@ -92,28 +90,30 @@ const HistoryReview = () => {
     }
   };
 
-  if (!attempt.practiceTest) {
-    return (
-      <PracticeResult
-        listQuestion={questions}
-        answerInfos={answerInfos}
-        onClickTryAgain={onClickTryAgain}
-        subtitle={`${formatName(attempt.examName) || 'Đề đã xoá'} · nộp lúc ${submittedAt}`}
-        secondaryAction={{ label: '← Về lịch sử', onClick: () => router.push(ROUTES.HISTORY) }}
-      />
-    );
-  }
-
   return (
-    <ExamMainWrap className="main-exam">
-      <ExamResult
-        listQuestion={questions}
-        onSetExamStatus={() => undefined}
-        onClickTryAgain={onClickTryAgain}
-        answerInfos={answerInfos}
-        examName={`${formatName(attempt.examName)} · ${submittedAt}`}
-      />
-    </ExamMainWrap>
+    <PracticeResult
+      listQuestion={questions}
+      answerInfos={answerInfos}
+      onClickTryAgain={onClickTryAgain}
+      subtitle={`${attempt.practiceTest ? 'Thi thử TOEIC · ' : ''}${
+        formatName(attempt.examName) || 'Đề đã xoá'
+      } · nộp lúc ${submittedAt}`}
+      secondaryAction={{ label: '← Về lịch sử', onClick: () => router.push(ROUTES.HISTORY) }}
+      toeic={
+        attempt.practiceTest
+          ? {
+              officialScale: attempt.officialScale,
+              totalScore: attempt.totalScore,
+              listeningScore: attempt.listeningScore,
+              readingScore: attempt.readingScore,
+              listeningCorrect: attempt.listeningCorrect,
+              listeningTotal: attempt.listeningTotal,
+              readingCorrect: attempt.readingCorrect,
+              readingTotal: attempt.readingTotal,
+            }
+          : null
+      }
+    />
   );
 };
 

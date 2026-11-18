@@ -1,238 +1,86 @@
-import { Progress } from 'antd';
-import ExamLayout from './ExamLayout';
+import { ClockCircleOutlined, LeftOutlined } from '@ant-design/icons';
+import { MiniTestViewWrap } from '@containers/ExamMiniTest/ExamMiniTestView.style';
+import { Spin } from 'antd';
+import { useRouter } from 'next/router';
+import { useExamMeta } from './useExamMeta';
 
+const countQuestions = (questions) =>
+  (questions || []).reduce(
+    (sum, question) => sum + (question?.isQuestionGroup ? (question.childQuestions || []).length : 1),
+    0
+  );
+
+// Màn giới thiệu đề luyện Part trước khi bắt đầu: số câu, thời gian, lưu ý và nút Bắt đầu.
 const ExamView = ({
   listQuestion,
   onSetExamStatus,
-  answerInfos,
   isLoading = false,
   loadFailed = false,
-  isMiniTest = false,
   durationMinutes = null,
 }: any) => {
-  const { total, newAnswerCount, correctAnswerCount, incorrectAnswerCount } = answerInfos;
+  const router = useRouter();
+  const meta = useExamMeta();
+  const questions = listQuestion || [];
+  const total = countQuestions(questions);
+  const groupCount = questions.filter((question) => question?.isQuestionGroup).length;
 
   return (
-    <ExamLayout listQuestion={listQuestion} answerInfos={answerInfos}>
-      <div id="game-view-container" className="game-view-container-main">
-        <div id="main-game-view" className="">
-          <div id="main-game-scroll-panel" className="main-game-object">
-            <div className="module-game-overview-component">
-              <div className="main-game-overview-bgr">
-                <span className="bubble-top-left" />
-                <span className="small-bubble-left" />
-                <span className="ellipse-left" />
-                <span className="ellipse-right" />
-                <span className="bubble-right" />
-              </div>
-              <div className="main-game-overview-data">
-                <div className="main-progress">
-                  <div className="main-progress-box" />
-                  <div className="box-layer-2" />
-                  <div className="box-layer-3">
-                    <Progress type="circle" percent={0} width={130} />
-                  </div>
-                </div>
-                <div className="main-statistics">
-                  <div className="main-statistics-questions-stat">
-                    <div className="main-stats-data-questions-stat-item item-total">
-                      <div
-                        className="questions-stat-item-value"
-                        style={{ color: 'rgb(132, 155, 182)' }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width={12}
-                          height={13}
-                          viewBox="0 0 12 13"
-                          fill="none"
-                        >
-                          <circle cx="6.28342" cy="6.48361" r="5.68967" fill="#849BB6" />
-                        </svg>
-                        {total}
-                      </div>
-                      <div className="questions-stat-item-label">Tổng</div>
-                    </div>
-                    <div className="main-stats-data-questions-stat-item item-correct">
-                      <div
-                        className="questions-stat-item-value"
-                        style={{ color: 'rgb(130, 188, 36)' }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width={12}
-                          height={13}
-                          viewBox="0 0 12 13"
-                          fill="none"
-                        >
-                          <circle cx="6.28342" cy="6.48361" r="5.68967" fill="#82BC24" />
-                        </svg>
-                        {correctAnswerCount}
-                      </div>
-                      <div className="questions-stat-item-label">Đúng</div>
-                    </div>
-                    <div className="main-stats-data-questions-stat-item item-incorrect">
-                      <div
-                        className="questions-stat-item-value"
-                        style={{ color: 'rgb(255, 84, 84)' }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width={12}
-                          height={13}
-                          viewBox="0 0 12 13"
-                          fill="none"
-                        >
-                          <circle cx="6.28342" cy="6.48361" r="5.68967" fill="#FF5454" />
-                        </svg>
-                        {incorrectAnswerCount}
-                      </div>
-                      <div className="questions-stat-item-label">Sai</div>
-                    </div>
-                  </div>
-                  <div className="main-statistics-questions-button">
-                    {!isLoading && loadFailed ? (
-                      <p>Không tải được đề.</p>
-                    ) : !isLoading && !listQuestion?.length ? (
-                      <p>Đề này chưa có câu hỏi.</p>
-                    ) : (
-                      <button
-                        className="MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButtonBase-root  css-bktioj"
-                        tabIndex={0}
-                        type="button"
-                        disabled={isLoading || !listQuestion?.length}
-                        onClick={() => {
-                          if (!listQuestion?.length) {
-                            return;
-                          }
-                          onSetExamStatus('starting');
-                        }}
-                      >
-                        Bắt đầu
-                      </button>
-                    )}
-                    {!loadFailed && listQuestion?.length > 0 && (
-                      <p className="exam-duration-note">
-                        {durationMinutes
-                          ? `Thời gian làm bài: ${durationMinutes} phút. Tải lại trang khi đang làm sẽ nộp bài ngay.`
-                          : 'Tải lại trang khi đang làm sẽ nộp bài ngay.'}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="main-game-overview-question-categories">
-                <div className="question-categories-title">
-                  Số câu trong bài
-                </div>
-                <div className="question-categories-list">
-                  <div className="MuiBox-root css-176iyts">
-                    <div className="MuiBox-root css-tkw370">
-                      <button
-                        className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1vacozs"
-                        tabIndex={0}
-                        type="button"
-                      >
-                        {total}
-                      </button>
-                    </div>
-                    <span className="MuiTypography-root MuiTypography-body1 css-gu1cw0">Tổng</span>
-                  </div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width={36}
-                    height={9}
-                    viewBox="0 0 36 9"
-                    fill="none"
-                    className="divider-continue-box"
-                    style={{ width: 36 }}
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M4.48249 8.09296C2.3116 8.09296 0.551758 6.3331 0.551758 4.1622C0.551758 1.99131 2.3116 0.231445 4.48249 0.231445C5.93799 0.231445 7.20873 1.02255 7.88817 2.19824L28.595 2.19824C29.2744 1.02255 30.545 0.231445 32.0005 0.231445C34.1712 0.231445 35.9309 1.99131 35.9309 4.1622C35.9309 6.3331 34.1712 8.09296 32.0005 8.09296C30.5462 8.09296 29.2764 7.30312 28.5966 6.129L7.88653 6.129C7.20669 7.30312 5.93683 8.09296 4.48249 8.09296Z"
-                      fill="#214D45"
-                    />
-                  </svg>
-                  <div className="MuiBox-root css-176iyts">
-                    <div className="MuiBox-root css-tkw370">
-                      <button
-                        className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-64idhc"
-                        tabIndex={0}
-                        type="button"
-                      >
-                        {newAnswerCount}
-                      </button>
-                    </div>
-                    <span className="MuiTypography-root MuiTypography-body1 css-ivwblt">Chưa làm</span>
-                  </div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width={36}
-                    height={9}
-                    viewBox="0 0 36 9"
-                    fill="none"
-                    className="divider-continue-box"
-                    style={{ width: 36 }}
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M4.48249 8.09296C2.3116 8.09296 0.551758 6.3331 0.551758 4.1622C0.551758 1.99131 2.3116 0.231445 4.48249 0.231445C5.93799 0.231445 7.20873 1.02255 7.88817 2.19824L28.595 2.19824C29.2744 1.02255 30.545 0.231445 32.0005 0.231445C34.1712 0.231445 35.9309 1.99131 35.9309 4.1622C35.9309 6.3331 34.1712 8.09296 32.0005 8.09296C30.5462 8.09296 29.2764 7.30312 28.5966 6.129L7.88653 6.129C7.20669 7.30312 5.93683 8.09296 4.48249 8.09296Z"
-                      fill="#214D45"
-                    />
-                  </svg>
-                  <div className="MuiBox-root css-176iyts">
-                    <div className="MuiBox-root css-tkw370">
-                      <button
-                        className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-16yci69"
-                        tabIndex={0}
-                        type="button"
-                      >
-                        {correctAnswerCount}
-                      </button>
-                    </div>
-                    <span className="MuiTypography-root MuiTypography-body1 css-6kw39w">
-                      Đúng
-                    </span>
-                  </div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width={36}
-                    height={9}
-                    viewBox="0 0 36 9"
-                    fill="none"
-                    className="divider-continue-box"
-                    style={{ width: 36 }}
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M4.48249 8.09296C2.3116 8.09296 0.551758 6.3331 0.551758 4.1622C0.551758 1.99131 2.3116 0.231445 4.48249 0.231445C5.93799 0.231445 7.20873 1.02255 7.88817 2.19824L28.595 2.19824C29.2744 1.02255 30.545 0.231445 32.0005 0.231445C34.1712 0.231445 35.9309 1.99131 35.9309 4.1622C35.9309 6.3331 34.1712 8.09296 32.0005 8.09296C30.5462 8.09296 29.2764 7.30312 28.5966 6.129L7.88653 6.129C7.20669 7.30312 5.93683 8.09296 4.48249 8.09296Z"
-                      fill="#214D45"
-                    />
-                  </svg>
-                  <div className="MuiBox-root css-176iyts">
-                    <div className="MuiBox-root css-tkw370">
-                      <button
-                        className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1s5ncj6"
-                        tabIndex={0}
-                        type="button"
-                      >
-                        {incorrectAnswerCount}
-                      </button>
-                    </div>
-                    <span className="MuiTypography-root MuiTypography-body1 css-js2k7p">
-                      Sai
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <MiniTestViewWrap className="container">
+      <div className="view-heading">
+        <h1>{meta.examName || 'Đề luyện'}</h1>
+        <p>{[meta.skillName, meta.partName].filter(Boolean).join(' · ') || 'Luyện theo Part'}</p>
       </div>
-    </ExamLayout>
+
+      <div className="view-body">
+        <section className="exam-detail-card" aria-label="Thông tin đề">
+          {isLoading ? (
+            <div className="detail-empty">
+              <Spin />
+            </div>
+          ) : loadFailed ? (
+            <p className="view-empty">Không tải được đề.</p>
+          ) : !questions.length ? (
+            <p className="view-empty">Đề này chưa có câu hỏi.</p>
+          ) : (
+            <>
+              <div className="detail-stats">
+                <div>
+                  <strong>{total}</strong>
+                  <span>câu hỏi</span>
+                </div>
+                <div>
+                  <strong>{durationMinutes || '—'}</strong>
+                  <span>{durationMinutes ? 'phút làm bài' : 'không giới hạn giờ'}</span>
+                </div>
+                <div>
+                  <strong>{groupCount || total}</strong>
+                  <span>{groupCount ? 'đoạn / câu nhóm' : 'câu đơn'}</span>
+                </div>
+              </div>
+              <ul className="intro-notes">
+                <li>Đồng hồ chạy ngay khi bấm Bắt đầu. Hết giờ, bài được nộp tự động.</li>
+                <li>Tải lại trang khi đang làm, bài cũng được nộp ngay với các câu đã chọn.</li>
+                <li>Câu bỏ trống khi nộp bài sẽ tính là sai. Đáp án và giải thích hiện sau khi nộp.</li>
+                <li>Phím tắt: A–D chọn đáp án, ← → chuyển câu.</li>
+              </ul>
+              <button type="button" className="btn-start" onClick={() => onSetExamStatus('starting')}>
+                <ClockCircleOutlined aria-hidden="true" /> Bắt đầu làm bài
+                {durationMinutes ? ` · ${durationMinutes} phút` : ''}
+              </button>
+              {meta.topicId && (
+                <button
+                  type="button"
+                  className="btn-back"
+                  onClick={() => router.push(`/practice/${meta.topicId}`)}
+                >
+                  <LeftOutlined aria-hidden="true" /> Chọn đề khác
+                </button>
+              )}
+            </>
+          )}
+        </section>
+      </div>
+    </MiniTestViewWrap>
   );
 };
 

@@ -29,6 +29,18 @@ const headline = (percent: number, wrong: number) => {
   return wrong > 0 ? `${lead} Còn ${wrong} câu cần xem lại.` : `${lead} Bạn làm đúng hết.`;
 };
 
+/** Điểm TOEIC của đề thi thử full; officialScale = đề đủ 200 câu, có điểm quy đổi 10–990. */
+export type ToeicResult = {
+  officialScale?: boolean;
+  totalScore?: number | null;
+  listeningScore?: number | null;
+  readingScore?: number | null;
+  listeningCorrect?: number;
+  listeningTotal?: number;
+  readingCorrect?: number;
+  readingTotal?: number;
+};
+
 const scrollToQuestion = (question) => {
   const element = document.getElementById(`review-${getQuestionId(question)}`);
   if (!element) return;
@@ -46,6 +58,7 @@ const ExamResult = ({
   durationMinutes = null,
   subtitle = '',
   secondaryAction = null,
+  toeic = null,
 }: {
   listQuestion: any[];
   onUpdateListQuestion?: (questions: any) => void;
@@ -59,12 +72,19 @@ const ExamResult = ({
   subtitle?: string;
   /** Nút phụ thay cho "Danh sách đề", ví dụ "Về lịch sử" ở trang lịch sử. */
   secondaryAction?: { label: string; onClick: () => void } | null;
+  /** Có giá trị với đề thi thử full: hiện điểm quy đổi và điểm Listening / Reading. */
+  toeic?: ToeicResult | null;
 }) => {
   const router = useRouter();
   const meta = useExamMeta();
   const [onlyWrong, setOnlyWrong] = useState(false);
   const { total, correctAnswerCount, incorrectAnswerCount } = answerInfos;
   const percent = total ? Math.round((correctAnswerCount / total) * 100) : 0;
+  const scaled = Boolean(toeic?.officialScale && typeof toeic?.totalScore === 'number');
+  const ringPercent = scaled ? Math.round(((toeic.totalScore as number) / 990) * 100) : percent;
+  const title = scaled
+    ? `Điểm quy đổi ${toeic.totalScore}/990.${incorrectAnswerCount > 0 ? ` Còn ${incorrectAnswerCount} câu cần xem lại.` : ''}`
+    : headline(percent, incorrectAnswerCount);
 
   // Mỗi câu (kể cả câu con của câu nhóm) kèm kết quả, dùng cho bảng tổng quan và bộ lọc.
   const items = useMemo(
@@ -111,10 +131,14 @@ const ExamResult = ({
               height="168"
               viewBox="0 0 120 120"
               role="img"
-              aria-label={`Đúng ${correctAnswerCount} trên ${total} câu, ${percent} phần trăm`}
+              aria-label={
+                scaled
+                  ? `Điểm quy đổi ${toeic.totalScore} trên 990`
+                  : `Đúng ${correctAnswerCount} trên ${total} câu, ${percent} phần trăm`
+              }
             >
               <circle cx="60" cy="60" r="52" fill="none" stroke="#edf1f1" strokeWidth="12" />
-              {percent > 0 && (
+              {ringPercent > 0 && (
                 <circle
                   cx="60"
                   cy="60"
@@ -123,16 +147,14 @@ const ExamResult = ({
                   stroke="var(--accent)"
                   strokeWidth="12"
                   strokeLinecap="round"
-                  strokeDasharray={`${(ringLength * percent) / 100} ${ringLength}`}
+                  strokeDasharray={`${(ringLength * ringPercent) / 100} ${ringLength}`}
                   transform="rotate(-90 60 60)"
                 />
               )}
             </svg>
             <div className="score-ring-text" aria-hidden="true">
-              <strong>{percent}%</strong>
-              <span>
-                {correctAnswerCount}/{total} câu đúng
-              </span>
+              <strong>{scaled ? toeic.totalScore : `${percent}%`}</strong>
+              <span>{scaled ? 'điểm / 990' : `${correctAnswerCount}/${total} câu đúng`}</span>
             </div>
           </div>
 
@@ -143,7 +165,7 @@ const ExamResult = ({
                   [meta.partName, meta.examName].filter(Boolean).join(' – ') ||
                   'Kết quả bài làm'}
               </span>
-              <h1 id="result-title">{headline(percent, incorrectAnswerCount)}</h1>
+              <h1 id="result-title">{title}</h1>
             </div>
             <div className="score-stats">
               <div className="stat is-correct">
@@ -154,6 +176,34 @@ const ExamResult = ({
                 <strong>{incorrectAnswerCount}</strong>
                 <span>Sai</span>
               </div>
+              {toeic && (
+                <>
+                  <div className="stat is-listening">
+                    <strong>
+                      {scaled && typeof toeic.listeningScore === 'number'
+                        ? toeic.listeningScore
+                        : `${toeic.listeningCorrect ?? 0}/${toeic.listeningTotal ?? 0}`}
+                    </strong>
+                    <span>
+                      {scaled
+                        ? `Listening · đúng ${toeic.listeningCorrect ?? 0}/${toeic.listeningTotal ?? 0}`
+                        : 'Listening · câu đúng'}
+                    </span>
+                  </div>
+                  <div className="stat is-reading">
+                    <strong>
+                      {scaled && typeof toeic.readingScore === 'number'
+                        ? toeic.readingScore
+                        : `${toeic.readingCorrect ?? 0}/${toeic.readingTotal ?? 0}`}
+                    </strong>
+                    <span>
+                      {scaled
+                        ? `Reading · đúng ${toeic.readingCorrect ?? 0}/${toeic.readingTotal ?? 0}`
+                        : 'Reading · câu đúng'}
+                    </span>
+                  </div>
+                </>
+              )}
               {timeUsedMs != null && (
                 <div className="stat">
                   <strong>{formatDuration(timeUsedMs)}</strong>
