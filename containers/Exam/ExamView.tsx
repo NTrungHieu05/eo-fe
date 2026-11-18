@@ -8,7 +8,8 @@ const ExamView = ({
   isLoading = false,
   loadFailed = false,
   isMiniTest = false,
-}) => {
+  durationMinutes = null,
+}: any) => {
   const { total, newAnswerCount, correctAnswerCount, incorrectAnswerCount } = answerInfos;
 
   return (
@@ -109,6 +110,13 @@ const ExamView = ({
                       >
                         Bắt đầu
                       </button>
+                    )}
+                    {!loadFailed && listQuestion?.length > 0 && (
+                      <p className="exam-duration-note">
+                        {durationMinutes
+                          ? `Thời gian làm bài: ${durationMinutes} phút. Tải lại trang khi đang làm sẽ nộp bài ngay.`
+                          : 'Tải lại trang khi đang làm sẽ nộp bài ngay.'}
+                      </p>
                     )}
                   </div>
                 </div>

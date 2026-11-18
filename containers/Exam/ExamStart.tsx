@@ -1,11 +1,46 @@
 import { ClockCircleOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Button } from '@ui';
-import { Modal } from 'antd';
-import { useState } from 'react';
+import { Message } from '@utils';
+import { Modal, Statistic } from 'antd';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import ExamLayout from './ExamLayout';
 import QuestionCard from './QuestionCard';
 import Countdown from 'antd/lib/statistic/Countdown';
+
+const pad = (value: number) => String(value).padStart(2, '0');
+
+const formatElapsed = (totalSeconds: number) => {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return hours > 0 ? `${pad(hours)}:${pad(minutes)}:${pad(seconds)}` : `${pad(minutes)}:${pad(seconds)}`;
+};
+
+// Đồng hồ đếm lên cho chế độ làm từng phần. Tách thành component riêng để mỗi giây
+// chỉ vẽ lại đồng hồ, không vẽ lại câu hỏi (tránh nháy, không làm gián đoạn audio).
+const ElapsedTimer = ({ stopped = false }) => {
+  const [startedAt] = useState(() => Date.now());
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    if (stopped) {
+      return undefined;
+    }
+    const tick = () => setElapsed(Math.floor((Date.now() - startedAt) / 1000));
+    tick();
+    const timer = window.setInterval(tick, 1000);
+    return () => window.clearInterval(timer);
+  }, [startedAt, stopped]);
+
+  return (
+    <Statistic
+      className="mini-test-count-down"
+      title={<ClockCircleOutlined />}
+      value={formatElapsed(elapsed)}
+    />
+  );
+};
 
 const ExamStart = ({
   listQuestion,
@@ -13,8 +48,19 @@ const ExamStart = ({
   onUpdateListQuestion,
   onSetExamStatus,
   answerInfos,
-  isMiniTest = false,
   readOnly = false,
+  deadline = 0,
+  onLeave = undefined,
+}: {
+  listQuestion: any[];
+  startIndex?: number;
+  onUpdateListQuestion: (updater: any) => void;
+  onSetExamStatus: (status: 'initial' | 'starting' | 'reviewing') => void;
+  answerInfos: any;
+  readOnly?: boolean;
+  /** Mốc hết giờ (ms). 0 = đề chưa đặt thời gian, hiện đồng hồ đếm lên. */
+  deadline?: number;
+  onLeave?: () => void;
 }) => {
   const router = useRouter();
   const questions = listQuestion || [];
@@ -53,6 +99,7 @@ const ExamStart = ({
       cancelText: 'Ở lại',
       okButtonProps: { danger: true },
       onOk: () => {
+        onLeave?.();
         const topic = router.query.topicCode;
         const topicId = Array.isArray(topic) ? topic[0] : topic;
         if (topicId) {
@@ -78,9 +125,12 @@ const ExamStart = ({
     setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0));
   };
 
-  const deadline = Date.now() + 1000 * 60 * 60;
-
-  const onFinishCountdown = async () => {
+  const onFinishCountdown = () => {
+    if (readOnly) {
+      return;
+    }
+    Modal.destroyAll();
+    Message.info('Hết giờ làm bài, bài được nộp tự động.');
     onSetExamStatus('reviewing');
   };
 
@@ -93,13 +143,15 @@ const ExamStart = ({
         setCurrentQuestionIndex(Math.min(Math.max(index, 0), Math.max(questions.length - 1, 0)))
       }
     >
-      {isMiniTest && (
+      {deadline > 0 ? (
         <Countdown
           className="mini-test-count-down"
           title={<ClockCircleOutlined />}
           value={deadline}
           onFinish={onFinishCountdown}
         />
+      ) : (
+        <ElapsedTimer stopped={readOnly} />
       )}
       <div id="game-view-container" className="game-view-container-main">
         <div id="main-game-view" className="">

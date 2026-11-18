@@ -12,7 +12,12 @@ type ExamStatusType = 'initial' | 'starting' | 'reviewing';
 
 // Bài thi dở được lưu theo user. Khoá có tiền tố toeic- nên bị xoá khi đăng xuất.
 const PROGRESS_KEY = 'toeic-exam-progress';
-const EXAM_DURATION_MS = 1000 * 60 * 120;
+const DEFAULT_DURATION_MINUTES = 120;
+// Thời gian làm bài lấy theo đề (admin đặt khi tạo đề); đề cũ chưa đặt thì 120 phút.
+const examDurationMs = (exam) => {
+  const minutes = Number(exam?.durationMinutes);
+  return (Number.isFinite(minutes) && minutes > 0 ? minutes : DEFAULT_DURATION_MINUTES) * 60 * 1000;
+};
 const readProgress = () => reactLocalStorage.getObject(PROGRESS_KEY) || {};
 const clearProgress = () => {
   if (typeof window !== 'undefined') {
@@ -252,7 +257,7 @@ const ExamMiniTest = () => {
       submittingRef.current = false;
       setIsSubmitting(false);
       if (status === 'starting') {
-        setDeadline(Date.now() + EXAM_DURATION_MS);
+        setDeadline(Date.now() + examDurationMs(selectedExam));
       }
     }
     setExamStatus(status);
@@ -284,7 +289,8 @@ const ExamMiniTest = () => {
     return () => window.removeEventListener('beforeunload', onBeforeUnload);
   }, [examStatus]);
 
-  // Mở lại trang: khôi phục bài thi dở của đúng user này, hết giờ thì nộp luôn.
+  // Mở lại trang (tải lại / đóng rồi mở) khi bài thi chưa nộp: nộp luôn các câu đã chọn,
+  // không cho làm tiếp.
   useEffect(() => {
     if (restoredRef.current || !userInfos?.userId) {
       return;
@@ -299,16 +305,8 @@ const ExamMiniTest = () => {
         clearProgress();
         return;
       }
-      if (!saved.deadline || saved.deadline <= Date.now()) {
-        Message.info('Bài thi dở đã hết giờ, hệ thống nộp bài với các câu bạn đã chọn.');
-        onSetExamStatus('reviewing', questions, saved.examId);
-        return;
-      }
-      submittingRef.current = false;
-      setIsSubmitting(false);
-      setDeadline(saved.deadline);
-      setExamStatus('starting');
-      Message.info('Đã khôi phục bài thi đang làm dở.');
+      Message.info('Trang đã được tải lại nên bài thi được nộp tự động với các câu bạn đã chọn.');
+      onSetExamStatus('reviewing', questions, saved.examId);
     });
   }, [userInfos?.userId]);
 
@@ -325,7 +323,7 @@ const ExamMiniTest = () => {
       submittingRef.current = false;
       setIsSubmitting(false);
       setScaledResult(null);
-      setDeadline(Date.now() + EXAM_DURATION_MS);
+      setDeadline(Date.now() + examDurationMs(selectedExam));
       setExamStatus('starting');
     }
   };

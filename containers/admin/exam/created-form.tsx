@@ -3,8 +3,8 @@ import { PATTERN_VALIDATE } from '@constants';
 import { useLoading } from '@hooks';
 import { styled } from '@styles/theme';
 import { Button } from '@ui';
-import { Message } from '@utils';
-import { Checkbox, Col, Form, Input, Row, Select } from 'antd';
+import { Message, matchesSearch } from '@utils';
+import { Checkbox, Col, Form, Input, InputNumber, Row, Select } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 
 type CreatedFormProps = {
@@ -24,6 +24,31 @@ const questionLabel = (question) => {
   return text.length > 80 ? `${text.slice(0, 80)}…` : text;
 };
 
+// Toàn bộ nội dung để tìm: câu hỏi, câu con, đáp án, Part (không cần gõ dấu).
+const questionSearchText = (question, topicName = '') =>
+  [
+    question?.question?.text,
+    question?.answer?.texts,
+    question?.answer?.choices,
+    (question?.childQuestions || []).map((child) => [
+      child?.question?.text,
+      child?.answer?.texts,
+      child?.answer?.choices,
+    ]),
+    question?.question?.sound,
+    question?.question?.image,
+    topicName,
+  ]
+    .flat(2)
+    .filter(Boolean)
+    .join(' ');
+
+const toQuestionOption = (question, topicName = '') => ({
+  label: questionLabel(question),
+  value: question.id,
+  searchText: questionSearchText(question, topicName),
+});
+
 const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
   const [form] = Form.useForm();
   const [{ isLoading }, { start, stop }] = useLoading();
@@ -31,6 +56,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
   const [topics, setTopics] = useState<any[]>([]);
   const practiceTest = Form.useWatch('practiceTest', form);
   const topicId = Form.useWatch('topicId', form);
+  const selectedQuestionIds = Form.useWatch('questionIds', form);
 
   const fetchDataList = async () => {
     start();
@@ -61,19 +87,20 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
     [topics]
   );
 
-  const questionOptions = useMemo((): Array<{ label: string; value?: string; options?: { label: string; value: string }[] }> => {
+  type QuestionOption = { label: string; value: string; searchText: string };
+  const questionOptions = useMemo((): Array<QuestionOption | { label: string; options: QuestionOption[] }> => {
     if (practiceTest) {
       const groups = topics
         .map((topic) => ({
           label: topic.name,
           options: questions
             .filter((question) => question.topicId === topic.id)
-            .map((question) => ({ label: questionLabel(question), value: question.id })),
+            .map((question) => toQuestionOption(question, topic.name)),
         }))
         .filter((group) => group.options.length);
       const orphan = questions
         .filter((question) => !question.topicId)
-        .map((question) => ({ label: questionLabel(question), value: question.id }));
+        .map((question) => toQuestionOption(question, 'Chưa gán Part'));
       if (orphan.length) {
         groups.push({ label: 'Chưa gán Part', options: orphan });
       }
@@ -81,7 +108,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
     }
     return questions
       .filter((question) => !topicId || question.topicId === topicId)
-      .map((question) => ({ label: questionLabel(question), value: question.id }));
+      .map((question) => toQuestionOption(question, topics.find((topic) => topic.id === question.topicId)?.name));
   }, [questions, topics, practiceTest, topicId]);
 
   const onSubmit = async (data) => {
@@ -92,6 +119,7 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
         questionIds: data.questionIds,
         practiceTest: !!data.practiceTest,
         topicId: data.practiceTest ? undefined : data.topicId,
+        durationMinutes: data.durationMinutes,
         ...(formData ? { id: formData.id } : {}),
       };
 
@@ -119,11 +147,20 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
         questionIds: formData.questionIds,
         topicId: formData.topicId,
         practiceTest: !!formData.practiceTest,
+        durationMinutes: formData.durationMinutes,
       });
     } else {
       form.resetFields();
     }
   }, [formData]);
+
+  // Gợi ý thời gian khi tạo đề mới: đề full 120 phút, đề từng phần 15 phút (sửa được, 10–20 phút tùy đề).
+  useEffect(() => {
+    if (formData) {
+      return;
+    }
+    form.setFieldsValue({ durationMinutes: practiceTest ? 120 : 15 });
+  }, [practiceTest, formData]);
 
   useEffect(() => {
     if (practiceTest) {
@@ -187,6 +224,29 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                       <Checkbox>Đề thi thử (full test, nhiều Part)</Checkbox>
                     </Form.Item>
                   </Col>
+                  <Col span={24}>
+                    <Form.Item
+                      name="durationMinutes"
+                      label="Thời gian làm bài (phút)"
+                      rules={[
+                        { required: true, message: 'Nhập thời gian làm bài!' },
+                        {
+                          type: 'number',
+                          min: 1,
+                          max: 300,
+                          message: 'Thời gian làm bài phải từ 1 đến 300 phút',
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        min={1}
+                        max={300}
+                        precision={0}
+                        style={{ width: '100%' }}
+                        placeholder={practiceTest ? 'Ví dụ: 120' : 'Ví dụ: 15'}
+                      />
+                    </Form.Item>
+                  </Col>
                   {!practiceTest && (
                     <Col span={24}>
                       <Form.Item
@@ -207,21 +267,29 @@ const CreatedForm = ({ onClose, formData }: CreatedFormProps) => {
                   <Col span={24}>
                     <Form.Item
                       name="questionIds"
-                      label={practiceTest ? 'Câu hỏi (theo từng Part)' : 'Câu hỏi của Part'}
+                      label={`${practiceTest ? 'Câu hỏi (theo từng Part)' : 'Câu hỏi của Part'}${
+                        selectedQuestionIds?.length ? ` · đã chọn ${selectedQuestionIds.length} câu` : ''
+                      }`}
                       rules={[{ required: true, message: 'Chọn ít nhất một câu hỏi' }]}
                     >
                       <Select
                         mode="multiple"
                         allowClear
                         showSearch
-                        optionFilterProp="label"
                         optionLabelProp="label"
+                        filterOption={(input, option: any) =>
+                          // Nhóm Part (không có value) không tự lọc; chỉ lọc từng câu.
+                          option?.value !== undefined &&
+                          matchesSearch(input, option?.searchText ?? option?.label)
+                        }
+                        notFoundContent="Không có câu hỏi phù hợp"
+                        listHeight={360}
                         style={{ width: '100%' }}
                         placeholder={
                           practiceTest
-                            ? 'Chọn câu từ ngân hàng, nhóm theo Part'
+                            ? 'Gõ để tìm câu hỏi (nội dung, đáp án, Part...) rồi chọn'
                             : topicId
-                            ? 'Chọn câu hỏi thuộc Part này'
+                            ? 'Gõ để tìm câu hỏi thuộc Part này rồi chọn'
                             : 'Chọn Part trước'
                         }
                         options={questionOptions}

@@ -1,5 +1,6 @@
 import { ClockCircleOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Button } from '@ui';
+import { Message } from '@utils';
 import { Modal } from 'antd';
 import { useMemo, useState } from 'react';
 import ExamLayout from './ExamMiniTestLayout';
@@ -85,6 +86,8 @@ const ExamStart = ({
     if (!questions.length || readOnly) {
       return;
     }
+    Modal.destroyAll();
+    Message.info('Hết giờ làm bài, bài thi được nộp tự động.');
     onSetExamStatus('reviewing');
   };
 
