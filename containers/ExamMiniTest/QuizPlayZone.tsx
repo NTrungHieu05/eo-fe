@@ -1,6 +1,6 @@
 import Icon from '@ant-design/icons/lib/components/Icon';
 import { IconCheckCircle, IconChoiceCircle, IconCloseCircle } from '@ui/Svgs';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { isLetterHint, sameAnswerText } from '@utils';
 import Hint from './Hint';
 import QuizPlayItem from './QuizPlayItem';
@@ -26,14 +26,16 @@ type QuizPlayZoneProps = {
   hideIndex?: boolean;
 };
 export default function QuizPlayZone(props: QuizPlayZoneProps) {
-  const [choices, setChoices] = useState([]);
-  useEffect(() => {
+  // Tính đáp án ngay trong lúc render (useMemo) thay vì useState + useEffect:
+  // cách cũ vẽ một khung hình không có đáp án rồi mới hiện, gây nháy mỗi lần chuyển câu.
+  const choices = useMemo(() => {
     const listAnswer = props?.answer?.allAnswer?.length > 0 ? props.answer.allAnswer : [];
     let data = listAnswer.map((answer) => {
       return {
         text: answer,
         isChecked: false,
         isAnswer: false,
+        isHint: false,
       };
     });
     data = data.map((choice) => {
@@ -53,7 +55,7 @@ export default function QuizPlayZone(props: QuizPlayZoneProps) {
 
       return _choice;
     });
-    setChoices(data);
+    return data;
   }, [props.userAnswer, props.answer]);
 
   const answered = props?.userAnswer?.length > 0;
