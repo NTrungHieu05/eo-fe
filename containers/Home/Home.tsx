@@ -35,7 +35,7 @@ const Home = () => {
         <section className="hero">
           <div>
             <p className="hero-kicker">Luyện thi Listening & Reading</p>
-            <h1>Chinh phục TOEIC 10–990</h1>
+            <h1>Chinh phục TOEIC 450-990</h1>
             <p className="hero-desc">
               Luyện từng Part, làm đề 200 câu trong 120 phút, và xem điểm quy đổi theo thang TOEIC.
             </p>
