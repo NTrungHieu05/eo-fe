@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import LeftContent from './LeftContent';
 import { AdminLayoutWrap } from './index.style';
@@ -6,7 +6,11 @@ import { ROLE, ROUTES } from '@constants';
 import Config from '@root/config';
 import { reactLocalStorage } from '@utils';
 
-const AdminLayout: React.FC = (props) => {
+// Khung admin (kiểm tra quyền + menu trái) được giữ cố định ở _app. Trước đây mỗi trang admin
+// dựng lại khung, `allowed` về false nên cả trang trắng một nhịp rồi mới hiện: gây nháy.
+export const AdminShellContext = createContext(false);
+
+export const AdminShell: React.FC = (props) => {
   const router = useRouter();
   const [allowed, setAllowed] = useState(false);
 
@@ -30,10 +34,22 @@ const AdminLayout: React.FC = (props) => {
         <div className="left-content-wrap">
           <LeftContent />
         </div>
-        <div className="right-content-wrap">{props.children}</div>
+        <div className="right-content-wrap">
+          <div className="page-enter" key={router.pathname}>
+            {props.children}
+          </div>
+        </div>
       </main>
     </AdminLayoutWrap>
   );
+};
+
+const AdminLayout: React.FC = (props) => {
+  const inShell = useContext(AdminShellContext);
+  if (inShell) {
+    return <>{props.children}</>;
+  }
+  return <AdminShell>{props.children}</AdminShell>;
 };
 
 export default AdminLayout;

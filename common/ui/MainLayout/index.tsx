@@ -1,6 +1,6 @@
 import { PUBLIC_ROUTER, ROLE, ROUTES } from '@constants';
 import Link from 'next/link';
-import React from 'react';
+import React, { createContext, useContext } from 'react';
 import { HeaderWrap, Layout, FooterWrap } from './index.style';
 import { Dropdown, Menu } from 'antd';
 import { doLogout } from '@api';
@@ -11,7 +11,11 @@ import { isEmpty } from 'lodash';
 import { Cookies } from 'react-cookie';
 import { useToeicContext } from '@contexts/toeicContext';
 
-const MainLayout = (props) => {
+// Khung trang (header + footer) được giữ cố định ở _app qua các lần chuyển trang.
+// Trước đây mỗi trang tự dựng lại header nên menu đo lại kích thước và bị nháy.
+export const ShellContext = createContext(false);
+
+export const SiteShell = (props) => {
   const router = useRouter();
 
   const { userInfos, topics } = useToeicContext();
@@ -137,7 +141,7 @@ const MainLayout = (props) => {
         <></>
       )}
 
-      <main className={`main-content-layout ${props?.className ?? ''}`}>{props.children}</main>
+      {props.children}
       {!PUBLIC_ROUTER.includes(router.pathname) ? (
         <FooterWrap>
           <div className="footer-below">
@@ -152,6 +156,23 @@ const MainLayout = (props) => {
         </FooterWrap>
       ) : null}
     </Layout>
+  );
+};
+
+const PageMain = ({ className, children }: { className?: string; children?: React.ReactNode }) => (
+  <main className={`main-content-layout page-enter ${className ?? ''}`}>{children}</main>
+);
+
+// Trang vẫn bọc <MainLayout className=...> như cũ: khi đã có khung cố định thì chỉ dựng phần nội dung.
+const MainLayout = (props) => {
+  const inShell = useContext(ShellContext);
+  if (inShell) {
+    return <PageMain className={props?.className}>{props.children}</PageMain>;
+  }
+  return (
+    <SiteShell>
+      <PageMain className={props?.className}>{props.children}</PageMain>
+    </SiteShell>
   );
 };
 

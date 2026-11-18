@@ -11,6 +11,7 @@ import { BreakpointsContextProvider } from '@contexts/breakpointsContext';
 import { ConfigProvider } from 'antd';
 import viVN from 'antd/lib/locale/vi_VN';
 import 'moment/locale/vi';
+import AppShell from '@ui/AppShell';
 
 require('@styles/antd.less');
 
@@ -30,7 +31,9 @@ const MyApp = ({ Component, pageProps, user, router }) => {
           <main>
             {globalStyles}
             <NextNprogress color={theme.colors.primary} options={{ showSpinner: false }} />
-            <Component {...pageProps} />
+            <AppShell>
+              <Component {...pageProps} />
+            </AppShell>
           </main>
         </div>
       </MasterContext>
