@@ -32,7 +32,10 @@ const headline = (percent: number, wrong: number) => {
 const scrollToQuestion = (question) => {
   const element = document.getElementById(`review-${getQuestionId(question)}`);
   if (!element) return;
-  window.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY - 90, behavior: 'smooth' });
+  window.scrollTo({
+    top: element.getBoundingClientRect().top + window.scrollY - 90,
+    behavior: 'smooth',
+  });
 };
 
 const ExamResult = ({
@@ -41,6 +44,8 @@ const ExamResult = ({
   answerInfos,
   timeUsedMs = null,
   durationMinutes = null,
+  subtitle = '',
+  secondaryAction = null,
 }: {
   listQuestion: any[];
   onUpdateListQuestion?: (questions: any) => void;
@@ -50,6 +55,10 @@ const ExamResult = ({
   isMiniTest?: boolean;
   timeUsedMs?: number | null;
   durationMinutes?: number | null;
+  /** Dòng nhỏ trên tiêu đề; mặc định là tên Part – tên đề lấy theo đường dẫn. */
+  subtitle?: string;
+  /** Nút phụ thay cho "Danh sách đề", ví dụ "Về lịch sử" ở trang lịch sử. */
+  secondaryAction?: { label: string; onClick: () => void } | null;
 }) => {
   const router = useRouter();
   const meta = useExamMeta();
@@ -69,12 +78,21 @@ const ExamResult = ({
               question,
               questionIndex,
             }))
-          : [{ key: `${questionIndex}`, no: question?.questionNo, outcome: outcomeOf(question), question, questionIndex }]
+          : [
+              {
+                key: `${questionIndex}`,
+                no: question?.questionNo,
+                outcome: outcomeOf(question),
+                question,
+                questionIndex,
+              },
+            ]
       ),
     [listQuestion]
   );
   const wrongQuestionIndexes = useMemo(
-    () => new Set(items.filter((item) => item.outcome !== 'correct').map((item) => item.questionIndex)),
+    () =>
+      new Set(items.filter((item) => item.outcome !== 'correct').map((item) => item.questionIndex)),
     [items]
   );
   const reviewQuestions = (listQuestion || [])
@@ -96,17 +114,19 @@ const ExamResult = ({
               aria-label={`Đúng ${correctAnswerCount} trên ${total} câu, ${percent} phần trăm`}
             >
               <circle cx="60" cy="60" r="52" fill="none" stroke="#edf1f1" strokeWidth="12" />
-              <circle
-                cx="60"
-                cy="60"
-                r="52"
-                fill="none"
-                stroke="var(--accent)"
-                strokeWidth="12"
-                strokeLinecap="round"
-                strokeDasharray={`${(ringLength * percent) / 100} ${ringLength}`}
-                transform="rotate(-90 60 60)"
-              />
+              {percent > 0 && (
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="52"
+                  fill="none"
+                  stroke="var(--accent)"
+                  strokeWidth="12"
+                  strokeLinecap="round"
+                  strokeDasharray={`${(ringLength * percent) / 100} ${ringLength}`}
+                  transform="rotate(-90 60 60)"
+                />
+              )}
             </svg>
             <div className="score-ring-text" aria-hidden="true">
               <strong>{percent}%</strong>
@@ -118,7 +138,11 @@ const ExamResult = ({
 
           <div className="score-body">
             <div className="score-heading">
-              <span>{[meta.partName, meta.examName].filter(Boolean).join(' – ') || 'Kết quả bài làm'}</span>
+              <span>
+                {subtitle ||
+                  [meta.partName, meta.examName].filter(Boolean).join(' – ') ||
+                  'Kết quả bài làm'}
+              </span>
               <h1 id="result-title">{headline(percent, incorrectAnswerCount)}</h1>
             </div>
             <div className="score-stats">
@@ -133,21 +157,37 @@ const ExamResult = ({
               {timeUsedMs != null && (
                 <div className="stat">
                   <strong>{formatDuration(timeUsedMs)}</strong>
-                  <span>{durationMinutes ? `Thời gian làm / ${durationMinutes} phút` : 'Thời gian làm'}</span>
+                  <span>
+                    {durationMinutes ? `Thời gian làm / ${durationMinutes} phút` : 'Thời gian làm'}
+                  </span>
                 </div>
               )}
             </div>
             <div className="score-actions">
-              <button type="button" className="btn-primary" onClick={() => scrollToQuestion(listQuestion?.[0])}>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => scrollToQuestion(listQuestion?.[0])}
+              >
                 Xem lại đáp án
               </button>
               <button type="button" className="btn-outline" onClick={onClickTryAgain}>
                 Làm lại đề này
               </button>
-              {meta.topicId && (
-                <button type="button" className="btn-link" onClick={() => router.push(`/practice/${meta.topicId}`)}>
-                  Danh sách đề →
+              {secondaryAction ? (
+                <button type="button" className="btn-link" onClick={secondaryAction.onClick}>
+                  {secondaryAction.label}
                 </button>
+              ) : (
+                meta.topicId && (
+                  <button
+                    type="button"
+                    className="btn-link"
+                    onClick={() => router.push(`/practice/${meta.topicId}`)}
+                  >
+                    Danh sách đề →
+                  </button>
+                )
               )}
             </div>
           </div>
@@ -201,7 +241,12 @@ const ExamResult = ({
                       </strong>
                       <span className={`badge ${badgeClass}`}>{badgeText}</span>
                     </div>
-                    <QuestionCard question={question} onUpdateQuestion={(next) => next} readOnly reveal />
+                    <QuestionCard
+                      question={question}
+                      onUpdateQuestion={(next) => next}
+                      readOnly
+                      reveal
+                    />
                   </article>
                 );
               })

@@ -2,6 +2,7 @@ import { getMyAttempt } from '@api';
 import { ROUTES } from '@constants';
 import { mapQuestions } from '@containers/ExamMiniTest';
 import ExamResult from '@containers/ExamMiniTest/ExamMiniTestResult';
+import PracticeResult from '@containers/Exam/ExamResult';
 import { ExamMainWrap } from '@containers/ExamMiniTest/MiniTest.style';
 import { useLoading } from '@hooks';
 import { applySavedAnswers, formatName, Message } from '@utils';
@@ -90,6 +91,18 @@ const HistoryReview = () => {
       router.push(ROUTES.HOME);
     }
   };
+
+  if (!attempt.practiceTest) {
+    return (
+      <PracticeResult
+        listQuestion={questions}
+        answerInfos={answerInfos}
+        onClickTryAgain={onClickTryAgain}
+        subtitle={`${formatName(attempt.examName) || 'Đề đã xoá'} · nộp lúc ${submittedAt}`}
+        secondaryAction={{ label: '← Về lịch sử', onClick: () => router.push(ROUTES.HISTORY) }}
+      />
+    );
+  }
 
   return (
     <ExamMainWrap className="main-exam">

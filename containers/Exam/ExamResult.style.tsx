@@ -2,10 +2,13 @@ import { styled } from '@styles/theme';
 
 // Màn kết quả, đặt bên trong PracticeWrap để dùng chung kiểu câu hỏi, nút và bảng câu.
 export const ResultWrap = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding-top: 32px;
+  /* && để thắng .container (display: block) trong global.tsx */
+  && {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 32px;
+  }
 
   .score-card {
     background: var(--surface);

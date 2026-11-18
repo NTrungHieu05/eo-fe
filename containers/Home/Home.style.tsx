@@ -6,9 +6,12 @@ export const HomePageWrapper = styled.div`
 `;
 
 export const HomeContentWrap = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
+  /* && để thắng .container (display: block) trong global.tsx */
+  && {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
   color: var(--ink);
 
   a {
