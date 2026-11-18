@@ -99,8 +99,8 @@ const CMSTopic: React.FC = () => {
 
   return (
     <PageWrapper>
-      <div className="cms-page-title">Quản lý Part</div>
       <AdminToolbar
+        title="Quản lý Part"
         keyword={keyword}
         onKeywordChange={onKeywordChange}
         placeholder="Tìm Part theo tên hoặc ID..."

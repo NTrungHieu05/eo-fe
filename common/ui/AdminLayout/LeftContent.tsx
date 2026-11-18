@@ -8,7 +8,15 @@ import { Message, reactLocalStorage } from '@utils';
 import { Cookies } from 'react-cookie';
 import Config from '@root/config';
 import { doLogout } from '@api';
-import { HomeOutlined, LogoutOutlined } from '@ant-design/icons';
+import {
+  AppstoreOutlined,
+  CustomerServiceOutlined,
+  FileTextOutlined,
+  HomeOutlined,
+  LogoutOutlined,
+  QuestionCircleOutlined,
+  TeamOutlined,
+} from '@ant-design/icons';
 
 const LeftContent: React.FC = () => {
   const router = useRouter();
@@ -43,48 +51,28 @@ const LeftContent: React.FC = () => {
 
   return (
     <LeftContentWrap>
-      <div className="cms-logo text-center mt-3 mb-3">
-        <Link href={ROUTES.HOME}>
-          <a title="Về trang học viên">
-            <img
-              src="/static/images/app-icon.png"
-              alt="toeic-test"
-              className="logo-img"
-              width={52}
-              height={52}
-            />
-          </a>
-        </Link>
-      </div>
+      <Link href={ROUTES.HOME}>
+        <a className="cms-brand" title="Về trang học viên">
+          <span className="cms-brand-mark" aria-hidden="true">
+            EO
+          </span>
+          Quản trị
+        </a>
+      </Link>
       <Menu
         selectedKeys={selectedKeys}
         mode="inline"
         theme="dark"
         className="heading-menu"
         items={[
-          { key: 'user', label: <Link href={ROUTES.ADMIN_USER}>Người dùng</Link> },
-          { key: 'skill', label: <Link href={ROUTES.ADMIN_SKILL}>Kỹ năng</Link> },
-          { key: 'topic', label: <Link href={ROUTES.ADMIN_TOPIC}>Part</Link> },
-          { key: 'exam', label: <Link href={ROUTES.ADMIN_EXAM}>Đề thi</Link> },
-          { key: 'question', label: <Link href={ROUTES.ADMIN_QUESTION}>Câu hỏi</Link> },
-          {
-            key: 'home',
-            label: (
-              <Link href={ROUTES.HOME}>
-                <a>
-                  Về trang học viên <HomeOutlined className="ml-1" style={{ fontSize: '15px' }} />
-                </a>
-              </Link>
-            ),
-          },
-          {
-            key: 'logout',
-            label: (
-              <div onClick={onLogoutClick}>
-                Đăng xuất <LogoutOutlined className="ml-1" style={{ fontSize: '15px' }} />
-              </div>
-            ),
-          },
+          { key: 'user', icon: <TeamOutlined />, label: <Link href={ROUTES.ADMIN_USER}>Người dùng</Link> },
+          { key: 'skill', icon: <CustomerServiceOutlined />, label: <Link href={ROUTES.ADMIN_SKILL}>Kỹ năng</Link> },
+          { key: 'topic', icon: <AppstoreOutlined />, label: <Link href={ROUTES.ADMIN_TOPIC}>Part</Link> },
+          { key: 'exam', icon: <FileTextOutlined />, label: <Link href={ROUTES.ADMIN_EXAM}>Đề thi</Link> },
+          { key: 'question', icon: <QuestionCircleOutlined />, label: <Link href={ROUTES.ADMIN_QUESTION}>Câu hỏi</Link> },
+          { type: 'divider' as const },
+          { key: 'home', icon: <HomeOutlined />, label: <Link href={ROUTES.HOME}>Về trang học viên</Link> },
+          { key: 'logout', icon: <LogoutOutlined />, label: 'Đăng xuất', onClick: onLogoutClick },
         ]}
       />
     </LeftContentWrap>

@@ -117,8 +117,8 @@ const CMSExam: React.FC = () => {
 
   return (
     <PageWrapper>
-      <div className="cms-page-title">Quản lý đề</div>
       <AdminToolbar
+        title="Quản lý đề"
         keyword={keyword}
         onKeywordChange={onKeywordChange}
         placeholder="Tìm đề theo tên, ID, Part, loại đề..."

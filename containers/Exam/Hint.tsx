@@ -12,7 +12,7 @@ export default function Hint(props) {
           type="button"
           onClick={() => setShow((prev) => !prev)}
         >
-          {show ? 'Hide' : 'Show'} Explanation
+          {show ? 'Ẩn giải thích' : 'Xem giải thích'}
           <span className="MuiTouchRipple-root css-w0pj6f" />
         </button>
       </div>

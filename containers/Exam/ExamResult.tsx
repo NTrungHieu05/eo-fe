@@ -1,263 +1,247 @@
-import { useEffect, useState } from 'react';
-import ReactAudioPlayer from 'react-audio-player';
-import ExamLayout from './ExamLayout';
-import QuizPlayZone from './QuizPlayZone';
-import { Progress } from 'antd';
+import { answersMatch, getQuestionId } from '@utils';
+import { useRouter } from 'next/router';
+import { useMemo, useState } from 'react';
+import { ResultWrap } from './ExamResult.style';
+import { PracticeWrap } from './ExamStart.style';
 import QuestionCard from './QuestionCard';
-import { getQuestionId } from '@utils';
+import { useExamMeta } from './useExamMeta';
+
+// Câu bỏ trống tính là sai, không tách riêng.
+type Outcome = 'correct' | 'wrong';
+
+const outcomeOf = (item): Outcome =>
+  item?.userAnswer?.[0] && answersMatch(item.userAnswer, item?.answer?.texts) ? 'correct' : 'wrong';
+
+const OUTCOME_LABEL: Record<Outcome, string> = {
+  correct: 'đúng',
+  wrong: 'sai',
+};
+
+const formatDuration = (ms: number) => {
+  const totalSeconds = Math.max(0, Math.round(ms / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+};
+
+const headline = (percent: number, wrong: number) => {
+  const lead = percent >= 80 ? 'Làm tốt lắm!' : percent >= 50 ? 'Khá ổn!' : 'Cần luyện thêm.';
+  return wrong > 0 ? `${lead} Còn ${wrong} câu cần xem lại.` : `${lead} Bạn làm đúng hết.`;
+};
+
+const scrollToQuestion = (question) => {
+  const element = document.getElementById(`review-${getQuestionId(question)}`);
+  if (!element) return;
+  window.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY - 90, behavior: 'smooth' });
+};
 
 const ExamResult = ({
   listQuestion,
-  onUpdateListQuestion,
-  onSetExamStatus,
   onClickTryAgain,
   answerInfos,
-  isMiniTest = false,
+  timeUsedMs = null,
+  durationMinutes = null,
+}: {
+  listQuestion: any[];
+  onUpdateListQuestion?: (questions: any) => void;
+  onSetExamStatus?: (status: any) => void;
+  onClickTryAgain: () => void;
+  answerInfos: any;
+  isMiniTest?: boolean;
+  timeUsedMs?: number | null;
+  durationMinutes?: number | null;
 }) => {
-  const { total, newAnswerCount, correctAnswerCount, incorrectAnswerCount } = answerInfos;
-  const onClickReview = () => {
-    const question = document.getElementById(`review-${getQuestionId(listQuestion?.[0])}`);
-    if (!question) return;
-    window.scrollTo({
-      top: question.offsetTop,
-      behavior: 'smooth',
-    });
-  };
+  const router = useRouter();
+  const meta = useExamMeta();
+  const [onlyWrong, setOnlyWrong] = useState(false);
+  const { total, correctAnswerCount, incorrectAnswerCount } = answerInfos;
+  const percent = total ? Math.round((correctAnswerCount / total) * 100) : 0;
 
-  const percent = total ? (correctAnswerCount / total) * 100 : 0;
+  // Mỗi câu (kể cả câu con của câu nhóm) kèm kết quả, dùng cho bảng tổng quan và bộ lọc.
+  const items = useMemo(
+    () =>
+      (listQuestion || []).flatMap((question, questionIndex) =>
+        question?.isQuestionGroup
+          ? (question.childQuestions || []).map((child, childIndex) => ({
+              key: `${questionIndex}-${childIndex}`,
+              no: child?.questionNo,
+              outcome: outcomeOf(child),
+              question,
+              questionIndex,
+            }))
+          : [{ key: `${questionIndex}`, no: question?.questionNo, outcome: outcomeOf(question), question, questionIndex }]
+      ),
+    [listQuestion]
+  );
+  const wrongQuestionIndexes = useMemo(
+    () => new Set(items.filter((item) => item.outcome !== 'correct').map((item) => item.questionIndex)),
+    [items]
+  );
+  const reviewQuestions = (listQuestion || [])
+    .map((question, index) => ({ question, index }))
+    .filter(({ index }) => !onlyWrong || wrongQuestionIndexes.has(index));
+
+  const ringLength = 2 * Math.PI * 52;
+
   return (
-    <ExamLayout listQuestion={listQuestion} answerInfos={answerInfos}>
-      <div id="game-view-container" className="game-view-container-main">
-        <div id="main-game-view" className="">
-          <div id="main-game-scroll-panel" className="main-game-object">
-            <div className="module-game-overview-component">
-              <div className="main-game-overview-bgr">
-                <span className="bubble-top-left" />
-                <span className="small-bubble-left" />
-                <span className="ellipse-left" />
-                <span className="ellipse-right" />
-                <span className="bubble-right" />
-              </div>
-              <div className="main-game-overview-data">
-                <div className="main-progress">
-                  <div className="main-progress-box" />
-                  <div className="box-layer-2" />
-                  <div className="box-layer-3">
-                    <Progress
-                      type="circle"
-                      percent={percent}
-                      width={130}
-                      format={(value) => (
-                        <span>{Number.isFinite(value) ? Math.round(value) : 0}%</span>
-                      )}
-                    />
-                  </div>
-                </div>
-                <div className="main-statistics">
-                  <div className="main-statistics-questions-stat">
-                    <div className="main-stats-data-questions-stat-item item-total">
-                      <div
-                        className="questions-stat-item-value"
-                        style={{ color: 'rgb(132, 155, 182)' }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width={12}
-                          height={13}
-                          viewBox="0 0 12 13"
-                          fill="none"
-                        >
-                          <circle cx="6.28342" cy="6.48361" r="5.68967" fill="#849BB6" />
-                        </svg>
-                        {total}
-                      </div>
-                      <div className="questions-stat-item-label">Tổng</div>
-                    </div>
-                    <div className="main-stats-data-questions-stat-item item-correct">
-                      <div
-                        className="questions-stat-item-value"
-                        style={{ color: 'rgb(130, 188, 36)' }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width={12}
-                          height={13}
-                          viewBox="0 0 12 13"
-                          fill="none"
-                        >
-                          <circle cx="6.28342" cy="6.48361" r="5.68967" fill="#82BC24" />
-                        </svg>
-                        {correctAnswerCount}
-                      </div>
-                      <div className="questions-stat-item-label">Đúng</div>
-                    </div>
-                    <div className="main-stats-data-questions-stat-item item-incorrect">
-                      <div
-                        className="questions-stat-item-value"
-                        style={{ color: 'rgb(255, 84, 84)' }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width={12}
-                          height={13}
-                          viewBox="0 0 12 13"
-                          fill="none"
-                        >
-                          <circle cx="6.28342" cy="6.48361" r="5.68967" fill="#FF5454" />
-                        </svg>
-                        {incorrectAnswerCount}
-                      </div>
-                      <div className="questions-stat-item-label">Sai</div>
-                    </div>
-                  </div>
-                  <div className="main-statistics-questions-button">
-                    {/* Đã nộp thì không làm tiếp được: câu bỏ trống đã tính là sai. */}
-                    <button
-                      className="MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButtonBase-root  css-1bya90x"
-                      tabIndex={0}
-                      type="button"
-                      onClick={onClickReview}
-                    >
-                      Xem lại
-                    </button>
-
-                    <button
-                      className="MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButtonBase-root  css-lv9ort"
-                      tabIndex={0}
-                      type="button"
-                      onClick={onClickTryAgain}
-                    >
-                      Làm lại
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="main-game-overview-question-categories">
-                <div className="question-categories-title">
-                  Số câu trong bài
-                </div>
-                <div className="question-categories-list">
-                  <div className="MuiBox-root css-176iyts">
-                    <div className="MuiBox-root css-tkw370">
-                      <button
-                        className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1vacozs"
-                        tabIndex={0}
-                        type="button"
-                      >
-                        {total}
-                      </button>
-                    </div>
-                    <span className="MuiTypography-root MuiTypography-body1 css-gu1cw0">Tổng</span>
-                  </div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width={36}
-                    height={9}
-                    viewBox="0 0 36 9"
-                    fill="none"
-                    className="divider-continue-box"
-                    style={{ width: 36 }}
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M4.48249 8.09296C2.3116 8.09296 0.551758 6.3331 0.551758 4.1622C0.551758 1.99131 2.3116 0.231445 4.48249 0.231445C5.93799 0.231445 7.20873 1.02255 7.88817 2.19824L28.595 2.19824C29.2744 1.02255 30.545 0.231445 32.0005 0.231445C34.1712 0.231445 35.9309 1.99131 35.9309 4.1622C35.9309 6.3331 34.1712 8.09296 32.0005 8.09296C30.5462 8.09296 29.2764 7.30312 28.5966 6.129L7.88653 6.129C7.20669 7.30312 5.93683 8.09296 4.48249 8.09296Z"
-                      fill="#214D45"
-                    />
-                  </svg>
-                  <div className="MuiBox-root css-176iyts">
-                    <div className="MuiBox-root css-tkw370">
-                      <button
-                        className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-64idhc"
-                        tabIndex={0}
-                        type="button"
-                      >
-                        {newAnswerCount}
-                      </button>
-                    </div>
-                    <span className="MuiTypography-root MuiTypography-body1 css-ivwblt">Bỏ trống (tính sai)</span>
-                  </div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width={36}
-                    height={9}
-                    viewBox="0 0 36 9"
-                    fill="none"
-                    className="divider-continue-box"
-                    style={{ width: 36 }}
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M4.48249 8.09296C2.3116 8.09296 0.551758 6.3331 0.551758 4.1622C0.551758 1.99131 2.3116 0.231445 4.48249 0.231445C5.93799 0.231445 7.20873 1.02255 7.88817 2.19824L28.595 2.19824C29.2744 1.02255 30.545 0.231445 32.0005 0.231445C34.1712 0.231445 35.9309 1.99131 35.9309 4.1622C35.9309 6.3331 34.1712 8.09296 32.0005 8.09296C30.5462 8.09296 29.2764 7.30312 28.5966 6.129L7.88653 6.129C7.20669 7.30312 5.93683 8.09296 4.48249 8.09296Z"
-                      fill="#214D45"
-                    />
-                  </svg>
-                  <div className="MuiBox-root css-176iyts">
-                    <div className="MuiBox-root css-tkw370">
-                      <button
-                        className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-16yci69"
-                        tabIndex={0}
-                        type="button"
-                      >
-                        {correctAnswerCount}
-                      </button>
-                    </div>
-                    <span className="MuiTypography-root MuiTypography-body1 css-6kw39w">
-                      Đúng
-                    </span>
-                  </div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width={36}
-                    height={9}
-                    viewBox="0 0 36 9"
-                    fill="none"
-                    className="divider-continue-box"
-                    style={{ width: 36 }}
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M4.48249 8.09296C2.3116 8.09296 0.551758 6.3331 0.551758 4.1622C0.551758 1.99131 2.3116 0.231445 4.48249 0.231445C5.93799 0.231445 7.20873 1.02255 7.88817 2.19824L28.595 2.19824C29.2744 1.02255 30.545 0.231445 32.0005 0.231445C34.1712 0.231445 35.9309 1.99131 35.9309 4.1622C35.9309 6.3331 34.1712 8.09296 32.0005 8.09296C30.5462 8.09296 29.2764 7.30312 28.5966 6.129L7.88653 6.129C7.20669 7.30312 5.93683 8.09296 4.48249 8.09296Z"
-                      fill="#214D45"
-                    />
-                  </svg>
-                  <div className="MuiBox-root css-176iyts">
-                    <div className="MuiBox-root css-tkw370">
-                      <button
-                        className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1s5ncj6"
-                        tabIndex={0}
-                        type="button"
-                      >
-                        {incorrectAnswerCount}
-                      </button>
-                    </div>
-                    <span className="MuiTypography-root MuiTypography-body1 css-js2k7p">
-                      Sai
-                    </span>
-                  </div>
-                </div>
-              </div>
+    <PracticeWrap>
+      <ResultWrap className="container">
+        <section className="score-card" aria-labelledby="result-title">
+          <div className="score-ring">
+            <svg
+              width="168"
+              height="168"
+              viewBox="0 0 120 120"
+              role="img"
+              aria-label={`Đúng ${correctAnswerCount} trên ${total} câu, ${percent} phần trăm`}
+            >
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#edf1f1" strokeWidth="12" />
+              <circle
+                cx="60"
+                cy="60"
+                r="52"
+                fill="none"
+                stroke="var(--accent)"
+                strokeWidth="12"
+                strokeLinecap="round"
+                strokeDasharray={`${(ringLength * percent) / 100} ${ringLength}`}
+                transform="rotate(-90 60 60)"
+              />
+            </svg>
+            <div className="score-ring-text" aria-hidden="true">
+              <strong>{percent}%</strong>
+              <span>
+                {correctAnswerCount}/{total} câu đúng
+              </span>
             </div>
           </div>
-        </div>
-        <div id="main-game-review-section" className="">
-          {(listQuestion || []).map((question, index) => (
-            <div id={`review-${getQuestionId(question)}`} key={getQuestionId(question) || index}>
-              <QuestionCard
-                question={listQuestion[index]}
-                onUpdateQuestion={(newQuestion) => newQuestion}
-                readOnly
-                reveal
-                key={`QuestionCard-${getQuestionId(listQuestion[index]) || index}`}
-              />
-              <hr className="MuiDivider-root MuiDivider-fullWidth css-39bbo6" />
+
+          <div className="score-body">
+            <div className="score-heading">
+              <span>{[meta.partName, meta.examName].filter(Boolean).join(' – ') || 'Kết quả bài làm'}</span>
+              <h1 id="result-title">{headline(percent, incorrectAnswerCount)}</h1>
             </div>
-          ))}
-        </div>
-      </div>
-    </ExamLayout>
+            <div className="score-stats">
+              <div className="stat is-correct">
+                <strong>{correctAnswerCount}</strong>
+                <span>Đúng</span>
+              </div>
+              <div className="stat is-wrong">
+                <strong>{incorrectAnswerCount}</strong>
+                <span>Sai</span>
+              </div>
+              {timeUsedMs != null && (
+                <div className="stat">
+                  <strong>{formatDuration(timeUsedMs)}</strong>
+                  <span>{durationMinutes ? `Thời gian làm / ${durationMinutes} phút` : 'Thời gian làm'}</span>
+                </div>
+              )}
+            </div>
+            <div className="score-actions">
+              <button type="button" className="btn-primary" onClick={() => scrollToQuestion(listQuestion?.[0])}>
+                Xem lại đáp án
+              </button>
+              <button type="button" className="btn-outline" onClick={onClickTryAgain}>
+                Làm lại đề này
+              </button>
+              {meta.topicId && (
+                <button type="button" className="btn-link" onClick={() => router.push(`/practice/${meta.topicId}`)}>
+                  Danh sách đề →
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+
+        <section className="review" aria-labelledby="review-title">
+          <div className="review-main">
+            <div className="review-head">
+              <h2 id="review-title">Xem lại từng câu</h2>
+              <div className="segmented" role="group" aria-label="Lọc câu">
+                <button
+                  type="button"
+                  aria-pressed={!onlyWrong}
+                  className={!onlyWrong ? 'is-on' : ''}
+                  onClick={() => setOnlyWrong(false)}
+                >
+                  Tất cả
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={onlyWrong}
+                  className={onlyWrong ? 'is-on' : ''}
+                  onClick={() => setOnlyWrong(true)}
+                >
+                  Câu sai ({incorrectAnswerCount})
+                </button>
+              </div>
+            </div>
+
+            {reviewQuestions.length === 0 ? (
+              <div className="exam-card">
+                <p className="review-empty">Không có câu sai nào. Tuyệt vời!</p>
+              </div>
+            ) : (
+              reviewQuestions.map(({ question, index }) => {
+                const outcomes = items.filter((item) => item.questionIndex === index);
+                const hasWrong = outcomes.some((item) => item.outcome !== 'correct');
+                const badgeClass = hasWrong ? 'is-wrong' : 'is-correct';
+                const badgeText = hasWrong ? 'Sai' : 'Đúng';
+                return (
+                  <article
+                    className="exam-card review-card"
+                    id={`review-${getQuestionId(question)}`}
+                    key={getQuestionId(question) || index}
+                  >
+                    <div className="review-card-head">
+                      <strong>
+                        {outcomes.length > 1
+                          ? `Câu ${outcomes[0]?.no}–${outcomes[outcomes.length - 1]?.no}`
+                          : `Câu ${outcomes[0]?.no ?? index + 1}`}
+                      </strong>
+                      <span className={`badge ${badgeClass}`}>{badgeText}</span>
+                    </div>
+                    <QuestionCard question={question} onUpdateQuestion={(next) => next} readOnly reveal />
+                  </article>
+                );
+              })
+            )}
+          </div>
+
+          <aside className="exam-aside review-aside" aria-label="Tổng quan các câu">
+            <div className="aside-head">
+              <h2>Tổng quan {total} câu</h2>
+            </div>
+            <div className="palette">
+              {items.map((item) => (
+                <button
+                  type="button"
+                  key={item.key}
+                  className={`palette-item outcome-${item.outcome}`}
+                  aria-label={`Câu ${item.no}, ${OUTCOME_LABEL[item.outcome]}`}
+                  onClick={() => {
+                    if (onlyWrong && item.outcome === 'correct') setOnlyWrong(false);
+                    window.setTimeout(() => scrollToQuestion(item.question), 0);
+                  }}
+                >
+                  {item.no}
+                </button>
+              ))}
+            </div>
+            <ul className="legend">
+              <li>
+                <span className="swatch outcome-correct" />
+                Đúng
+              </li>
+              <li>
+                <span className="swatch outcome-wrong" />
+                Sai
+              </li>
+            </ul>
+          </aside>
+        </section>
+      </ResultWrap>
+    </PracticeWrap>
   );
 };
 

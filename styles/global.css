@@ -30,8 +30,32 @@
   --downloadAppBg: #072f3a;
   --langBackground: #0e7c7b;
   --borderLangBackground: #9fd4d3;
-  --pageBg: #f3f6f6;
+  --pageBg: #f5f7f7;
   --cardShadow: 0 12px 32px rgba(7, 47, 58, 0.08);
+
+  /* Bộ màu giao diện mới (dùng chung cho mọi trang) */
+  --ink: #10282b;
+  --ink-soft: #3d5558;
+  --muted: #5b6f72;
+  --line: #e3e9e9;
+  --line-strong: #dce4e4;
+  --surface: #ffffff;
+  --surface-soft: #f5f7f7;
+  --accent: #0e7c7b;
+  --accent-ink: #0b6564;
+  --accent-deep: #08494a;
+  --accent-soft: #e8f3f2;
+  --brand-dark: #0f3b3d;
+  --warm: #c47b2b;
+  --warm-soft: #fbebdd;
+  --warm-ink: #8a4b12;
+  --warn-soft: #fff4e0;
+  --warn-ink: #7a4a00;
+  --danger: #d93a2b;
+  --danger-soft: #fdecea;
+  --danger-ink: #8e1f14;
+  --radius-lg: 20px;
+  --radius-md: 14px;
 }
 
 /* Chuyển trang mượt: nội dung trang mới hiện dần thay vì bật ra đột ngột.
@@ -51,4 +75,28 @@
   .page-enter {
     animation: none;
   }
+}
+
+/* Menu "Luyện theo Part" ở header: nhóm theo kỹ năng */
+.heading-menu-popup .ant-menu-sub {
+  padding: 8px;
+  border-radius: 14px;
+  min-width: 240px;
+}
+.heading-menu-popup .ant-menu-item-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 8px 12px 4px;
+}
+.heading-menu-popup .ant-menu-item {
+  border-radius: 8px;
+  font-size: 14px;
+}
+.heading-menu-popup .ant-menu-item-selected,
+.heading-menu-popup .ant-menu-item:hover {
+  background: var(--accent-soft) !important;
+  color: var(--accent-ink) !important;
 }

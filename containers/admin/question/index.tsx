@@ -134,8 +134,8 @@ const CMSQuestion: React.FC = () => {
 
   return (
     <PageWrapper>
-      <div className="cms-page-title">Quản lý câu hỏi</div>
       <AdminToolbar
+        title="Quản lý câu hỏi"
         keyword={keyword}
         onKeywordChange={onKeywordChange}
         placeholder="Tìm câu hỏi theo nội dung, đáp án, Part, tệp..."

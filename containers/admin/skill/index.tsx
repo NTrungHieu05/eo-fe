@@ -99,8 +99,8 @@ const CMSSkill: React.FC = () => {
 
   return (
     <PageWrapper>
-      <div className="cms-page-title">Quản lý kỹ năng</div>
       <AdminToolbar
+        title="Quản lý kỹ năng"
         keyword={keyword}
         onKeywordChange={onKeywordChange}
         placeholder="Tìm kỹ năng theo tên hoặc ID..."

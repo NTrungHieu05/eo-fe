@@ -63,6 +63,9 @@ const Exam = ({ examCode }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [durationMinutes, setDurationMinutes] = useState<number | null>(null);
   const [deadline, setDeadline] = useState<number>(0);
+  // Mốc bắt đầu / nộp bài để hiện thời gian làm ở màn kết quả (không biết khi bài tự nộp lúc tải lại).
+  const [startedAt, setStartedAt] = useState<number>(0);
+  const [finishedAt, setFinishedAt] = useState<number>(0);
   const loadRequest = useRef(0);
   const submittingRef = useRef(false);
   // Giữ promise tự nộp theo đề, để React Strict Mode (chạy effect 2 lần) không nộp trùng.
@@ -206,6 +209,8 @@ const Exam = ({ examCode }) => {
   };
 
   const startAttempt = () => {
+    setStartedAt(Date.now());
+    setFinishedAt(0);
     setDeadline(durationMinutes ? Date.now() + durationMinutes * 60 * 1000 : 0);
   };
 
@@ -300,6 +305,7 @@ const Exam = ({ examCode }) => {
         setIsSubmitting(false);
         return;
       }
+      setFinishedAt(Date.now());
     } else {
       submittingRef.current = false;
       setIsSubmitting(false);
@@ -346,6 +352,8 @@ const Exam = ({ examCode }) => {
           onSetExamStatus={onSetExamStatus}
           answerInfos={answerInfos}
           onClickTryAgain={onClickTryAgain}
+          timeUsedMs={startedAt && finishedAt ? finishedAt - startedAt : null}
+          durationMinutes={durationMinutes}
         />
       )}
       {examStatus === 'initial' && (

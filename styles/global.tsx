@@ -10,12 +10,12 @@ export const globalStyles = (
 
       body {
         margin: 0;
-        color: rgba(0, 0, 0, 0.87);
-        font-family: Inter, SVN-Poppins, sans-serif;
+        color: var(--ink);
+        font-family: 'Be Vietnam Pro', Inter, system-ui, sans-serif;
         font-weight: 400;
         font-size: 1rem;
         line-height: 1.5;
-        background-color: #f3f6f6;
+        background-color: var(--pageBg);
         overflow-x: hidden;
       }
       #main-app {

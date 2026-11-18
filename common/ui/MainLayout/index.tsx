@@ -15,6 +15,15 @@ import { useToeicContext } from '@contexts/toeicContext';
 // Trước đây mỗi trang tự dựng lại header nên menu đo lại kích thước và bị nháy.
 export const ShellContext = createContext(false);
 
+// Mục menu đang mở theo đường dẫn hiện tại.
+const activeNavKey = (pathname: string) => {
+  if (pathname === '/') return 'home';
+  if (pathname.startsWith('/practice') || pathname.startsWith('/study')) return 'practice';
+  if (pathname.startsWith('/test')) return 'test';
+  if (pathname.startsWith('/history')) return 'history';
+  return '';
+};
+
 export const SiteShell = (props) => {
   const router = useRouter();
 
@@ -106,29 +115,35 @@ export const SiteShell = (props) => {
             <Menu
               className="heading-menu"
               mode="horizontal"
+              selectedKeys={[activeNavKey(router.pathname)]}
               items={[
                 { key: 'home', label: 'Trang chủ', onClick: () => onRouterPush(ROUTES.HOME) },
-                ...topics.map((topic) => ({
-                  key: topic.id,
-                  label: topic.name,
-                  children: (topic?.topics || []).map((item) => ({
-                    key: item.topicId,
-                    label: <Link href={`/practice/${item?.topicId}`}>{formatName(item.topicName)}</Link>,
+                {
+                  key: 'practice',
+                  label: 'Luyện theo Part',
+                  popupClassName: 'heading-menu-popup',
+                  children: topics.map((topic) => ({
+                    type: 'group' as const,
+                    key: `skill-${topic.id}`,
+                    label: topic.name,
+                    children: (topic?.topics || []).map((item) => ({
+                      key: item.topicId,
+                      label: <Link href={`/practice/${item?.topicId}`}>{formatName(item.topicName)}</Link>,
+                    })),
                   })),
-                })),
+                },
+                { key: 'test', label: 'Thi thử', onClick: () => onRouterPush(ROUTES.MINI_TEST) },
+                { key: 'history', label: 'Lịch sử', onClick: () => onRouterPush(ROUTES.HISTORY) },
               ]}
             />
-            <Link href={ROUTES.MINI_TEST}>
-              <a className="cta-test-btn">Thi thử TOEIC</a>
-            </Link>
             {!isEmpty(userInfos) ? (
-              <Dropdown overlay={menu}>
-                <span className="user-chip">
-                  <span className="user-avatar">
+              <Dropdown overlay={menu} trigger={['click', 'hover']}>
+                <button type="button" className="user-chip" aria-label={`Tài khoản: ${userInfos?.displayName || ''}`}>
+                  <span className="user-avatar" aria-hidden="true">
                     {(userInfos?.displayName || 'U').slice(0, 1).toUpperCase()}
                   </span>
-                  {userInfos?.displayName}
-                </span>
+                  <span className="user-name">{userInfos?.displayName}</span>
+                </button>
               </Dropdown>
             ) : (
               <span className="btn-login">
